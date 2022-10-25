@@ -1,1 +1,15 @@
+.venv
+*.egg-info
+dist
+build
+*.log
+**/__pycache__
+**/*.pyc
+test-*.py
+scripts
+htmlcov
+.coverage
+.pytest_cache
+.idea
+.vscode
 node_modules

@@ -1,0 +1,41 @@
+{
+    "webStorageEnabled": false,
+    "locationContextEnabled": false,
+    "browserName": "",
+    "platform": "MAC",
+    "javascriptEnabled": true,
+    "databaseEnabled": false,
+    "takesScreenshot": true,
+    "networkConnectionEnabled": false,
+    "percy:options": {
+      "enabled": true,
+      "ignoreErrors": true
+    },
+    "platformName": "iOS",
+    "bstack:options": {
+      "appiumVersion": "1.21.0"
+    },
+    "newCommandTimeout": 0,
+    "realMobile": "true",
+    "deviceName": "iphone 14",
+    "safariIgnoreFraudWarning": true,
+    "orientation": "PORTRAIT",
+    "deviceOrientation": "PORTRAIT",
+    "noReset": true,
+    "automationName": "XCUITest",
+    "keychainPath": "[REDACTED VALUE]",
+    "keychainPassword": "[REDACTED VALUE]",
+    "useXctestrunFile": true,
+    "bootstrapPath": "/usr/local/.browserstack/config/wda_derived_data_16_1.21.0_e9279c32-baa8-4e44-b03e-00aa591b5c2b/Build/Products",
+    "browserstack.isTargetBased": "true",
+    "build": "ios-builds",
+    "os_version": "16",
+    "sessionName": "v0.0.1",
+    "udid": "00008110-001019020AA1401E",
+    "bundleID": "com.browserstack.Sample-iOS",
+    "bundleId": "com.browserstack.Sample-iOS",
+    "webkitResponseTimeout": 20000,
+    "safariInitialUrl": "http://mobile-internet-check.browserstack.com",
+    "waitForQuiescence": false,
+    "wdaStartupRetries": 3
+  }

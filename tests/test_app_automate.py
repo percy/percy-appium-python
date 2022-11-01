@@ -1,4 +1,4 @@
-# pylint: disable=[arguments-differ, protected-access, line-too-long]
+# pylint: disable=[arguments-differ, protected-access]
 import unittest
 from unittest.mock import MagicMock, patch
 import time

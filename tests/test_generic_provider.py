@@ -1,4 +1,4 @@
-# pylint: disable=[arguments-differ, protected-access, line-too-long]
+# pylint: disable=[arguments-differ, protected-access]
 import shutil
 import os
 import unittest

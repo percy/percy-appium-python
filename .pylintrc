@@ -15,3 +15,5 @@ disable=
   too-few-public-methods,
   protected-access,
   too-many-arguments,
+[FORMAT]
+max-line-length=150

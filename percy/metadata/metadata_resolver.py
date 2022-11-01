@@ -6,8 +6,9 @@ from percy.metadata.ios_metadata import IOSMetadata
 class MetadataResolver:
     @staticmethod
     def resolve(driver):
-        if driver.capabilities.get('platformName', '').lower() == 'android':
+        platform_name = driver.capabilities.get('platformName', '').lower()
+        if platform_name == 'android':
             return AndroidMetadata(driver)
-        if driver.capabilities.get('platformName', '').lower() == 'ios':
+        if platform_name == 'ios':
             return IOSMetadata(driver)
         raise PlatformNotSupported

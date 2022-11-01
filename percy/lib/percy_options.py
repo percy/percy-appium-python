@@ -1,5 +1,3 @@
-# pylint: disable=[line-too-long]
-
 class PercyOptions:
     IGNORE_ERRORS = 'ignoreErrors'
     ENABLED = 'enabled'

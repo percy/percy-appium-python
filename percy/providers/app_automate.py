@@ -7,7 +7,7 @@ from percy.common import log
 
 
 class AppAutomate(GenericProvider):
-    SESSION_CACHE = dict()
+    SESSION_CACHE = {}
     CACHE_PERIOD = 5 * 60  # 5 * 60 seconds
 
     def __init__(self, driver: WebDriver, metadata) -> None:
@@ -15,28 +15,35 @@ class AppAutomate(GenericProvider):
         self._marked_percy_session = True
 
     @staticmethod
-    def supports(remote_url) -> bool:  # resolver
+    def supports(remote_url) -> bool:
         if isinstance(remote_url, str) and remote_url.rfind('browserstack') > -1:
             return True
         return False
 
-    def screenshot(self, name: str, fullscreen: bool, debug_url: str = ''):
+    def screenshot(self, name: str, fullscreen: bool):
         self.execute_percy_screenshot_begin()
-        response = super().screenshot(name, fullscreen, self.get_debug_url())
+        response = super().screenshot(name, fullscreen)
         percy_screenshot_url = response.get('link', '')
         self.execute_percy_screenshot_end(percy_screenshot_url)
         return response
 
-    def get_debug_url(self):
-        session = self._get_cached_session_id()
-        if session:
-            return session
+    def get_session_details(self):
+        session_details = self._get_cached_session()
+        if session_details: return session_details
 
-        response = self.metadata.execute_script( \
+        response = self.metadata.execute_script(
             'browserstack_executor: {"action": "getSessionDetails"}')
-        browser_url = json.loads(response if response else '{}').get('browser_url', '')
-        self._set_session_id_cache(browser_url)
+        response = json.loads(response if response else '{}')
+        self._set_session_cache(response)
+        return response
+
+    def get_debug_url(self):
+        browser_url = self.get_session_details().get('browser_url', '')
         return browser_url
+
+    def get_device_name(self):
+        device_name = self.get_session_details().get('device')
+        return device_name
 
     def _clean_cache(self):
         now = time.time()
@@ -46,18 +53,19 @@ class AppAutomate(GenericProvider):
                 session_ids.append(session_id)
         list(map(self.SESSION_CACHE.pop, session_ids))
 
-    def _get_cached_session_id(self):
+    def _get_cached_session(self):
         self._clean_cache()
         session_id = self.metadata.session_id
-        session = self.SESSION_CACHE.get(session_id, (''))
+        session = self.SESSION_CACHE.get(session_id)
         if session:
             self.SESSION_CACHE[session_id][1] = time.time()
             return session[0]
         return None
 
-    def _set_session_id_cache(self, value):
+    def _set_session_cache(self, value):
         session_id = self.metadata.session_id
-        self.SESSION_CACHE[session_id] = [value, time.time()]
+        if value:
+            self.SESSION_CACHE[session_id] = [value, time.time()]
 
     def execute_percy_screenshot_begin(self):
         try:
@@ -77,7 +85,6 @@ class AppAutomate(GenericProvider):
             log('Could not set session as Percy session')
             log(e, on_debug=True)
             self._marked_percy_session = False
-        return None
 
     def execute_percy_screenshot_end(self, percy_screenshot_url):
         try:
@@ -90,4 +97,3 @@ class AppAutomate(GenericProvider):
                 self.metadata.execute_script(command)
         except Exception as e:
             log(e, on_debug=True)
-        return None

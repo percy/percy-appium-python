@@ -8,7 +8,7 @@ from percy.lib.tile import Tile
 
 
 class GenericProvider:
-    def __init__(self, driver: WebDriver, metadata) -> None:
+    def __init__(self, driver: WebDriver, metadata):
         self.driver = driver
         self.metadata = metadata
 
@@ -16,14 +16,15 @@ class GenericProvider:
     def supports(_remote_url):
         return True
 
-    def screenshot(self, name, fullscreen, debug_url=''):
+    def screenshot(self, name, fullscreen):
         tiles = self._get_tiles(fullscreen)
         tag = self._get_tag()
-        return self._post_screenshots(name, tag, tiles, debug_url)
+
+        return self._post_screenshots(name, tag, tiles, self.get_debug_url())
 
     def _get_tag(self):
         return {
-            "name": self.metadata.device_name,
+            "name": self.get_device_name() or self.metadata.device_name,
             "os-name": self.metadata.os_name,
             "os-version": self.metadata.os_version,
             "width": self.metadata.device_screen_size['width'],
@@ -56,6 +57,9 @@ class GenericProvider:
         return filepath
 
     def get_debug_url(self):
+        return ''
+
+    def get_device_name(self):
         return ''
 
     def _get_dir(self):

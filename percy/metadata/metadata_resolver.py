@@ -8,7 +8,6 @@ class MetadataResolver:
     def resolve(driver):
         if driver.capabilities.get('platformName', '').lower() == 'android':
             return AndroidMetadata(driver)
-        elif driver.capabilities.get('platformName', '').lower() == 'ios':
+        if driver.capabilities.get('platformName', '').lower() == 'ios':
             return IOSMetadata(driver)
-        else:
-            raise PlatformNotSupported
+        raise PlatformNotSupported

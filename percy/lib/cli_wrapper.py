@@ -27,7 +27,7 @@ class CLIWrapper:
     @lru_cache(maxsize=None)
     def is_percy_enabled():
         try:
-            response = requests.get(f'{PERCY_CLI_API}/percy/healthcheck')
+            response = requests.get(f'{PERCY_CLI_API}/percy/healthcheck', timeout=10)
             response.raise_for_status()
             data = response.json()
 
@@ -50,13 +50,13 @@ class CLIWrapper:
         body['client_info'] = CLIENT_INFO
         body['environment_info'] = ENV_INFO
 
-        response = requests.post(f'{PERCY_CLI_API}/percy/comparison', json=body)
-        # # Handle errors
+        response = requests.post(f'{PERCY_CLI_API}/percy/comparison', json=body, timeout=30)
+        # Handle errors
         response.raise_for_status()
         data = response.json()
 
         if response.status_code != 200:
-            raise CLIException(data['error'])
+            raise CLIException(data.get('error', 'UnknownException'))
         return data
 
     @staticmethod

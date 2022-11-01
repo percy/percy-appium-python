@@ -12,3 +12,6 @@ disable=
   no-member,
   no-value-for-parameter,
   redefined-builtin,
+  too-few-public-methods,
+  protected-access,
+  too-many-arguments,

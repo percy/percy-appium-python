@@ -1,4 +1,4 @@
-# pylint: disable=[protected-access]
+# pylint: disable=[protected-access, line-too-long]
 import unittest
 from unittest.mock import Mock, patch
 from percy.errors import CLIException
@@ -22,7 +22,7 @@ class CLIWrapperTestCase(unittest.TestCase):
 
             mock_requests.return_value = response
             self.assertRaises(CLIException, self.cli_wrapper.post_screenshots, 'some-name', {}, [], 'some-debug-url')
-    
+
     @patch.object(cli_wrapper.CLIWrapper, '_request_body', return_value={})
     def test_post_screenshot(self, _mock_request_body):
         with patch('requests.post') as mock_requests:
@@ -34,7 +34,7 @@ class CLIWrapperTestCase(unittest.TestCase):
             mock_requests.return_value = response
             post_screenshots_reponse = self.cli_wrapper.post_screenshots( 'some-name', {}, [], 'some-debug-url')
             self.assertDictEqual(post_screenshots_reponse, response.json())
-    
+
     def test_request_body(self):
         tile = Tile('some-file-path', 10, 10 ,20, 20)
         tag = {'name': 'Tag'}

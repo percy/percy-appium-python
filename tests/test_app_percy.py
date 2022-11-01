@@ -1,4 +1,4 @@
-# pylint: disable=[arguments-differ, protected-access]
+# pylint: disable=[arguments-differ, protected-access, line-too-long]
 import copy
 import unittest
 from unittest.mock import patch, Mock, MagicMock, PropertyMock
@@ -37,6 +37,7 @@ class TestAppPercy(unittest.TestCase):
         self.mock_android_webdriver.capabilities['desired']['percy:options'] = {'enabled': True}
         self.mock_android_webdriver.capabilities['percy:options'] = {'enabled': True}
 
+    @patch.object(AndroidMetadata, 'execute_script', MagicMock(return_value='{"browser_url": "https://browser_ur", "device": "Google Pixel 4"}'))
     @patch.object(CLIWrapper, 'post_screenshots', MagicMock(return_value=comparison_response))
     @patch.object(GenericProvider, '_write_screenshot', MagicMock(return_value='path-to-png-file'))
     @patch.object(AppAutomate, 'get_debug_url', MagicMock(return_value='https://mocked-app-automate-session-url'))
@@ -62,6 +63,7 @@ class TestAppPercy(unittest.TestCase):
             self.assertTrue(isinstance(app_percy.metadata, AndroidMetadata))
             self.assertTrue(isinstance(app_percy.provider, GenericProvider))
 
+    @patch.object(IOSMetadata, 'execute_script', MagicMock(side_effect=[{'top': 14, 'height': 1500}, '{"browser_url": "https://browser_ur", "device": "iPhone 14"}']))
     @patch.object(AppAutomate, 'get_debug_url', MagicMock(return_value='https://mocked-app-automate-session-url'))
     @patch.object(GenericProvider, '_write_screenshot', MagicMock(return_value='path-to-png-file'))
     @patch.object(CLIWrapper, 'post_screenshots', MagicMock(return_value=comparison_response))

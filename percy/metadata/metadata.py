@@ -33,7 +33,7 @@ class Metadata(ABC):
     @abstractmethod
     def device_screen_size(self):
         raise NotImplementedError
-    
+
     @property
     @abstractmethod
     def device_name(self):
@@ -43,7 +43,7 @@ class Metadata(ABC):
     @abstractmethod
     def status_bar(self):
         raise NotImplementedError
-    
+
     @property
     def status_bar_height(self):
         return self.status_bar['height']

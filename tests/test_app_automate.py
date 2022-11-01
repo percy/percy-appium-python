@@ -60,20 +60,15 @@ class TestAppAutomate(unittest.TestCase):
         self.app_automate.execute_percy_screenshot_end('snapshot-url')
         mocked_log.assert_called()
 
-    @patch.object(AppAutomate, '_get_cached_session_id', MagicMock(return_value='session-id'))
-    def test_app_automate_cached_session(self):
-        self.assertEqual(self.app_automate.get_debug_url(), 'session-id')
-        self.mock_webdriver.execute_script.assert_not_called()
-
     @patch.object(AndroidMetadata, 'execute_script', MagicMock(return_value='{"browser_url": "app_automate_session_id"}'))
     def test_get_cached_session_id(self):
-        self.app_automate._set_session_id_cache('https://app-automate-session-url')
-        cached_session_url = self.app_automate._get_cached_session_id()
+        self.app_automate._set_session_cache('https://app-automate-session-url')
+        cached_session_url = self.app_automate._get_cached_session()
         self.assertEqual(cached_session_url, 'https://app-automate-session-url')
 
     def test_app_automate_cache_clean(self):
         self.app_automate.CACHE_PERIOD = 2  # 2 seconds
-        self.app_automate._set_session_id_cache('value-for-session-id')
+        self.app_automate._set_session_cache('value-for-session-id')
         time.sleep(3)
         self.app_automate._clean_cache()
         self.assertListEqual(list(self.app_automate.SESSION_CACHE.keys()), [])

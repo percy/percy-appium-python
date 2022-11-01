@@ -16,7 +16,7 @@ class AppPercy:
 
     def screenshot(self, name: str, fullscreen: bool = False):
         if not self.percy_options.enabled:
-            return
+            return None
         if not isinstance(name, str):
             raise TypeError('Argument `name` should be a string')
         if not isinstance(fullscreen, bool):

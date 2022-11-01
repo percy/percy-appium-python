@@ -27,7 +27,12 @@ class AndroidMetadata(Metadata):
     @property
     def viewport(self):
         return self.capabilities['viewportRect']
-    
+
     @property
     def device_name(self):
-        return self.capabilities.get('deviceModel')
+        desired_caps = self.capabilities.get('desired', {})
+        _device_name = desired_caps.get('deviceName')
+        _device = desired_caps.get('device')
+        _device_name = _device_name or _device
+        _device_model = self.capabilities.get('deviceModel')
+        return _device_name or _device_model

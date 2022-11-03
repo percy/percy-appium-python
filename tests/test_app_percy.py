@@ -63,8 +63,9 @@ class TestAppPercy(unittest.TestCase):
             self.assertTrue(isinstance(app_percy.metadata, AndroidMetadata))
             self.assertTrue(isinstance(app_percy.provider, GenericProvider))
 
-    @patch.object(IOSMetadata, 'execute_script', MagicMock(side_effect=[{'top': 14, 'height': 1500},
-                                                                         '{"browser_url": "https://browser_ur", "device": "iPhone 14"}']))
+    @patch.object(IOSMetadata, 'execute_script',
+    MagicMock(side_effect=[{'top': 14, 'height': 1500},
+                           {'top': 40, 'height': 1200}]))
     @patch.object(AppAutomate, 'get_debug_url', MagicMock(return_value='https://mocked-app-automate-session-url'))
     @patch.object(GenericProvider, '_write_screenshot', MagicMock(return_value='path-to-png-file'))
     @patch.object(CLIWrapper, 'post_screenshots', MagicMock(return_value=comparison_response))

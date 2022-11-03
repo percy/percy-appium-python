@@ -12,6 +12,7 @@ class AppAutomate(GenericProvider):
 
     def __init__(self, driver: WebDriver, metadata) -> None:
         super().__init__(driver, metadata)
+        self.metadata._device_name = self.get_device_name()
         self._marked_percy_session = True
 
     @staticmethod
@@ -46,8 +47,7 @@ class AppAutomate(GenericProvider):
         return browser_url
 
     def get_device_name(self):
-        device_name = self.get_session_details().get('device')
-        return device_name
+        return self.get_session_details().get('device', '')
 
     def _clean_cache(self):
         now = time.time()
@@ -95,7 +95,9 @@ class AppAutomate(GenericProvider):
             if self._marked_percy_session:
                 request_body = {
                     'action': 'percyScreenshot',
-                    'arguments': {'state': 'end', 'percyScreenshotUrl': percy_screenshot_url }
+                    'arguments': {
+                        'state': 'end',
+                        'percyScreenshotUrl': percy_screenshot_url }
                 }
                 command = f'browserstack_executor: {json.dumps(request_body)}'
                 self.metadata.execute_script(command)

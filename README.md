@@ -1,5 +1,5 @@
 # percy-appium-python
-<!-- ![Test](https://github.com/percy/percy-python-appium/workflows/Test/badge.svg) -->
+![Test](https://github.com/percy/percy-appium-python/workflows/Test/badge.svg)
 
 [Percy](https://percy.io) visual testing for Python Appium.
 

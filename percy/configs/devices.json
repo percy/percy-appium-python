@@ -1,206 +1,206 @@
 {
     "iphone 14 pro max": {
-        "Scale Factor": "3",
-        "Status Bar": "59"
+        "scale_factor": "3",
+        "status_bar": "59"
     },
     "iphone 14 pro": {
-        "Scale Factor": "3",
-        "Status Bar": "59"
+        "scale_factor": "3",
+        "status_bar": "59"
     },
     "iphone 14 plus": {
-        "Scale Factor": "3",
-        "Status Bar": "47"
+        "scale_factor": "3",
+        "status_bar": "47"
     },
     "iphone 14": {
-        "Scale Factor": "3",
-        "Status Bar": "47"
+        "scale_factor": "3",
+        "status_bar": "47"
     },
     "iphone 13 pro max": {
-        "Scale Factor": "3",
-        "Status Bar": "47"
+        "scale_factor": "3",
+        "status_bar": "47"
     },
     "iphone 13 pro": {
-        "Scale Factor": "3",
-        "Status Bar": "47"
+        "scale_factor": "3",
+        "status_bar": "47"
     },
     "iphone 13 mini": {
-        "Scale Factor": "3",
-        "Status Bar": "50"
+        "scale_factor": "3",
+        "status_bar": "50"
     },
     "iphone 13": {
-        "Scale Factor": "3",
-        "Status Bar": "47"
+        "scale_factor": "3",
+        "status_bar": "47"
     },
     "iphone 12 pro max": {
-        "Scale Factor": "3",
-        "Status Bar": "47"
+        "scale_factor": "3",
+        "status_bar": "47"
     },
     "iphone 12 pro": {
-        "Scale Factor": "3",
-        "Status Bar": "47"
+        "scale_factor": "3",
+        "status_bar": "47"
     },
     "iphone 12 mini": {
-        "Scale Factor": "3",
-        "Status Bar": "50"
+        "scale_factor": "3",
+        "status_bar": "50"
     },
     "iphone 12": {
-        "Scale Factor": "3",
-        "Status Bar": "47"
+        "scale_factor": "3",
+        "status_bar": "47"
     },
     "iphone 11 pro max": {
-        "Scale Factor": "3",
-        "Status Bar": "44"
+        "scale_factor": "3",
+        "status_bar": "44"
     },
     "iphone 11 pro": {
-        "Scale Factor": "3",
-        "Status Bar": "44"
+        "scale_factor": "3",
+        "status_bar": "44"
     },
     "iphone 11": {
-        "Scale Factor": "2",
-        "Status Bar": "48"
+        "scale_factor": "2",
+        "status_bar": "48"
     },
     "iphone xs": {
-        "Scale Factor": "3",
-        "Status Bar": "44"
+        "scale_factor": "3",
+        "status_bar": "44"
     },
     "iphone xs max": {
-        "Scale Factor": "3",
-        "Status Bar": "44"
+        "scale_factor": "3",
+        "status_bar": "44"
     },
     "iphone xr": {
-        "Scale Factor": "2",
-        "Status Bar": "48"
+        "scale_factor": "2",
+        "status_bar": "48"
     },
     "iphone x": {
-        "Scale Factor": "3",
-        "Status Bar": "44"
+        "scale_factor": "3",
+        "status_bar": "44"
     },
     "iphone 8": {
-        "Scale Factor": "2",
-        "Status Bar": "20"
+        "scale_factor": "2",
+        "status_bar": "20"
     },
     "iphone 8 plus": {
-        "Scale Factor": "3",
-        "Status Bar": "20"
+        "scale_factor": "3",
+        "status_bar": "20"
     },
     "iphone 7": {
-        "Scale Factor": "2",
-        "Status Bar": "20"
+        "scale_factor": "2",
+        "status_bar": "20"
     },
     "iphone 6s": {
-        "Scale Factor": "2",
-        "Status Bar": "20"
+        "scale_factor": "2",
+        "status_bar": "20"
     },
     "iphone 6 plus": {
-        "Scale Factor": "3",
-        "Status Bar": "20"
+        "scale_factor": "3",
+        "status_bar": "20"
     },
     "iphone 6s plus": {
-        "Scale Factor": "3",
-        "Status Bar": "20"
+        "scale_factor": "3",
+        "status_bar": "20"
     },
     "iphone 6": {
-        "Scale Factor": "2",
-        "Status Bar": "20"
+        "scale_factor": "2",
+        "status_bar": "20"
     },
     "iphone se 2022": {
-        "Scale Factor": "2",
-        "Status Bar": "20"
+        "scale_factor": "2",
+        "status_bar": "20"
     },
     "iphone se 2020": {
-        "Scale Factor": "2",
-        "Status Bar": "20"
+        "scale_factor": "2",
+        "status_bar": "20"
     },
     "iphone se": {
-        "Scale Factor": "2",
-        "Status Bar": "20"
+        "scale_factor": "2",
+        "status_bar": "20"
     },
     "ipad air 4": {
-        "Scale Factor": "2",
-        "Status Bar": "24"
+        "scale_factor": "2",
+        "status_bar": "24"
     },
     "ipad 9th": {
-        "Scale Factor": "2",
-        "Status Bar": "20"
+        "scale_factor": "2",
+        "status_bar": "20"
     },
     "ipad 10th": {
-        "Scale Factor": "2",
-        "Status Bar": "24"
+        "scale_factor": "2",
+        "status_bar": "24"
     },
     "ipad air 5": {
-        "Scale Factor": "2",
-        "Status Bar": "24"
+        "scale_factor": "2",
+        "status_bar": "24"
     },
     "ipad pro 12.9 2022": {
-        "Scale Factor": "2",
-        "Status Bar": "24"
+        "scale_factor": "2",
+        "status_bar": "24"
     },
     "ipad pro 12.9 2021": {
-        "Scale Factor": "2",
-        "Status Bar": "24"
+        "scale_factor": "2",
+        "status_bar": "24"
     },
     "ipad pro 12.9 2020": {
-        "Scale Factor": "2",
-        "Status Bar": "24"
+        "scale_factor": "2",
+        "status_bar": "24"
     },
     "ipad pro 11 2021": {
-        "Scale Factor": "2",
-        "Status Bar": "24"
+        "scale_factor": "2",
+        "status_bar": "24"
     },
     "ipad pro 11 2022": {
-        "Scale Factor": "2",
-        "Status Bar": "24"
+        "scale_factor": "2",
+        "status_bar": "24"
     },
     "ipad 8th": {
-        "Scale Factor": "2",
-        "Status Bar": "20"
+        "scale_factor": "2",
+        "status_bar": "20"
     },
     "ipad pro 12.9 2018": {
-        "Scale Factor": "2",
-        "Status Bar": "24"
+        "scale_factor": "2",
+        "status_bar": "24"
     },
     "ipad mini 2021": {
-        "Scale Factor": "2",
-        "Status Bar": "24"
+        "scale_factor": "2",
+        "status_bar": "24"
     },
     "ipad pro 11 2020": {
-        "Scale Factor": "2",
-        "Status Bar": "24"
+        "scale_factor": "2",
+        "status_bar": "24"
     },
     "ipad mini 2019": {
-        "Scale Factor": "2",
-        "Status Bar": "20"
+        "scale_factor": "2",
+        "status_bar": "20"
     },
     "ipad air 2019": {
-        "Scale Factor": "2",
-        "Status Bar": "20"
+        "scale_factor": "2",
+        "status_bar": "20"
     },
     "ipad 7th": {
-        "Scale Factor": "2",
-        "Status Bar": "20"
+        "scale_factor": "2",
+        "status_bar": "20"
     },
     "ipad pro 11 2018": {
-        "Scale Factor": "2",
-        "Status Bar": "24"
+        "scale_factor": "2",
+        "status_bar": "24"
     },
     "ipad pro 9.7 2016": {
-        "Scale Factor": "2",
-        "Status Bar": "20"
+        "scale_factor": "2",
+        "status_bar": "20"
     },
     "ipad pro 12.9 2017": {
-        "Scale Factor": "2",
-        "Status Bar": "20"
+        "scale_factor": "2",
+        "status_bar": "20"
     },
     "ipad mini 4": {
-        "Scale Factor": "2",
-        "Status Bar": "20"
+        "scale_factor": "2",
+        "status_bar": "20"
     },
     "ipad 6th": {
-        "Scale Factor": "2",
-        "Status Bar": "20"
+        "scale_factor": "2",
+        "status_bar": "20"
     },
     "ipad 5th": {
-        "Scale Factor": "2",
-        "Status Bar": "20"
+        "scale_factor": "2",
+        "status_bar": "20"
     }
 }

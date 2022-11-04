@@ -13,9 +13,9 @@ class IOSMetadata(Metadata):
         height = self.viewport.get('top') + self.viewport.get('height')
         width = self.viewport.get('width')
         if not height and not width:
-            static_device_info = self.value_from_static_devices_info(self.device_name)
-            height = self.get_window_size().get('height') * int(static_device_info.get("Scale Factor"))
-            width = self.get_window_size().get('width') * int(static_device_info.get("Scale Factor"))
+            static_device_info = self.get_device_info(self.device_name)
+            height = self.get_window_size().get('height') * int(static_device_info.get("scale_factor"))
+            width = self.get_window_size().get('width') * int(static_device_info.get("scale_factor"))
         return {'width': width, 'height': height}
 
     @property
@@ -24,9 +24,9 @@ class IOSMetadata(Metadata):
         if self.viewport.get('top'):
             height = self.viewport.get('top')
         else:
-            static_device_info = self.value_from_static_devices_info(self.device_name)
-            scale_factor = static_device_info.get("Scale Factor")
-            status_bar_height = static_device_info.get("Status Bar")
+            static_device_info = self.get_device_info(self.device_name)
+            scale_factor = static_device_info.get("scale_factor")
+            status_bar_height = static_device_info.get("status_bar")
             height = int(status_bar_height) * int(scale_factor)
         return {'height': height}
 

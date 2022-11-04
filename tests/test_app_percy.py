@@ -103,6 +103,17 @@ class TestAppPercy(unittest.TestCase):
     def test_percy_options_ignore_errors(self, _mocked_log):
         self.mock_android_webdriver.capabilities['percy:options'] = {'ignoreErrors': False}
         self.assertRaises(Exception, percy_screenshot, self.mock_android_webdriver, 'screenshot')
+        _mocked_log.assert_called_once_with('Could not take screenshot "screenshot"')
+
+    @patch('percy.screenshot.log')
+    @patch.object(CLIWrapper, 'is_percy_enabled', MagicMock(return_value=True))
+    def test_percy_options_ignore_errors_not_raise(self, _mock_log):
+        with patch.object(AppPercy, 'screenshot') as mock_screenshot:
+            exception = Exception('Some Exception')
+            mock_screenshot.side_effect = exception
+            self.mock_android_webdriver.capabilities['percy:options'] = {'ignoreErrors': True}
+            percy_screenshot(self.mock_android_webdriver, 'screenshot')
+            _mock_log.assert_called_with(exception, on_debug=True)
 
     @patch.object(GenericProvider, 'supports', MagicMock(return_value=False))
     def test_invalid_provider(self):

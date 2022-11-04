@@ -4,8 +4,11 @@ from abc import ABC, abstractmethod
 from percy.common import log
 
 
+_DEVICE_INFO_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'configs', 'devices.json')
+with open(_DEVICE_INFO_FILE_PATH, 'r', encoding='utf-8') as fp:
+    _DEVICE_INFO = json.load(fp)
+
 class Metadata(ABC):
-    _DEVICE_INFO_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'configs', 'devices.json')
     def __init__(self, driver):
         self.driver = driver
         self._device_name = None
@@ -71,10 +74,9 @@ class Metadata(ABC):
     def execute_script(self, command):
         return self.driver.execute_script(command)
 
-    def value_from_static_devices_info(self, device_name):
+    def get_device_info(self, device_name):
         if self.device_info:
             return self.device_info
-        with open(self._DEVICE_INFO_FILE_PATH, 'r', encoding='utf-8') as fp:
-            self.device_info = json.load(fp).get(device_name.lower(), {})
-            if not self.device_info: log(f'{device_name.lower()} does not exist in config.')
+        self.device_info = _DEVICE_INFO.get(device_name.lower(), {})
+        if not self.device_info: log(f'{device_name.lower()} does not exist in config.')
         return self.device_info

@@ -35,3 +35,18 @@ class TestBaseMetadata(TestCase):
 
         with self.assertRaises(NotImplementedError):
             _viewport = base_metadata.viewport
+
+        # Get device info of a device exist in config
+        self.assertEqual(base_metadata.device_info, {})
+        device_config = base_metadata.get_device_info('iPhone 6')
+        self.assertNotEqual(base_metadata.device_info, {})
+        self.assertDictEqual(base_metadata.get_device_info('iPhone 6'), device_config)
+
+        # Get device info of a device not exist in config
+        with patch('percy.metadata.metadata.log') as mock_log:
+            base_metadata.device_info = {}
+            self.assertEqual(base_metadata.device_info, {})
+
+            device_name = 'Some Phone 123'
+            base_metadata.get_device_info(device_name)
+            mock_log.assert_called_once_with(f'{device_name.lower()} does not exist in config.')

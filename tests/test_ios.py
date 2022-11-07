@@ -1,6 +1,6 @@
 # pylint: disable=[arguments-differ, protected-access]
 from unittest import TestCase
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock, PropertyMock
 from appium.webdriver.webdriver import WebDriver
 
 from percy.metadata import IOSMetadata
@@ -30,3 +30,30 @@ class TestIOSMetadata(TestCase):
     def test_remote_url(self):
         self.mock_webdriver.command_executor._url = 'some-remote-url'
         self.assertEqual(self.ios_metadata.remote_url, 'some-remote-url')
+
+    def test_get_window_size(self):
+        height, width = 100, 100
+        window_size = {'height': height, 'width': width}
+        self.mock_webdriver.get_window_size.return_value = window_size
+        self.assertDictEqual(self.ios_metadata._window_size, {})
+        fetched_window_size = self.ios_metadata.get_window_size()
+        self.assertDictEqual(window_size, fetched_window_size)
+
+    @patch.object(IOSMetadata, 'execute_script',  MagicMock(side_effect = Exception('RealException')))
+    @patch('percy.metadata.ios_metadata.log')
+    def test_viewport_exception(self, mock_log):
+        _viewport = self.ios_metadata.viewport
+        mock_log.assert_called_once_with('Could not use viewportRect; using static config', on_debug=True)
+
+    @patch.object(IOSMetadata, 'device_name',  PropertyMock(return_value = 'iPhone 6'))
+    @patch.object(IOSMetadata, 'execute_script',  MagicMock(side_effect = Exception('RealException')))
+    def test_device_screen_size(self):
+        self.mock_webdriver.get_window_size.return_value = {'height': 100, 'width': 100}
+        device_screen_size = self.ios_metadata.device_screen_size
+        self.assertDictEqual(device_screen_size, {'height': 200, 'width': 200})
+
+    @patch.object(IOSMetadata, 'device_name',  PropertyMock(return_value = 'iPhone 6'))
+    @patch.object(IOSMetadata, 'execute_script',  MagicMock(side_effect = Exception('RealException')))
+    def test_status_bar(self):
+        status_bar = self.ios_metadata.status_bar
+        self.assertDictEqual(status_bar, {'height': 40})

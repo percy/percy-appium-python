@@ -103,3 +103,7 @@ class TestGenericProvider(unittest.TestCase):
     def test_non_app_automate(self):
         response = self.generic_provider.screenshot('screenshot 1', False)
         self.assertDictEqual(response, self.comparison_response)
+
+    def test_get_device_name(self):
+        device_name = self.generic_provider.get_device_name()
+        self.assertEqual(device_name, '')

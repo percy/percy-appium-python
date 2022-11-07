@@ -1,11 +1,9 @@
-from appium.webdriver.webdriver import WebDriver
-
 from percy.common import log
 from percy.lib import AppPercy
 from percy.lib.cli_wrapper import CLIWrapper
 
 
-def percy_screenshot(driver: WebDriver, name: str, fullscreen: bool=False):
+def percy_screenshot(driver, name: str, fullscreen: bool=False):
     if not CLIWrapper.is_percy_enabled():
         return None
     app_percy = None

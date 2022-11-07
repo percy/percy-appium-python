@@ -63,8 +63,9 @@ class TestAppPercy(unittest.TestCase):
             self.assertTrue(isinstance(app_percy.metadata, AndroidMetadata))
             self.assertTrue(isinstance(app_percy.provider, GenericProvider))
 
-    @patch.object(IOSMetadata, 'execute_script', MagicMock(side_effect=[{'top': 14, 'height': 1500},
-                                                                         '{"browser_url": "https://browser_ur", "device": "iPhone 14"}']))
+    @patch.object(IOSMetadata, 'execute_script',
+    MagicMock(side_effect=[{'top': 14, 'height': 1500},
+                           {'top': 40, 'height': 1200}]))
     @patch.object(AppAutomate, 'get_debug_url', MagicMock(return_value='https://mocked-app-automate-session-url'))
     @patch.object(GenericProvider, '_write_screenshot', MagicMock(return_value='path-to-png-file'))
     @patch.object(CLIWrapper, 'post_screenshots', MagicMock(return_value=comparison_response))
@@ -102,6 +103,17 @@ class TestAppPercy(unittest.TestCase):
     def test_percy_options_ignore_errors(self, _mocked_log):
         self.mock_android_webdriver.capabilities['percy:options'] = {'ignoreErrors': False}
         self.assertRaises(Exception, percy_screenshot, self.mock_android_webdriver, 'screenshot')
+        _mocked_log.assert_called_once_with('Could not take screenshot "screenshot"')
+
+    @patch('percy.screenshot.log')
+    @patch.object(CLIWrapper, 'is_percy_enabled', MagicMock(return_value=True))
+    def test_percy_options_ignore_errors_not_raise(self, _mock_log):
+        with patch.object(AppPercy, 'screenshot') as mock_screenshot:
+            exception = Exception('Some Exception')
+            mock_screenshot.side_effect = exception
+            self.mock_android_webdriver.capabilities['percy:options'] = {'ignoreErrors': True}
+            percy_screenshot(self.mock_android_webdriver, 'screenshot')
+            _mock_log.assert_called_with(exception, on_debug=True)
 
     @patch.object(GenericProvider, 'supports', MagicMock(return_value=False))
     def test_invalid_provider(self):

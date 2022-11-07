@@ -24,7 +24,7 @@ class GenericProvider:
 
     def _get_tag(self):
         return {
-            "name": self.get_device_name() or self.metadata.device_name,
+            "name": self.metadata.device_name,
             "os-name": self.metadata.os_name,
             "os-version": self.metadata.os_version,
             "width": self.metadata.device_screen_size['width'],

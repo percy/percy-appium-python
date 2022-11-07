@@ -23,7 +23,7 @@ class GenericProvider:
         return self._post_screenshots(name, tag, tiles, self.get_debug_url())
 
     def _get_tag(self, **kwargs):
-        name = self.metadata.device_name
+        name = kwargs.get('device_name', self.metadata.device_name)
         os_name = self.metadata.os_name
         os_version = self.metadata.os_version
         width = self.metadata.device_screen_size.get('width', 0)

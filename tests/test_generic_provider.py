@@ -68,10 +68,10 @@ class TestGenericProvider(unittest.TestCase):
         self.assertEqual(tag['orientation'], self.android_metadata.orientation)
 
     def test_get_tag_kwargs(self):
-        orientation = 'some-device-name'
-        tag = self.generic_provider._get_tag(device_name=orientation)
+        device_name = 'some-device-name'
+        tag = self.generic_provider._get_tag(device_name=device_name)
         self.assertIn('name', tag)
-        self.assertEqual(tag['name'], orientation)
+        self.assertEqual(tag['name'], device_name)
 
         orientation = 'some-orientation'
         tag = self.generic_provider._get_tag(orientation=orientation)

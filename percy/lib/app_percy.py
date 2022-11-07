@@ -21,7 +21,7 @@ class AppPercy:
             raise TypeError('Argument name should be a string')
         device_name = kwargs.get('device_name')
         if device_name and not isinstance(device_name, str):
-           raise TypeError('Argument device_name should be a string')
+            raise TypeError('Argument device_name should be a string')
         fullscreen = kwargs.get('full_screen')
         if fullscreen and not isinstance(fullscreen, bool):
             raise TypeError('Argument fullscreen should be a boolean')

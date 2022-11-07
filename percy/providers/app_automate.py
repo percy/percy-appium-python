@@ -12,6 +12,8 @@ class AppAutomate(GenericProvider):
 
     def __init__(self, driver: WebDriver, metadata) -> None:
         super().__init__(driver, metadata)
+        # Device name retrieval is custom for App Automate users
+        self.metadata._device_name = self.get_device_name()
         self._marked_percy_session = True
 
     @staticmethod

@@ -14,8 +14,8 @@ class IOSMetadata(Metadata):
         width = self.viewport.get('width')
         if not height and not width:
             static_device_info = self.get_device_info(self.device_name)
-            height = self.get_window_size().get('height') * int(static_device_info.get("scale_factor"))
-            width = self.get_window_size().get('width') * int(static_device_info.get("scale_factor"))
+            height = self.get_window_size().get('height') * int(static_device_info.get("scale_factor", 0))
+            width = self.get_window_size().get('width') * int(static_device_info.get("scale_factor", 0))
         return {'width': width, 'height': height}
 
     @property

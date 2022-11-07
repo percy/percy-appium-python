@@ -25,8 +25,8 @@ class IOSMetadata(Metadata):
             height = self.viewport.get('top')
         else:
             static_device_info = self.get_device_info(self.device_name)
-            scale_factor = static_device_info.get("scale_factor")
-            status_bar_height = static_device_info.get("status_bar")
+            scale_factor = static_device_info.get("scale_factor", 0)
+            status_bar_height = static_device_info.get("status_bar", 0)
             height = int(status_bar_height) * int(scale_factor)
         return {'height': height}
 

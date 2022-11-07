@@ -16,29 +16,37 @@ class GenericProvider:
     def supports(_remote_url):
         return True
 
-    def screenshot(self, name, fullscreen):
-        tiles = self._get_tiles(fullscreen)
-        tag = self._get_tag()
+    def screenshot(self, name, **kwargs):
+        tiles = self._get_tiles(**kwargs)
+        tag = self._get_tag(**kwargs)
 
         return self._post_screenshots(name, tag, tiles, self.get_debug_url())
 
-    def _get_tag(self):
+    def _get_tag(self, **kwargs):
+        name = self.metadata.device_name
+        os_name = self.metadata.os_name
+        os_version = self.metadata.os_version
+        width = self.metadata.device_screen_size.get('width', 0)
+        height = self.metadata.device_screen_size.get('height', 0)
+        orientation = kwargs.get('orientation', self.metadata.orientation).lower()
+
         return {
-            "name": self.metadata.device_name,
-            "os-name": self.metadata.os_name,
-            "os-version": self.metadata.os_version,
-            "width": self.metadata.device_screen_size['width'],
-            "height": self.metadata.device_screen_size['height'],
-            "orientation": self.metadata.orientation.lower()
+            "name": name,
+            "os_name": os_name,
+            "os_version": os_version,
+            "width": width,
+            "height": height,
+            "orientation": orientation
         }
 
-    def _get_tiles(self, fullscreen=False):
+    def _get_tiles(self, **kwargs):
         png_bytes = self.driver.get_screenshot_as_png()
         directory = self._get_dir()
         path = self._write_screenshot(png_bytes, directory)
 
-        status_bar_height = self.metadata.status_bar_height
-        nav_bar_height = self.metadata.navigation_bar_height
+        fullscreen = kwargs.get('full_screen', False)
+        status_bar_height = kwargs.get('status_bar_height') or self.metadata.status_bar_height
+        nav_bar_height = kwargs.get('nav_bar_height') or self.metadata.navigation_bar_height
         header_height = 0
         footer_height = 0
         return [

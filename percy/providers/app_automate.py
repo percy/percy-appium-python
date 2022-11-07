@@ -22,9 +22,10 @@ class AppAutomate(GenericProvider):
             return True
         return False
 
-    def screenshot(self, name: str, fullscreen: bool):
+    def screenshot(self, name: str, **kwargs):
         self.execute_percy_screenshot_begin()
-        response = super().screenshot(name, fullscreen)
+        self.metadata._device_name = kwargs.get('device_name') or self.metadata._device_name
+        response = super().screenshot(name, **kwargs)
         percy_screenshot_url = response.get('link', '')
         self.execute_percy_screenshot_end(percy_screenshot_url)
         return response

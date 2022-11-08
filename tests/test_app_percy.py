@@ -9,7 +9,7 @@ from percy.errors import DriverNotSupported, UnknownProvider
 from percy import percy_screenshot
 from percy.lib.app_percy import AppPercy
 from percy.lib.cli_wrapper import CLIWrapper
-from percy.metadata import IOSMetadata
+from percy.metadata import IOSMetadata, Metadata
 from percy.providers.app_automate import AppAutomate
 from percy.providers.generic_provider import GenericProvider
 from percy.metadata import AndroidMetadata
@@ -43,6 +43,7 @@ class TestAppPercy(unittest.TestCase):
     @patch.object(AppAutomate, 'get_debug_url', MagicMock(return_value='https://mocked-app-automate-session-url'))
     @patch.object(AppAutomate, 'execute_percy_screenshot_begin', MagicMock(return_value=None))
     @patch.object(AppAutomate, 'execute_percy_screenshot_end', MagicMock(return_value=None))
+    @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
     def test_android_on_app_automate(self):
         with patch('percy.metadata.AndroidMetadata.remote_url', new_callable=PropertyMock) as mock_remote_url:
             mock_remote_url.return_value = 'url-of-browserstack-cloud'
@@ -64,8 +65,9 @@ class TestAppPercy(unittest.TestCase):
             self.assertTrue(isinstance(app_percy.provider, GenericProvider))
 
     @patch.object(IOSMetadata, 'execute_script',
-    MagicMock(side_effect=[{'top': 14, 'height': 1500},
-                           {'top': 40, 'height': 1200}]))
+        MagicMock(side_effect=[{'top': 14, 'height': 1500},
+                            {'top': 40, 'height': 1200}]))
+    @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
     @patch.object(AppAutomate, 'get_debug_url', MagicMock(return_value='https://mocked-app-automate-session-url'))
     @patch.object(GenericProvider, '_write_screenshot', MagicMock(return_value='path-to-png-file'))
     @patch.object(CLIWrapper, 'post_screenshots', MagicMock(return_value=comparison_response))
@@ -82,6 +84,7 @@ class TestAppPercy(unittest.TestCase):
 
     @patch.object(GenericProvider, '_write_screenshot', MagicMock(return_value='path-to-png-file'))
     @patch.object(CLIWrapper, 'post_screenshots', MagicMock(return_value=comparison_response))
+    @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
     def test_ios_on_non_app_automate(self):
         with patch('percy.metadata.IOSMetadata.remote_url', new_callable=PropertyMock) as mock_remote_url:
             mock_remote_url.return_value = ''

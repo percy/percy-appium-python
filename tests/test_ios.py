@@ -3,7 +3,7 @@ from unittest import TestCase
 from unittest.mock import patch, MagicMock, PropertyMock
 from appium.webdriver.webdriver import WebDriver
 
-from percy.metadata import IOSMetadata
+from percy.metadata import IOSMetadata, Metadata
 from tests.mocks.mock_methods import android_capabilities
 
 
@@ -31,6 +31,7 @@ class TestIOSMetadata(TestCase):
         self.mock_webdriver.command_executor._url = 'some-remote-url'
         self.assertEqual(self.ios_metadata.remote_url, 'some-remote-url')
 
+    @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
     def test_get_window_size(self):
         height, width = 100, 100
         window_size = {'height': height, 'width': width}
@@ -40,6 +41,8 @@ class TestIOSMetadata(TestCase):
         self.assertDictEqual(window_size, fetched_window_size)
 
     @patch.object(IOSMetadata, 'execute_script',  MagicMock(side_effect = Exception('RealException')))
+    @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
+    @patch('percy.lib.cache.Cache.CACHE', {})
     @patch('percy.metadata.ios_metadata.log')
     def test_viewport_exception(self, mock_log):
         _viewport = self.ios_metadata.viewport
@@ -47,6 +50,8 @@ class TestIOSMetadata(TestCase):
 
     @patch.object(IOSMetadata, 'device_name',  PropertyMock(return_value = 'iPhone 6'))
     @patch.object(IOSMetadata, 'execute_script',  MagicMock(side_effect = Exception('RealException')))
+    @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
+    @patch('percy.lib.cache.Cache.CACHE', {})
     def test_device_screen_size(self):
         self.mock_webdriver.get_window_size.return_value = {'height': 100, 'width': 100}
         device_screen_size = self.ios_metadata.device_screen_size
@@ -54,6 +59,8 @@ class TestIOSMetadata(TestCase):
 
     @patch.object(IOSMetadata, 'device_name',  PropertyMock(return_value = 'iPhone 6'))
     @patch.object(IOSMetadata, 'execute_script',  MagicMock(side_effect = Exception('RealException')))
+    @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
+    @patch('percy.lib.cache.Cache.CACHE', {})
     def test_status_bar(self):
         status_bar = self.ios_metadata.status_bar
         self.assertDictEqual(status_bar, {'height': 40})

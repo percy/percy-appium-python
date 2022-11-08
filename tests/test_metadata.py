@@ -5,8 +5,8 @@ from unittest.mock import Mock, patch
 from percy.metadata.metadata import Metadata
 
 
-class TestBaseMetadata(TestCase):
-    print('TestBaseMetadata')
+class TestMetadata(TestCase):
+    print('TestMetadata')
     def test_instantiation(self):
         with self.assertRaises(TypeError) as cm:
             Metadata(Mock())

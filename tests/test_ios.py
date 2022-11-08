@@ -8,8 +8,6 @@ from tests.mocks.mock_methods import android_capabilities
 
 
 class TestIOSMetadata(TestCase):
-    print('TestIOSMetadata')
-
     @patch('appium.webdriver.webdriver.WebDriver')
     def setUp(self, mock_appium) -> None:
         mock_appium.__class__ = WebDriver

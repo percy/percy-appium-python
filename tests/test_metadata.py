@@ -6,7 +6,6 @@ from percy.metadata.metadata import Metadata
 
 
 class TestMetadata(TestCase):
-    print('TestMetadata')
     def test_instantiation(self):
         with self.assertRaises(TypeError) as cm:
             Metadata(Mock())

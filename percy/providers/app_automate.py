@@ -27,14 +27,14 @@ class AppAutomate(GenericProvider):
         return response
 
     def get_session_details(self):
-        session_details = Cache().get_cache(self.metadata.session_id, 'session_details')
+        session_details = Cache.get_cache(self.metadata.session_id, 'session_details')
         if session_details: return session_details
         response = {}
         try:
             response = self.metadata.execute_script(
                 'browserstack_executor: {"action": "getSessionDetails"}')
             response = json.loads(response if response else '{}')
-            Cache().set_cache(self.metadata.session_id, 'session_details', response)
+            Cache.set_cache(self.metadata.session_id, 'session_details', response)
         except Exception as e:
             log('Could not get session details from AppAutomate')
             log(e, on_debug=True)

@@ -6,10 +6,8 @@ from percy.lib.cache import Cache
 
 
 class TestCache(unittest.TestCase):
-    print('TestCache')
-
     def setUp(self) -> None:
-        self.cache = Cache()
+        self.cache = Cache
         self.session_id = 'session_id_123'
         self.prop = 'window_size'
         self.value = {'top': 'Top Value'}

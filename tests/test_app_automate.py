@@ -8,7 +8,6 @@ from tests.mocks.mock_methods import android_capabilities
 
 
 class TestAppAutomate(unittest.TestCase):
-    print('TestAppAutomate')
     comparison_response = {'success': True, 'link': 'https://snapshots-url'}
 
     @patch('appium.webdriver.webdriver.WebDriver')

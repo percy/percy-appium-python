@@ -17,7 +17,6 @@ from tests.mocks.mock_methods import android_capabilities, ios_capabilities
 
 
 class TestAppPercy(unittest.TestCase):
-    print('TestAppPercy')
     comparison_response = {'link': 'https://snapshot_url', 'success': True}
 
     @patch('appium.webdriver.webdriver.WebDriver')

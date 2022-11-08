@@ -36,23 +36,23 @@ class IOSMetadata(Metadata):
         return {'height': 0}
 
     def get_window_size(self):
-        self._window_size = Cache().get_cache(self.session_id, 'window_size')
+        self._window_size = Cache.get_cache(self.session_id, 'window_size')
         if not self._window_size:
             self._window_size = self.driver.get_window_size()
-            Cache().set_cache(self.session_id, 'window_size', self._window_size)
+            Cache.set_cache(self.session_id, 'window_size', self._window_size)
         return self._window_size
 
     @property
     def viewport(self):
-        self._viewport = Cache().get_cache(self.session_id, 'viewport') or {}
+        self._viewport = Cache.get_cache(self.session_id, 'viewport') or {}
         if not self._viewport:
             self._viewport['attempt'] = self._viewport.get('attempt', 0) + 1
             try:
                 self._viewport['data'] = self.execute_script("mobile: viewportRect")
-                Cache().set_cache(self.session_id, 'viewport', self._viewport)
+                Cache.set_cache(self.session_id, 'viewport', self._viewport)
             except Exception:
                 log("Could not use viewportRect; using static config", on_debug=True)
-                Cache().set_cache(self.session_id, 'viewport', self._viewport)
+                Cache.set_cache(self.session_id, 'viewport', self._viewport)
         return self._viewport.get('data', {'top': 0, 'height': 0, 'width': 0})
 
     @property

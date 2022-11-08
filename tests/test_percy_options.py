@@ -3,7 +3,6 @@ from percy.lib.percy_options import PercyOptions
 
 
 class TestPercyOptions(unittest.TestCase):
-    print('TestPercyOptions')
     def test_percy_options_not_provided(self):  # Defaults
         capabilities = {}
         percy_options = PercyOptions(capabilities)

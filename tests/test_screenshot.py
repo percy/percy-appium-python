@@ -60,8 +60,6 @@ def mock_screenshot(fail=False):
 
 
 class TestPercyScreenshot(unittest.TestCase):
-    print('TestPercyScreenshot---')
-
     @patch('appium.webdriver.webdriver.WebDriver')
     def setUp(self, mock_webdriver) -> None:
         mock_webdriver.__class__ = WebDriver

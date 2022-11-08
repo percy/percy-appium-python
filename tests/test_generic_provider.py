@@ -12,7 +12,6 @@ from tests.mocks.mock_methods import android_capabilities
 
 
 class TestGenericProvider(unittest.TestCase):
-    print('TestGenericProvider')
     comparison_response = {"comparison": {"id": 123, "url": 'https://percy-build-url'}}
 
     @patch('appium.webdriver.webdriver.WebDriver')

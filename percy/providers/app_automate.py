@@ -26,7 +26,7 @@ class AppAutomate(GenericProvider):
         self.metadata._device_name = kwargs.get('device_name') or self.get_device_name()
         response = super().screenshot(name, **kwargs)
         percy_screenshot_url = response.get('link', '')
-        self.execute_percy_screenshot_end(percy_screenshot_url)
+        self.execute_percy_screenshot_end(self.metadata.device_name, percy_screenshot_url)
         return response
 
     def get_session_details(self):
@@ -72,14 +72,15 @@ class AppAutomate(GenericProvider):
         if value:
             self.SESSION_CACHE[session_id] = [value, time.time()]
 
-    def execute_percy_screenshot_begin(self):
+    def execute_percy_screenshot_begin(self, name):
         try:
             request_body = {
                 'action': 'percyScreenshot',
                 'arguments': {
                     'state': 'begin',
                     'percyBuildId':  os.getenv('PERCY_BUILD_ID', ''),
-                    'percyBuildUrl': os.getenv('PERCY_BUILD_URL', '')
+                    'percyBuildUrl': os.getenv('PERCY_BUILD_URL', ''),
+                    'name': name
                 }
             }
             command = f'browserstack_executor: {json.dumps(request_body)}'
@@ -91,14 +92,16 @@ class AppAutomate(GenericProvider):
             log(e, on_debug=True)
             self._marked_percy_session = False
 
-    def execute_percy_screenshot_end(self, percy_screenshot_url):
+    def execute_percy_screenshot_end(self, name, percy_screenshot_url):
         try:
             if self._marked_percy_session:
                 request_body = {
                     'action': 'percyScreenshot',
                     'arguments': {
                         'state': 'end',
-                        'percyScreenshotUrl': percy_screenshot_url }
+                        'percyScreenshotUrl': percy_screenshot_url,
+                        'name': name,
+                        'status': 'success' }
                 }
                 command = f'browserstack_executor: {json.dumps(request_body)}'
                 self.metadata.execute_script(command)

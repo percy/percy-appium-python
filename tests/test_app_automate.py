@@ -25,11 +25,6 @@ class TestAppAutomate(unittest.TestCase):
         self.metadata = AndroidMetadata(self.mock_webdriver)
         self.app_automate = AppAutomate(self.mock_webdriver, self.metadata)
 
-    @patch.object(AppAutomate, 'screenshot', MagicMock(return_value=comparison_response))
-    def test_app_automate_screenshot(self):
-        response = self.app_automate.screenshot('screenshot 1')
-        self.assertDictEqual(response, self.comparison_response)
-
     @patch.object(AndroidMetadata, 'execute_script', MagicMock(return_value='{"browser_url": "app_automate_session_url"}'))
     def test_app_automate_get_debug_url(self):
         debug_url = self.app_automate.get_debug_url()
@@ -38,26 +33,26 @@ class TestAppAutomate(unittest.TestCase):
     @patch('percy.providers.app_automate.log')
     def test_app_automate_execute_percy_screenshot_begin(self, _mocked_log):
         self.mock_webdriver.execute_script.return_value = {}
-        self.assertIsNone(self.app_automate.execute_percy_screenshot_begin())
+        self.assertIsNone(self.app_automate.execute_percy_screenshot_begin('Screebshot 1'))
         self.mock_webdriver.execute_script.assert_called()
 
     @patch('percy.providers.app_automate.log')
     def test_execute_percy_screenshot_begin_throws_error(self, mocked_log):
         self.mock_webdriver.execute_script.side_effect = Exception('SomeException')
         self.assertTrue(self.app_automate._marked_percy_session)
-        self.app_automate.execute_percy_screenshot_begin()
+        self.app_automate.execute_percy_screenshot_begin('Screenshot 1')
         self.assertFalse(self.app_automate._marked_percy_session)
         mocked_log.assert_called()
 
     def test_app_automate_execute_percy_screenshot_end(self):
         self.mock_webdriver.execute_script.return_value = {}
-        self.assertIsNone(self.app_automate.execute_percy_screenshot_end(self.comparison_response['link']))
+        self.assertIsNone(self.app_automate.execute_percy_screenshot_end('Screenshot 1', self.comparison_response['link'], 'success'))
         self.mock_webdriver.execute_script.assert_called()
 
     @patch('percy.providers.app_automate.log')
     def test_execute_percy_screenshot_end_throws_error(self, mocked_log):
         self.mock_webdriver.execute_script.side_effect = Exception('SomeException')
-        self.app_automate.execute_percy_screenshot_end('snapshot-url')
+        self.app_automate.execute_percy_screenshot_end('Screenshot 1', 'snapshot-url', 'success')
         mocked_log.assert_called()
 
     @patch.object(AndroidMetadata, 'execute_script', MagicMock(return_value='{"browser_url": "app_automate_session_id"}'))

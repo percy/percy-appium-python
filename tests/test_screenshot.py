@@ -88,7 +88,11 @@ class TestPercyScreenshot(unittest.TestCase):
             mock_remote_url.return_value = ''
             app_percy = AppPercy(self.mock_webdriver)
             self.assertRaises(TypeError, app_percy.screenshot, 123)
-            self.assertRaises(TypeError, app_percy.screenshot, 'screenshot 1', 123)
+            self.assertRaises(TypeError, app_percy.screenshot, 'screenshot 1', device_name = 123)
+            self.assertRaises(TypeError, app_percy.screenshot, 'screenshot 1', full_screen = 123)
+            self.assertRaises(TypeError, app_percy.screenshot, 'screenshot 1', orientation = 123)
+            self.assertRaises(TypeError, app_percy.screenshot, 'screenshot 1', status_bar_height = 'height')
+            self.assertRaises(TypeError, app_percy.screenshot, 'screenshot 1', nav_bar_height = 'height')
 
 
     def test_throws_error_when_a_driver_is_not_provided(self):
@@ -127,7 +131,7 @@ class TestPercyScreenshot(unittest.TestCase):
         mock_screenshot()
 
         percy_screenshot(self.mock_webdriver, 'screenshot 1')
-        percy_screenshot(self.mock_webdriver, 'screenshot 2', fullscreen=False)
+        percy_screenshot(self.mock_webdriver, 'screenshot 2', full_screen=False)
 
         self.assertEqual(httpretty.last_request().path, '/percy/comparison')
 

@@ -3,13 +3,13 @@ from percy.lib import AppPercy
 from percy.lib.cli_wrapper import CLIWrapper
 
 
-def percy_screenshot(driver, name: str, fullscreen: bool=False):
+def percy_screenshot(driver, name: str, **kwargs):
     if not CLIWrapper.is_percy_enabled():
         return None
     app_percy = None
     try:
         app_percy = AppPercy(driver)
-        return app_percy.screenshot(name, fullscreen)
+        return app_percy.screenshot(name, **kwargs)
     except Exception as e:
         log(f'Could not take screenshot "{name}"')
         if app_percy and app_percy.percy_options.ignore_errors is False:

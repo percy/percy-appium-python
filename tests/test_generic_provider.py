@@ -56,16 +56,27 @@ class TestGenericProvider(unittest.TestCase):
         tag = self.generic_provider._get_tag()
         self.assertIn('name', tag)
         self.assertEqual(tag['name'], self.android_metadata.device_name)
-        self.assertIn('os-name', tag)
-        self.assertEqual(tag['os-name'], self.android_metadata.os_name)
-        self.assertIn('os-version', tag)
-        self.assertEqual(tag['os-version'], self.android_metadata.os_version)
+        self.assertIn('os_name', tag)
+        self.assertEqual(tag['os_name'], self.android_metadata.os_name)
+        self.assertIn('os_version', tag)
+        self.assertEqual(tag['os_version'], self.android_metadata.os_version)
         self.assertIn('width', tag)
         self.assertEqual(tag['width'], self.android_metadata.device_screen_size['width'])
         self.assertIn('height', tag)
         self.assertEqual(tag['height'], self.android_metadata.device_screen_size['height'])
         self.assertIn('orientation', tag)
         self.assertEqual(tag['orientation'], self.android_metadata.orientation)
+
+    def test_get_tag_kwargs(self):
+        device_name = 'some-device-name'
+        tag = self.generic_provider._get_tag(device_name=device_name)
+        self.assertIn('name', tag)
+        self.assertEqual(tag['name'], device_name)
+
+        orientation = 'some-orientation'
+        tag = self.generic_provider._get_tag(orientation=orientation)
+        self.assertIn('orientation', tag)
+        self.assertEqual(tag['orientation'], orientation)
 
     def test_get_tiles(self):
         tile = self.generic_provider._get_tiles()[0]
@@ -85,6 +96,16 @@ class TestGenericProvider(unittest.TestCase):
         self.assertFalse(dict_tile['fullscreen'])
         os.remove(tile.filepath)
 
+    def test_get_tiles_kwargs(self):
+        status_bar_height, nav_bar_height = 135, 246
+        tile = dict(self.generic_provider._get_tiles(status_bar_height=status_bar_height, nav_bar_height=nav_bar_height, full_screen=True)[0])
+        self.assertIn('status_bar_height', tile)
+        self.assertEqual(tile['status_bar_height'], status_bar_height)
+        self.assertIn('nav_bar_height', tile)
+        self.assertEqual(tile['nav_bar_height'], nav_bar_height)
+        self.assertIn('fullscreen', tile)
+        self.assertTrue(tile['fullscreen'])
+
     @patch.object(CLIWrapper, 'post_screenshots', MagicMock(return_value=comparison_response))
     def test_post_screenshots(self):
         tag = self.generic_provider._get_tag()
@@ -101,7 +122,7 @@ class TestGenericProvider(unittest.TestCase):
 
     @patch.object(GenericProvider, '_post_screenshots', MagicMock(return_value=comparison_response))
     def test_non_app_automate(self):
-        response = self.generic_provider.screenshot('screenshot 1', False)
+        response = self.generic_provider.screenshot('screenshot 1')
         self.assertDictEqual(response, self.comparison_response)
 
     def test_get_device_name(self):

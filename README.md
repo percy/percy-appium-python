@@ -58,6 +58,11 @@ $ percy app:exec -- [python test command]
 
 - `driver` (**required**) - A appium driver instance
 - `name` (**required**) - The screenshot name; must be unique to each screenshot
+- `device_name` (**optional**) - The device name used for capturing screenshot
+- `orientation` (**optional**) - Orientation of device while capturing screeenshot; Allowed values [`portrait` | `landscape`]
+- `status_bar_height` (**optional**) - Height of status bar; number
+- `nav_bar_height` (**optional**) - Height of navigation bar; number
+- `full_screen` (**optional**) - Indicate whether app is full screen; boolean
 
 ### Migrating Config
 

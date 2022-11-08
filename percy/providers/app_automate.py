@@ -18,13 +18,16 @@ class AppAutomate(GenericProvider):
         return False
 
     def screenshot(self, name: str, **kwargs):
-        self.execute_percy_screenshot_begin()
+        self.execute_percy_screenshot_begin(name)
         # Device name retrieval is custom for App Automate users
         self.metadata._device_name = kwargs.get('device_name') or self.get_device_name()
-        response = super().screenshot(name, **kwargs)
-        percy_screenshot_url = response.get('link', '')
-        self.execute_percy_screenshot_end(percy_screenshot_url)
-        return response
+        try:
+            response = super().screenshot(name, **kwargs)
+            percy_screenshot_url = response.get('link', '')
+            self.execute_percy_screenshot_end(name, percy_screenshot_url, 'success')
+        except Exception as e:
+            self.execute_percy_screenshot_end(name, percy_screenshot_url, 'failure', str(e))
+            raise e
 
     def get_session_details(self):
         session_details = Cache.get_cache(self.metadata.session_id, 'session_details')
@@ -47,14 +50,15 @@ class AppAutomate(GenericProvider):
     def get_device_name(self):
         return self.get_session_details().get('device', '')
 
-    def execute_percy_screenshot_begin(self):
+    def execute_percy_screenshot_begin(self, name):
         try:
             request_body = {
                 'action': 'percyScreenshot',
                 'arguments': {
                     'state': 'begin',
                     'percyBuildId':  os.getenv('PERCY_BUILD_ID', ''),
-                    'percyBuildUrl': os.getenv('PERCY_BUILD_URL', '')
+                    'percyBuildUrl': os.getenv('PERCY_BUILD_URL', ''),
+                    'name': name
                 }
             }
             command = f'browserstack_executor: {json.dumps(request_body)}'
@@ -66,15 +70,18 @@ class AppAutomate(GenericProvider):
             log(e, on_debug=True)
             self._marked_percy_session = False
 
-    def execute_percy_screenshot_end(self, percy_screenshot_url):
+    def execute_percy_screenshot_end(self, name, percy_screenshot_url, status, status_message=None):
         try:
             if self._marked_percy_session:
                 request_body = {
                     'action': 'percyScreenshot',
                     'arguments': {
                         'state': 'end',
-                        'percyScreenshotUrl': percy_screenshot_url }
+                        'percyScreenshotUrl': percy_screenshot_url,
+                        'name': name,
+                        'status': status }
                 }
+                if status_message: request_body['arguments']['statusMessage'] = status_message
                 command = f'browserstack_executor: {json.dumps(request_body)}'
                 self.metadata.execute_script(command)
         except Exception as e:

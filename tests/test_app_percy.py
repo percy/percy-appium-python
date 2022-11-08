@@ -47,8 +47,7 @@ class TestAppPercy(unittest.TestCase):
         with patch('percy.metadata.AndroidMetadata.remote_url', new_callable=PropertyMock) as mock_remote_url:
             mock_remote_url.return_value = 'url-of-browserstack-cloud'
             app_percy = AppPercy(self.mock_android_webdriver)
-            response = app_percy.screenshot('screenshot 1')
-            self.assertEqual(response, self.comparison_response)
+            app_percy.screenshot('screenshot 1')
             self.assertTrue(isinstance(app_percy.metadata, AndroidMetadata))
             self.assertTrue(isinstance(app_percy.provider, AppAutomate))
 
@@ -58,8 +57,7 @@ class TestAppPercy(unittest.TestCase):
         with patch('percy.metadata.AndroidMetadata.remote_url', new_callable=PropertyMock) as mock_remote_url:
             mock_remote_url.return_value = ''
             app_percy = AppPercy(self.mock_android_webdriver)
-            response = app_percy.screenshot('screenshot 2')
-            self.assertEqual(response, self.comparison_response)
+            app_percy.screenshot('screenshot 2')
             self.assertTrue(isinstance(app_percy.metadata, AndroidMetadata))
             self.assertTrue(isinstance(app_percy.provider, GenericProvider))
 
@@ -76,8 +74,7 @@ class TestAppPercy(unittest.TestCase):
         with patch('percy.metadata.IOSMetadata.remote_url', new_callable=PropertyMock) as mock_remote_url:
             mock_remote_url.return_value = 'url-of-browserstack-cloud'
             app_percy = AppPercy(self.mock_ios_webdriver)
-            response = app_percy.screenshot('screenshot 1')
-            self.assertEqual(response, self.comparison_response)
+            app_percy.screenshot('screenshot 1')
             self.assertTrue(isinstance(app_percy.metadata, IOSMetadata))
             self.assertTrue(isinstance(app_percy.provider, AppAutomate))
 
@@ -88,8 +85,7 @@ class TestAppPercy(unittest.TestCase):
         with patch('percy.metadata.IOSMetadata.remote_url', new_callable=PropertyMock) as mock_remote_url:
             mock_remote_url.return_value = ''
             app_percy = AppPercy(self.mock_ios_webdriver)
-            response = app_percy.screenshot('screenshot 2')
-            self.assertEqual(response, self.comparison_response)
+            app_percy.screenshot('screenshot 2')
             self.assertTrue(isinstance(app_percy.metadata, IOSMetadata))
             self.assertTrue(isinstance(app_percy.provider, GenericProvider))
 

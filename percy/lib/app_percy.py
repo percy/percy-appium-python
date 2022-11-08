@@ -34,4 +34,4 @@ class AppPercy:
         orientation = kwargs.get('orientation')
         if orientation and not isinstance(orientation, str):
             raise TypeError('Argument orientation should be a string and portrait/landscape')
-        return self.provider.screenshot(name, **kwargs)
+        self.provider.screenshot(name, **kwargs)

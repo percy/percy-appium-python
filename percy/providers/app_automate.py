@@ -21,13 +21,16 @@ class AppAutomate(GenericProvider):
         return False
 
     def screenshot(self, name: str, **kwargs):
-        self.execute_percy_screenshot_begin()
+        self.execute_percy_screenshot_begin(name)
         # Device name retrieval is custom for App Automate users
         self.metadata._device_name = kwargs.get('device_name') or self.get_device_name()
-        response = super().screenshot(name, **kwargs)
-        percy_screenshot_url = response.get('link', '')
-        self.execute_percy_screenshot_end(self.metadata.device_name, percy_screenshot_url)
-        return response
+        try:
+            response = super().screenshot(name, **kwargs)
+            percy_screenshot_url = response.get('link', '')
+            self.execute_percy_screenshot_end(name, percy_screenshot_url, 'success')
+        except Exception as e:
+            self.execute_percy_screenshot_end(name, percy_screenshot_url, 'failure', str(e))
+            raise e
 
     def get_session_details(self):
         session_details = self._get_cached_session()
@@ -92,7 +95,7 @@ class AppAutomate(GenericProvider):
             log(e, on_debug=True)
             self._marked_percy_session = False
 
-    def execute_percy_screenshot_end(self, name, percy_screenshot_url):
+    def execute_percy_screenshot_end(self, name, percy_screenshot_url, status, status_message=None):
         try:
             if self._marked_percy_session:
                 request_body = {
@@ -101,8 +104,9 @@ class AppAutomate(GenericProvider):
                         'state': 'end',
                         'percyScreenshotUrl': percy_screenshot_url,
                         'name': name,
-                        'status': 'success' }
+                        'status': status }
                 }
+                if status_message: request_body['arguments']['statusMessage'] = status_message
                 command = f'browserstack_executor: {json.dumps(request_body)}'
                 self.metadata.execute_script(command)
         except Exception as e:

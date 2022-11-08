@@ -23,8 +23,7 @@ class AppAutomate(GenericProvider):
     def screenshot(self, name: str, **kwargs):
         self.execute_percy_screenshot_begin()
         # Device name retrieval is custom for App Automate users
-        self.metadata._device_name = self.get_device_name()
-        self.metadata._device_name = kwargs.get('device_name') or self.metadata._device_name
+        self.metadata._device_name = kwargs.get('device_name') or self.get_device_name()
         response = super().screenshot(name, **kwargs)
         percy_screenshot_url = response.get('link', '')
         self.execute_percy_screenshot_end(percy_screenshot_url)

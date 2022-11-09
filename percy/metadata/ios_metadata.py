@@ -44,16 +44,16 @@ class IOSMetadata(Metadata):
 
     @property
     def viewport(self):
-        self._viewport = Cache.get_cache(self.session_id, 'viewport') or {}
-        if not self._viewport:
-            self._viewport['attempt'] = self._viewport.get('attempt', 0) + 1
+        self._viewport = Cache.get_cache(self.session_id, 'viewport')
+        if self._viewport is None:
             try:
-                self._viewport['data'] = self.execute_script("mobile: viewportRect")
+                self._viewport = self.execute_script("mobile: viewportRect")
                 Cache.set_cache(self.session_id, 'viewport', self._viewport)
             except Exception:
                 log("Could not use viewportRect; using static config", on_debug=True)
-                Cache.set_cache(self.session_id, 'viewport', self._viewport)
-        return self._viewport.get('data', {'top': 0, 'height': 0, 'width': 0})
+                # setting `viewport` as empty dict so that it's not None anymore
+                Cache.set_cache(self.session_id, 'viewport', {})
+        return self._viewport or {'top': 0, 'height': 0, 'width': 0}
 
     @property
     def device_name(self):

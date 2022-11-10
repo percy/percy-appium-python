@@ -64,7 +64,7 @@ class TestGenericProvider(unittest.TestCase):
         self.assertIn('height', tag)
         self.assertEqual(tag['height'], self.android_metadata.device_screen_size['height'])
         self.assertIn('orientation', tag)
-        self.assertEqual(tag['orientation'], self.android_metadata.orientation)
+        self.assertEqual(tag['orientation'], self.android_metadata.orientation.upper())
 
     def test_get_tag_kwargs(self):
         device_name = 'some-device-name'
@@ -75,7 +75,7 @@ class TestGenericProvider(unittest.TestCase):
         orientation = 'some-orientation'
         tag = self.generic_provider._get_tag(orientation=orientation)
         self.assertIn('orientation', tag)
-        self.assertEqual(tag['orientation'], orientation)
+        self.assertEqual(tag['orientation'], orientation.upper())
 
     def test_get_tiles(self):
         tile = self.generic_provider._get_tiles()[0]

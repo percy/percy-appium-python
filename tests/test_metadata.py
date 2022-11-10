@@ -1,19 +1,25 @@
 # pylint: disable=[abstract-class-instantiated]
 from unittest import TestCase
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, patch, PropertyMock
 
 from percy.metadata.metadata import Metadata
 
 
 class TestMetadata(TestCase):
+    @patch('appium.webdriver.webdriver.WebDriver')
+    def setUp(self, mock_webdriver) -> None:
+        self.mock_webdriver = mock_webdriver
+        self.mock_webdriver.capabilities = PropertyMock()
+
     def test_instantiation(self):
         with self.assertRaises(TypeError) as cm:
-            Metadata(Mock())
+            Metadata(self.mock_webdriver)
         self.assertIsInstance(cm.exception, TypeError)
 
     @patch("percy.metadata.metadata.Metadata.__abstractmethods__", set())
     def test_base_metadata_properties(self):
-        base_metadata = Metadata(Mock())
+        base_metadata = Metadata(self.mock_webdriver)
+
         with self.assertRaises(NotImplementedError):
             _device_name = base_metadata.device_name
 
@@ -49,3 +55,29 @@ class TestMetadata(TestCase):
             device_name = 'Some Phone 123'
             base_metadata.get_device_info(device_name)
             mock_log.assert_called_once_with(f'{device_name.lower()} does not exist in config.')
+
+    @patch("percy.metadata.metadata.Metadata.__abstractmethods__", set())
+    def test_base_metadata_get_orientation(self):
+        base_metadata = Metadata(self.mock_webdriver)
+        orientation = 'PRTRT'
+        self.assertEqual(base_metadata.get_orientation(orientation=orientation), orientation)
+
+        orientation = 'prtrt'
+        self.assertEqual(base_metadata.get_orientation(orientation=orientation), orientation.upper())
+
+        # Test orientation for kwarg orientation = AUTO, auto, Auto
+        orientation = 'OriENTation'
+        self.mock_webdriver.orientation = orientation
+        base_metadata = Metadata(self.mock_webdriver)
+        self.assertEqual(base_metadata.get_orientation(orientation='AUTO'),
+            orientation.upper())
+        self.assertEqual(base_metadata.get_orientation(orientation='auto'),
+            orientation.upper())
+        self.assertEqual(base_metadata.get_orientation(orientation='Auto'),
+            orientation.upper())
+
+        # If not provided, should take it from capabilities
+        orientation = 'OriEntaTion'
+        self.mock_webdriver.capabilities = { 'orientation': orientation }
+        self.assertEqual(base_metadata.get_orientation(),
+            orientation.upper())

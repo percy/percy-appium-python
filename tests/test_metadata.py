@@ -1,6 +1,6 @@
-# pylint: disable=[abstract-class-instantiated]
+# pylint: disable=[abstract-class-instantiated, arguments-differ]
 from unittest import TestCase
-from unittest.mock import Mock, patch, PropertyMock
+from unittest.mock import patch, PropertyMock
 
 from percy.metadata.metadata import Metadata
 

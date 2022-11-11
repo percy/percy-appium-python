@@ -1,5 +1,5 @@
 from os import path
-from setuptools import setup
+from setuptools import find_packages, setup
 import percy
 
 # read the README for long_description
@@ -18,7 +18,7 @@ setup(
     author_email='team@percy.io',
     url='https://github.com/percy/percy-appium-python',
     keywords='appium percy visual testing',
-    packages=['percy'],
+    packages=find_packages(include=['percy*']),
     include_package_data=True,
     install_requires=[
         'Appium-Python-Client',

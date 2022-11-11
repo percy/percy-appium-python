@@ -30,7 +30,7 @@ class Metadata(ABC):
     def os_version(self):
         try:
             return str(int(float(self.capabilities.get('os_version'))))
-        except ValueError:
+        except Exception:
             return self.capabilities.get('os_version')
 
     @property
@@ -84,13 +84,10 @@ class Metadata(ABC):
         return self.driver.execute_script(command)
 
     def value_from_devices_info(self, key, device_name, os_version=None):
-        try:
-            device_info = self.get_device_info(device_name)
-            if os_version:
-                device_info = device_info.get(os_version, {})
-            return int(device_info.get(key, 0))
-        except Exception:
-            return 0
+        device_info = self.get_device_info(device_name)
+        if os_version:
+            device_info = device_info.get(os_version, {})
+        return int(device_info.get(key, 0))
 
     def get_device_info(self, device_name):
         if self.device_info:

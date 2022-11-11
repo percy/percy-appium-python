@@ -12,7 +12,6 @@ from tests.mocks.mock_methods import android_capabilities
 
 
 class TestGenericProvider(unittest.TestCase):
-    print('TestGenericProvider')
     comparison_response = {"comparison": {"id": 123, "url": 'https://percy-build-url'}}
 
     @patch('appium.webdriver.webdriver.WebDriver')
@@ -23,7 +22,7 @@ class TestGenericProvider(unittest.TestCase):
 
         self.mock_webdriver = mock_webdriver
         self.mock_webdriver.capabilities = android_capabilities
-        self.mock_webdriver.orientation = 'PORTRAIT'
+        self.mock_webdriver.orientation = 'PorTrait'
         self.mock_webdriver.get_system_bars.return_value = {'statusBar': {'height': 10, 'width': 20},
                                                             'navigationBar': {'height': 10, 'width': 20}}
         self.mock_webdriver.get_screenshot_as_png.return_value = b'some random bytes'
@@ -65,7 +64,7 @@ class TestGenericProvider(unittest.TestCase):
         self.assertIn('height', tag)
         self.assertEqual(tag['height'], self.android_metadata.device_screen_size['height'])
         self.assertIn('orientation', tag)
-        self.assertEqual(tag['orientation'], self.android_metadata.orientation)
+        self.assertEqual(tag['orientation'], self.android_metadata.orientation.lower())
 
     def test_get_tag_kwargs(self):
         device_name = 'some-device-name'
@@ -73,10 +72,10 @@ class TestGenericProvider(unittest.TestCase):
         self.assertIn('name', tag)
         self.assertEqual(tag['name'], device_name)
 
-        orientation = 'some-orientation'
+        orientation = 'Some-Orientation'
         tag = self.generic_provider._get_tag(orientation=orientation)
         self.assertIn('orientation', tag)
-        self.assertEqual(tag['orientation'], orientation)
+        self.assertEqual(tag['orientation'], orientation.lower())
 
     def test_get_tiles(self):
         tile = self.generic_provider._get_tiles()[0]

@@ -1,15 +1,12 @@
 import json
 import os
-import time
 from appium.webdriver.webdriver import WebDriver
-from percy.providers.generic_provider import GenericProvider
 from percy.common import log
+from percy.lib.cache import Cache
+from percy.providers.generic_provider import GenericProvider
 
 
 class AppAutomate(GenericProvider):
-    SESSION_CACHE = {}
-    CACHE_PERIOD = 5 * 60  # 5 * 60 seconds
-
     def __init__(self, driver: WebDriver, metadata) -> None:
         super().__init__(driver, metadata)
         self._marked_percy_session = True
@@ -33,14 +30,14 @@ class AppAutomate(GenericProvider):
             raise e
 
     def get_session_details(self):
-        session_details = self._get_cached_session()
+        session_details = Cache.get_cache(self.metadata.session_id, 'session_details')
         if session_details: return session_details
         response = {}
         try:
             response = self.metadata.execute_script(
                 'browserstack_executor: {"action": "getSessionDetails"}')
             response = json.loads(response if response else '{}')
-            self._set_session_cache(response)
+            Cache.set_cache(self.metadata.session_id, 'session_details', response)
         except Exception as e:
             log('Could not get session details from AppAutomate')
             log(e, on_debug=True)
@@ -52,28 +49,6 @@ class AppAutomate(GenericProvider):
 
     def get_device_name(self):
         return self.get_session_details().get('device', '')
-
-    def _clean_cache(self):
-        now = time.time()
-        session_ids = []
-        for session_id, (_, timestamp) in self.SESSION_CACHE.items():
-            if now - timestamp >= self.CACHE_PERIOD:
-                session_ids.append(session_id)
-        list(map(self.SESSION_CACHE.pop, session_ids))
-
-    def _get_cached_session(self):
-        self._clean_cache()
-        session_id = self.metadata.session_id
-        session = self.SESSION_CACHE.get(session_id)
-        if session:
-            self.SESSION_CACHE[session_id][1] = time.time()
-            return session[0]
-        return None
-
-    def _set_session_cache(self, value):
-        session_id = self.metadata.session_id
-        if value:
-            self.SESSION_CACHE[session_id] = [value, time.time()]
 
     def execute_percy_screenshot_begin(self, name):
         try:

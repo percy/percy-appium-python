@@ -28,7 +28,7 @@ class GenericProvider:
         os_version = self.metadata.os_version
         width = self.metadata.device_screen_size.get('width', 0)
         height = self.metadata.device_screen_size.get('height', 0)
-        orientation = kwargs.get('orientation', self.metadata.orientation).lower()
+        orientation = self.metadata.get_orientation(**kwargs).lower()
 
         return {
             "name": name,

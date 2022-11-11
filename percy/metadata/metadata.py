@@ -34,6 +34,12 @@ class Metadata(ABC):
     def remote_url(self):
         return self.driver.command_executor._url
 
+    def get_orientation(self, **kwargs):
+        orientation = kwargs.get('orientation', self.capabilities.get('orientation', 'PORTRAIT'))
+        if orientation.lower() == 'auto':
+            orientation = self.orientation
+        return orientation.upper()
+
     @property
     def orientation(self):
         return self.driver.orientation.lower()

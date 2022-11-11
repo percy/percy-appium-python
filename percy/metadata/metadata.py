@@ -28,7 +28,10 @@ class Metadata(ABC):
 
     @property
     def os_version(self):
-        return self.capabilities.get('os_version')
+        try:
+            return str(int(float(self.capabilities.get('os_version'))))
+        except Exception:
+            return self.capabilities.get('os_version')
 
     @property
     def remote_url(self):
@@ -79,6 +82,12 @@ class Metadata(ABC):
 
     def execute_script(self, command):
         return self.driver.execute_script(command)
+
+    def value_from_devices_info(self, key, device_name, os_version=None):
+        device_info = self.get_device_info(device_name)
+        if os_version:
+            device_info = device_info.get(os_version, {})
+        return int(device_info.get(key, 0))
 
     def get_device_info(self, device_name):
         if self.device_info:

@@ -2,11 +2,11 @@
 import shutil
 import os
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, PropertyMock
 from appium.webdriver.webdriver import WebDriver
 
 from percy.lib.cli_wrapper import CLIWrapper
-from percy.metadata import AndroidMetadata
+from percy.metadata import AndroidMetadata, Metadata
 from percy.providers.generic_provider import GenericProvider
 from tests.mocks.mock_methods import android_capabilities
 
@@ -77,6 +77,7 @@ class TestGenericProvider(unittest.TestCase):
         self.assertIn('orientation', tag)
         self.assertEqual(tag['orientation'], orientation.lower())
 
+    @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
     def test_get_tiles(self):
         tile = self.generic_provider._get_tiles()[0]
         dict_tile = dict(tile)
@@ -106,6 +107,7 @@ class TestGenericProvider(unittest.TestCase):
         self.assertTrue(tile['fullscreen'])
 
     @patch.object(CLIWrapper, 'post_screenshots', MagicMock(return_value=comparison_response))
+    @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
     def test_post_screenshots(self):
         tag = self.generic_provider._get_tag()
         tiles = self.generic_provider._get_tiles()
@@ -120,6 +122,7 @@ class TestGenericProvider(unittest.TestCase):
         self.assertEqual(self.generic_provider.supports(''), 'returned_from_supports')
 
     @patch.object(GenericProvider, '_post_screenshots', MagicMock(return_value=comparison_response))
+    @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
     def test_non_app_automate(self):
         response = self.generic_provider.screenshot('screenshot 1')
         self.assertDictEqual(response, self.comparison_response)

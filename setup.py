@@ -19,6 +19,7 @@ setup(
     url='https://github.com/percy/percy-appium-python',
     keywords='appium percy visual testing',
     packages=find_packages(include=['percy*']),
+    package_data={'percy': ['configs/*.json']},
     include_package_data=True,
     install_requires=[
         'Appium-Python-Client',

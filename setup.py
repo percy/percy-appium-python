@@ -21,8 +21,8 @@ setup(
     packages=['percy'],
     include_package_data=True,
     install_requires=[
-        'Appium-Python-Client==2.*'
-        'requests==2.*'
+        'Appium-Python-Client',
+        'requests'
     ],
     python_requires='>=3.6',
     classifiers=[

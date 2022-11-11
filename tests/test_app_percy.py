@@ -53,6 +53,7 @@ class TestAppPercy(unittest.TestCase):
 
     @patch.object(GenericProvider, '_write_screenshot', MagicMock(return_value='path-to-png-file'))
     @patch.object(CLIWrapper, 'post_screenshots', MagicMock(return_value=comparison_response))
+    @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
     def test_android_on_non_app_automate(self):
         with patch('percy.metadata.AndroidMetadata.remote_url', new_callable=PropertyMock) as mock_remote_url:
             mock_remote_url.return_value = ''

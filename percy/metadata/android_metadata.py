@@ -1,4 +1,5 @@
 from percy.metadata.metadata import Metadata
+from percy.lib.cache import Cache
 
 
 class AndroidMetadata(Metadata):
@@ -12,17 +13,27 @@ class AndroidMetadata(Metadata):
         return {'width': int(width), 'height': int(height)}
 
     def get_system_bars(self):
+        self._bars = Cache.get_cache(self.session_id, 'system_bars')
         if not self._bars:
             self._bars = self.driver.get_system_bars()
+            Cache.set_cache(self.session_id, 'system_bars', self._bars)
         return self._bars
 
     @property
     def status_bar(self):
-        return self.get_system_bars().get('statusBar')
+        status_bar = self.get_system_bars().get('statusBar')
+        if status_bar.get('height') == 1:
+            response = self.value_from_devices_info('status_bar', self.device_name.upper(), self.os_version)
+            return {'height': response}
+        return status_bar
 
     @property
     def navigation_bar(self):
-        return self.get_system_bars().get('navigationBar')
+        navigation_bar = self.get_system_bars().get('navigationBar')
+        if navigation_bar.get('height') == 1:
+            response = {'height': self.value_from_devices_info('nav_bar', self.device_name.upper(), self.os_version)}
+            return response
+        return navigation_bar
 
     @property
     def viewport(self):

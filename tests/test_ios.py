@@ -56,6 +56,7 @@ class TestIOSMetadata(TestCase):
         self.assertDictEqual(device_screen_size, {'height': 200, 'width': 200})
 
     @patch.object(IOSMetadata, 'device_name',  PropertyMock(return_value = 'iPhone 6'))
+    @patch.object(IOSMetadata, 'os_version',  PropertyMock(return_value = '10.0'))
     @patch.object(IOSMetadata, 'execute_script',  MagicMock(side_effect = Exception('RealException')))
     @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
     @patch('percy.lib.cache.Cache.CACHE', {})

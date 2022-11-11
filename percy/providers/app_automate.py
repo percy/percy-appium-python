@@ -1,16 +1,11 @@
 import json
 import os
-from appium.webdriver.webdriver import WebDriver
 from percy.common import log
 from percy.lib.cache import Cache
 from percy.providers.generic_provider import GenericProvider
 
 
 class AppAutomate(GenericProvider):
-    def __init__(self, driver: WebDriver, metadata) -> None:
-        super().__init__(driver, metadata)
-        self._marked_percy_session = True
-
     @staticmethod
     def supports(remote_url) -> bool:
         if isinstance(remote_url, str) and remote_url.rfind('browserstack') > -1:
@@ -64,25 +59,24 @@ class AppAutomate(GenericProvider):
             command = f'browserstack_executor: {json.dumps(request_body)}'
             response = self.metadata.execute_script(command)
             response = json.loads(response)
-            self._marked_percy_session = response.get("success") is True
         except Exception as e:
             log('Could not set session as Percy session')
+            log('Error occurred during begin call', on_debug=True)
             log(e, on_debug=True)
-            self._marked_percy_session = False
 
     def execute_percy_screenshot_end(self, name, percy_screenshot_url, status, status_message=None):
         try:
-            if self._marked_percy_session:
-                request_body = {
-                    'action': 'percyScreenshot',
-                    'arguments': {
-                        'state': 'end',
-                        'percyScreenshotUrl': percy_screenshot_url,
-                        'name': name,
-                        'status': status }
-                }
-                if status_message: request_body['arguments']['statusMessage'] = status_message
-                command = f'browserstack_executor: {json.dumps(request_body)}'
-                self.metadata.execute_script(command)
+            request_body = {
+                'action': 'percyScreenshot',
+                'arguments': {
+                    'state': 'end',
+                    'percyScreenshotUrl': percy_screenshot_url,
+                    'name': name,
+                    'status': status }
+            }
+            if status_message: request_body['arguments']['statusMessage'] = status_message
+            command = f'browserstack_executor: {json.dumps(request_body)}'
+            self.metadata.execute_script(command)
         except Exception as e:
+            log('Error occurred during end call', on_debug=True)
             log(e, on_debug=True)

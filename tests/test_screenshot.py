@@ -10,6 +10,7 @@ import httpretty
 from percy import percy_screenshot
 from percy.common import LABEL
 from percy.lib.cli_wrapper import CLIWrapper
+from percy.metadata import Metadata
 from percy.lib.app_percy import AppPercy
 from percy.providers.generic_provider import GenericProvider
 from tests.mocks.mock_methods import android_capabilities
@@ -123,6 +124,7 @@ class TestPercyScreenshot(unittest.TestCase):
 
         self.assertEqual(httpretty.last_request().path, '/percy/healthcheck')
 
+    @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
     @patch.object(GenericProvider, '_write_screenshot', MagicMock(return_value='path-to-png-file'))
     def test_posts_multiple_screenshots_to_the_local_percy_server(self):
         mock_healthcheck()

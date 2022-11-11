@@ -36,14 +36,6 @@ class TestAppAutomate(unittest.TestCase):
         self.assertIsNone(self.app_automate.execute_percy_screenshot_begin('Screebshot 1'))
         self.mock_webdriver.execute_script.assert_called()
 
-    @patch('percy.providers.app_automate.log')
-    def test_execute_percy_screenshot_begin_throws_error(self, mock_log):
-        self.mock_webdriver.execute_script.side_effect = Exception('SomeException')
-        self.assertTrue(self.app_automate._marked_percy_session)
-        self.app_automate.execute_percy_screenshot_begin('Screenshot 1')
-        self.assertFalse(self.app_automate._marked_percy_session)
-        mock_log.assert_called()
-
     def test_app_automate_execute_percy_screenshot_end(self):
         self.mock_webdriver.execute_script.return_value = {}
         self.assertIsNone(self.app_automate.execute_percy_screenshot_end('Screenshot 1', self.comparison_response['link'], 'success'))

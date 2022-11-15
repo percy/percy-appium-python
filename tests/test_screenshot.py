@@ -138,7 +138,7 @@ class TestPercyScreenshot(unittest.TestCase):
         s1 = httpretty.latest_requests()[2].parsed_body
 
         # self.assertEqual(s1['name'], 'screenshot 1')
-        self.assertRegex(s1['client_info'], r'percy-appium-python/\d+')
+        self.assertRegex(s1['client_info'], r'percy-appium-app/\d+')
         self.assertRegex(s1['environment_info'][0], r'appium/\d+')
         self.assertRegex(s1['environment_info'][1], r'python/\d+')
 

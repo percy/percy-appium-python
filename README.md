@@ -14,7 +14,7 @@ $ npm install --save-dev @percy/cli
 pip install Percy appium package:
 
 ```ssh-session
-$ pip install percy-appium
+$ pip install percy-appium-app
 ```
 
 ## Usage
@@ -28,7 +28,7 @@ from percy import percy_screenshot
 driver = webdriver.Remote("https://" + userName + ":" + accessKey + "@hub-cloud.browserstack.com/wd/hub", desired_caps)
 
 # take a screenshot
-response = percy_screenshot(driver, 'here is some name')
+percy_screenshot(driver, 'here is some name')
 ```
 
 Running the test above normally will result in the following log:

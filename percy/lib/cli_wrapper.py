@@ -11,7 +11,7 @@ from percy.common import log
 
 
 # Collect client and environment information
-CLIENT_INFO = 'percy-appium-python/' + SDK_VERSION
+CLIENT_INFO = 'percy-appium-app/' + SDK_VERSION
 ENV_INFO = ['appium/' + APPIUM_VERSION, 'python/' + platform.python_version()]
 
 # Maybe get the CLI API address from the environment

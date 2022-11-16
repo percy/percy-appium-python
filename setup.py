@@ -8,7 +8,7 @@ with open(path.join(cwd, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='percy-appium',
+    name='percy-appium-app',
     description='Python client for visual testing with Percy for mobile apps',
     long_description=long_description,
     long_description_content_type='text/markdown',

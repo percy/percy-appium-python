@@ -16,12 +16,15 @@ class AndroidMetadata(Metadata):
     def get_system_bars(self):
         self._bars = Cache.get_cache(self.session_id, 'system_bars')
         if self._viewport_rect:
-            self._bars = {
-                'statusBar': {'height': self._viewport_rect.get('top', 1)},
-                'navigationBar': {
-                    'height': self.device_screen_size.get('height') - self._viewport_rect.get('height', 0) - self._viewport_rect.get('top', 0)
+            try:
+                self._bars = {
+                    'statusBar': {'height': self._viewport_rect['top']},
+                    'navigationBar': {
+                        'height': self.device_screen_size['height'] - self._viewport_rect['height'] - self._viewport_rect['top']
+                    }
                 }
-            }
+            except Exception:
+                self._bars = None
         if not self._bars:
             self._bars = self.driver.get_system_bars()
             Cache.set_cache(self.session_id, 'system_bars', self._bars)

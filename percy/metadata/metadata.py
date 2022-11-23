@@ -29,10 +29,9 @@ class Metadata(ABC):
 
     @property
     def os_version(self):
-        if self._os_version:
-            return self._os_version
+        os_version = self.capabilities.get('os_version') or self.capabilities.get('platformVersion', '')
+        os_version = self._os_version or os_version
         try:
-            os_version = self.capabilities.get('os_version') or self.capabilities.get('platformVersion', '')
             return str(int(float(os_version)))
         except Exception:
             return ''

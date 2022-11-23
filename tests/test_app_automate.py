@@ -3,6 +3,7 @@ import unittest
 from unittest.mock import MagicMock, patch, PropertyMock
 from appium.webdriver.webdriver import WebDriver
 from percy.providers.app_automate import AppAutomate
+from percy.providers.generic_provider import GenericProvider
 from percy.metadata import AndroidMetadata, Metadata
 from tests.mocks.mock_methods import android_capabilities
 
@@ -54,3 +55,17 @@ class TestAppAutomate(unittest.TestCase):
     def test_get_session_details(self, mock_log):
         self.app_automate.get_session_details()
         mock_log.assert_called()
+
+    @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
+    @patch.object(GenericProvider, 'screenshot', MagicMock(return_value={'link': 'https://link'}))
+    def test_execute_percy_screenshot_end(self):
+        self.app_automate.execute_percy_screenshot_begin = MagicMock()
+        mock_screenshot_end = MagicMock()
+        self.app_automate.execute_percy_screenshot_end = mock_screenshot_end
+        self.app_automate.screenshot('name')
+        mock_screenshot_end.assert_called_once_with('name', 'https://link', 'success')
+
+        with self.assertRaises(Exception) as e:
+            mock_screenshot_end.side_effect = Exception('RandomException')
+            self.app_automate.screenshot('name')
+        mock_screenshot_end.assert_called_with('name', 'https://link', 'failure', str(e.exception))

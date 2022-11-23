@@ -12,6 +12,7 @@ class Metadata(ABC):
     def __init__(self, driver):
         self.driver = driver
         self._device_name = None
+        self._os_version = None
         self.device_info = {}
 
     @property
@@ -28,11 +29,13 @@ class Metadata(ABC):
 
     @property
     def os_version(self):
+        if self._os_version:
+            return self._os_version
         try:
-            os_version = self.capabilities.get('os_version') or self.capabilities.get('platformVersion')
+            os_version = self.capabilities.get('os_version') or self.capabilities.get('platformVersion', '')
             return str(int(float(os_version)))
         except Exception:
-            return self.capabilities.get('os_version')
+            return ''
 
     @property
     def remote_url(self):

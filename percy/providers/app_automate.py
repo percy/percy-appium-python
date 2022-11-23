@@ -14,8 +14,9 @@ class AppAutomate(GenericProvider):
 
     def screenshot(self, name: str, **kwargs):
         self.execute_percy_screenshot_begin(name)
-        # Device name retrieval is custom for App Automate users
+        # Device name and OS version retrieval is custom for App Automate users
         self.metadata._device_name = kwargs.get('device_name') or self.get_device_name()
+        self.metadata._os_version = self.get_os_version()
         try:
             response = super().screenshot(name, **kwargs)
             percy_screenshot_url = response.get('link', '')
@@ -25,14 +26,14 @@ class AppAutomate(GenericProvider):
             raise e
 
     def get_session_details(self):
-        session_details = Cache.get_cache(self.metadata.session_id, 'session_details')
+        session_details = Cache.get_cache(self.metadata.session_id, Cache.session_details)
         if session_details: return session_details
         response = {}
         try:
             response = self.metadata.execute_script(
                 'browserstack_executor: {"action": "getSessionDetails"}')
             response = json.loads(response if response else '{}')
-            Cache.set_cache(self.metadata.session_id, 'session_details', response)
+            Cache.set_cache(self.metadata.session_id, Cache.session_details, response)
         except Exception as e:
             log('Could not get session details from AppAutomate')
             log(e, on_debug=True)
@@ -44,6 +45,9 @@ class AppAutomate(GenericProvider):
 
     def get_device_name(self):
         return self.get_session_details().get('device', '')
+
+    def get_os_version(self):
+        return self.get_session_details().get('os_version', '')
 
     def execute_percy_screenshot_begin(self, name):
         try:

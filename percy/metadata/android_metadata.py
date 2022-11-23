@@ -14,7 +14,7 @@ class AndroidMetadata(Metadata):
         return {'width': int(width), 'height': int(height)}
 
     def get_system_bars(self):
-        self._bars = Cache.get_cache(self.session_id, 'system_bars')
+        self._bars = Cache.get_cache(self.session_id, Cache.system_bars)
         if self._viewport_rect:
             try:
                 self._bars = {
@@ -27,7 +27,7 @@ class AndroidMetadata(Metadata):
                 self._bars = None
         if not self._bars:
             self._bars = self.driver.get_system_bars()
-            Cache.set_cache(self.session_id, 'system_bars', self._bars)
+            Cache.set_cache(self.session_id, Cache.system_bars, self._bars)
         return self._bars
 
     @property

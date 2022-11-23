@@ -1,4 +1,5 @@
 # percy-appium-python
+[![PyPI version](https://badge.fury.io/py/percy-appium-app.svg)](https://pypi.org/project/percy-appium-app/)
 ![Test](https://github.com/percy/percy-appium-python/workflows/Test/badge.svg)
 
 [Percy](https://percy.io) visual testing for Python Appium.

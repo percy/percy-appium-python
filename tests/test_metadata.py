@@ -91,7 +91,7 @@ class TestMetadata(TestCase):
 
         capabilities = {}
         self.mock_webdriver.capabilities = capabilities
-        self.assertEqual(self.metadata.os_version, None)
+        self.assertEqual(self.metadata.os_version, '')
 
     def test_metadata_value_from_devices_info_for_android(self):
         android_device = 'google pixel 7'

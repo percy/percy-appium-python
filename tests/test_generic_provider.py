@@ -38,6 +38,12 @@ class TestGenericProvider(unittest.TestCase):
         self.assertEqual(os.listdir(dir_created), [])
         os.removedirs(dir_created)
 
+    @patch.dict(os.environ, {"PERCY_TMP_DIR": "/tmp/percy-apps"})
+    def test_get_dir_with_env_var(self):
+        dir_created = self.generic_provider._get_dir()
+        self.assertEqual(os.listdir(dir_created), [])
+        os.removedirs(dir_created)
+
     def test_get_path(self):
         count = 1000  # Generate count unique paths and check their uniqueness
         png_paths = [self.generic_provider._get_path(self.existing_dir) for _ in range(count)]

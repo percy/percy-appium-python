@@ -1,5 +1,6 @@
 import os
 import tempfile
+from pathlib import Path
 
 from appium.webdriver.webdriver import WebDriver
 
@@ -71,8 +72,11 @@ class GenericProvider:
         return ''
 
     def _get_dir(self):
-        dir_path = tempfile.mkdtemp()
-        return dir_path
+        dir_path = os.environ.get('PERCY_TMP_DIR') or None
+        if dir_path:
+            Path(dir_path).mkdir(parents=True, exist_ok=True)
+            return dir_path
+        return tempfile.mkdtemp()
 
     def _get_path(self, directory):
         suffix = '.png'

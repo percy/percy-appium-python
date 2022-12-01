@@ -13,10 +13,11 @@ class AppAutomate(GenericProvider):
         return False
 
     def screenshot(self, name: str, **kwargs):
-        self.execute_percy_screenshot_begin(name)
+        session_details = self.execute_percy_screenshot_begin(name)
         # Device name and OS version retrieval is custom for App Automate users
-        self.metadata._device_name = kwargs.get('device_name') or self.get_device_name()
-        self.metadata._os_version = self.get_os_version()
+        self.metadata._device_name = kwargs.get('device_name') or session_details.get("deviceName")
+        self.metadata._os_version = session_details.get("osVersion")
+        self.set_debug_url(session_details)
         try:
             response = super().screenshot(name, **kwargs)
             percy_screenshot_url = response.get('link', '')
@@ -25,29 +26,10 @@ class AppAutomate(GenericProvider):
             self.execute_percy_screenshot_end(name, percy_screenshot_url, 'failure', str(e))
             raise e
 
-    def get_session_details(self):
-        session_details = Cache.get_cache(self.metadata.session_id, Cache.session_details)
-        if session_details: return session_details
-        response = {}
-        try:
-            response = self.metadata.execute_script(
-                'browserstack_executor: {"action": "getSessionDetails"}')
-            response = json.loads(response if response else '{}')
-            Cache.set_cache(self.metadata.session_id, Cache.session_details, response)
-        except Exception as e:
-            log('Could not get session details from AppAutomate')
-            log(e, on_debug=True)
-        return response
-
-    def get_debug_url(self):
-        browser_url = self.get_session_details().get('browser_url', '')
-        return browser_url
-
-    def get_device_name(self):
-        return self.get_session_details().get('device', '')
-
-    def get_os_version(self):
-        return self.get_session_details().get('os_version', '')
+    def set_debug_url(self, session_details):
+        build_hash = session_details.get("buildHash")
+        session_hash = session_details.get("sessionHash")
+        self.debug_url = "https://app-automate.browserstack.com/dashboard/v2/builds/" + build_hash + "/sessions/" + session_hash
 
     def execute_percy_screenshot_begin(self, name):
         try:
@@ -63,6 +45,7 @@ class AppAutomate(GenericProvider):
             command = f'browserstack_executor: {json.dumps(request_body)}'
             response = self.metadata.execute_script(command)
             response = json.loads(response)
+            return response
         except Exception as e:
             log('Could not set session as Percy session')
             log('Error occurred during begin call', on_debug=True)

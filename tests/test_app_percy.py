@@ -38,7 +38,11 @@ class TestAppPercy(unittest.TestCase):
 
     @patch.object(CLIWrapper, 'post_screenshots', MagicMock(return_value=comparison_response))
     @patch.object(GenericProvider, '_write_screenshot', MagicMock(return_value='path-to-png-file'))
-    @patch.object(AppAutomate, 'execute_percy_screenshot_begin', MagicMock(return_value={'deviceName': 'Google Pixel 4', 'osVersion': '12.0', 'buildHash': 'abc', 'sessionHash': 'def'}))
+    @patch.object(AppAutomate, 'execute_percy_screenshot_begin', MagicMock(return_value={'deviceName': 'Google Pixel 4',
+        'osVersion': '12.0',
+        'buildHash': 'abc',
+        'sessionHash': 'def'
+    }))
     @patch.object(AppAutomate, 'execute_percy_screenshot_end', MagicMock(return_value=None))
     @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
     def test_android_on_app_automate(self):
@@ -66,7 +70,11 @@ class TestAppPercy(unittest.TestCase):
     @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
     @patch.object(GenericProvider, '_write_screenshot', MagicMock(return_value='path-to-png-file'))
     @patch.object(CLIWrapper, 'post_screenshots', MagicMock(return_value=comparison_response))
-    @patch.object(AppAutomate, 'execute_percy_screenshot_begin', MagicMock(return_value={'deviceName': 'Google Pixel 4', 'osVersion': '12.0', 'buildHash': 'abc', 'sessionHash': 'def'}))
+    @patch.object(AppAutomate, 'execute_percy_screenshot_begin', MagicMock(return_value={'deviceName': 'iPhone 14',
+        'osVersion': '14',
+        'buildHash': 'abc',
+        'sessionHash': 'def'
+    }))
     @patch.object(AppAutomate, 'execute_percy_screenshot_end', MagicMock(return_value=None))
     def test_ios_on_app_automate(self):
         with patch('percy.metadata.IOSMetadata.remote_url', new_callable=PropertyMock) as mock_remote_url:

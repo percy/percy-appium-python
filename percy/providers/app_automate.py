@@ -1,7 +1,6 @@
 import json
 import os
 from percy.common import log
-from percy.lib.cache import Cache
 from percy.providers.generic_provider import GenericProvider
 
 

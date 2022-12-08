@@ -49,6 +49,7 @@ class AppAutomate(GenericProvider):
             log('Could not set session as Percy session')
             log('Error occurred during begin call', on_debug=True)
             log(e, on_debug=True)
+            return None
 
     def execute_percy_screenshot_end(self, name, percy_screenshot_url, status, status_message=None):
         try:

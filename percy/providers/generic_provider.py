@@ -12,6 +12,7 @@ class GenericProvider:
     def __init__(self, driver: WebDriver, metadata):
         self.driver = driver
         self.metadata = metadata
+        self.debug_url = ''
 
     @staticmethod
     def supports(_remote_url):
@@ -66,7 +67,7 @@ class GenericProvider:
         return filepath
 
     def get_debug_url(self):
-        return ''
+        return self.debug_url
 
     def get_device_name(self):
         return ''

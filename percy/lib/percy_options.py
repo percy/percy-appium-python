@@ -9,7 +9,7 @@ class PercyOptions:
 
     def _parse_percy_options(self):
         options = list(map(self._capabilities.get, self.PERCY_OPTIONS))
-        options = (options[0] or options[1] if options else {}) or {}
+        options = (options[0] or options[1]) if any(options) else {}
         if options: return options
         if options is not None and self.IGNORE_ERRORS not in options:
             options[self.IGNORE_ERRORS] = self._capabilities.get(f'percy.{self.IGNORE_ERRORS}', True)

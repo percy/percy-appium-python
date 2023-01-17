@@ -105,6 +105,7 @@ class TestAppPercy(unittest.TestCase):
 
     def test_screenshot_with_percyOptions_disabled(self):
         self.mock_android_webdriver.capabilities['percyOptions'] = {'enabled': False}
+        self.mock_android_webdriver.capabilities['percy:options'] = None
 
         app_percy = AppPercy(self.mock_android_webdriver)
         self.assertIsNone(app_percy.screenshot('screenshot 1'))
@@ -127,7 +128,9 @@ class TestAppPercy(unittest.TestCase):
             percy_screenshot(self.mock_android_webdriver, 'screenshot')
             _mock_log.assert_called_with(exception, on_debug=True)
 
-    def test_percy_options_ignore_errors_not_raise(self, _mock_log):
+    @patch('percy.screenshot.log')
+    @patch.object(CLIWrapper, 'is_percy_enabled', MagicMock(return_value=True))
+    def test_percyOptions_ignore_errors_not_raise(self, _mock_log):
         with patch.object(AppPercy, 'screenshot') as mock_screenshot:
             exception = Exception('Some Exception')
             mock_screenshot.side_effect = exception

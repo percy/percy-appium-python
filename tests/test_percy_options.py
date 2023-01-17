@@ -1,7 +1,7 @@
 import unittest
 from percy.lib.percy_options import PercyOptions
 
-
+# pylint: disable=R0904
 class TestPercyOptions(unittest.TestCase):
     def test_percy_options_not_provided(self):  # Defaults
         capabilities = {}

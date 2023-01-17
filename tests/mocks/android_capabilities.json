@@ -12,6 +12,10 @@
         "enabled": true,
         "ignoreErrors": false
       },
+      "percyOptions": {
+        "enabled": true,
+        "ignoreErrors": false
+      },
       "platformName": "Android",
       "bstack:options": {
         "appiumVersion": "1.17.0"
@@ -39,6 +43,10 @@
       "disableSuppressAccessibilityService": true
     },
     "percy:options": {
+      "enabled": true,
+      "ignoreErrors": true
+    },
+    "percyOptions": {
       "enabled": true,
       "ignoreErrors": true
     },

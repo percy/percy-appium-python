@@ -35,6 +35,8 @@ class TestAppPercy(unittest.TestCase):
     def tearDown(self) -> None:
         self.mock_android_webdriver.capabilities['desired']['percy:options'] = {'enabled': True}
         self.mock_android_webdriver.capabilities['percy:options'] = {'enabled': True}
+        self.mock_android_webdriver.capabilities['desired']['percyOptions'] = {'enabled': True}
+        self.mock_android_webdriver.capabilities['percyOptions'] = {'enabled': True}
 
     @patch.object(CLIWrapper, 'post_screenshots', MagicMock(return_value=comparison_response))
     @patch.object(GenericProvider, '_write_screenshot', MagicMock(return_value='path-to-png-file'))
@@ -101,6 +103,12 @@ class TestAppPercy(unittest.TestCase):
         app_percy = AppPercy(self.mock_android_webdriver)
         self.assertIsNone(app_percy.screenshot('screenshot 1'))
 
+    def test_screenshot_with_percyOptions_disabled(self):
+        self.mock_android_webdriver.capabilities['percyOptions'] = {'enabled': False}
+
+        app_percy = AppPercy(self.mock_android_webdriver)
+        self.assertIsNone(app_percy.screenshot('screenshot 1'))
+
     @patch('percy.screenshot.log')
     @patch.object(AppPercy, 'screenshot', MagicMock(side_effect = Exception('RealException')))
     @patch.object(CLIWrapper, 'is_percy_enabled', MagicMock(return_value=True))
@@ -116,6 +124,14 @@ class TestAppPercy(unittest.TestCase):
             exception = Exception('Some Exception')
             mock_screenshot.side_effect = exception
             self.mock_android_webdriver.capabilities['percy:options'] = {'ignoreErrors': True}
+            percy_screenshot(self.mock_android_webdriver, 'screenshot')
+            _mock_log.assert_called_with(exception, on_debug=True)
+
+    def test_percy_options_ignore_errors_not_raise(self, _mock_log):
+        with patch.object(AppPercy, 'screenshot') as mock_screenshot:
+            exception = Exception('Some Exception')
+            mock_screenshot.side_effect = exception
+            self.mock_android_webdriver.capabilities['percyOptions'] = {'ignoreErrors': True}
             percy_screenshot(self.mock_android_webdriver, 'screenshot')
             _mock_log.assert_called_with(exception, on_debug=True)
 

@@ -11,6 +11,10 @@
       "enabled": true,
       "ignoreErrors": true
     },
+    "percyOptions": {
+      "enabled": true,
+      "ignoreErrors": false
+    },
     "platformName": "iOS",
     "bstack:options": {
       "appiumVersion": "1.21.0"

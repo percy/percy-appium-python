@@ -59,3 +59,7 @@ class IOSMetadata(Metadata):
         if self._device_name is None:
             self._device_name = self.capabilities.get('deviceName')
         return self._device_name
+
+    @property
+    def scale_factor(self):
+        return self.value_from_devices_info('scale_factor', self.device_name)

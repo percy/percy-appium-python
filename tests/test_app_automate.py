@@ -41,6 +41,11 @@ class TestAppAutomate(unittest.TestCase):
         self.assertIsNone(self.app_automate.execute_percy_screenshot_end('Screenshot 1', self.comparison_response['link'], 'success'))
         self.mock_webdriver.execute_script.assert_called()
 
+    def test_app_automate_execute_percy_screenshot(self):
+        self.mock_webdriver.execute_script.return_value = {}
+        self.assertIsNone(self.app_automate.execute_percy_screenshot('Screenshot 1', 1080, 5))
+        self.mock_webdriver.execute_script.assert_called()
+
     @patch('percy.providers.app_automate.log')
     def test_execute_percy_screenshot_end_throws_error(self, mock_log):
         self.mock_webdriver.execute_script.side_effect = Exception('SomeException')
@@ -60,3 +65,10 @@ class TestAppAutomate(unittest.TestCase):
             mock_screenshot_end.side_effect = Exception('RandomException')
             self.app_automate.screenshot('name')
         mock_screenshot_end.assert_called_with('name', 'https://link', 'failure', str(e.exception))
+
+    @patch.object(AppAutomate, '_get_tiles', MagicMock(return_value='unique_session_id'))
+    def test_get_tiles(self):
+        self.app_automate._get_tiles(fullpage_screenshot=True)
+        self.assertIsNone(self.app_automate.execute_percy_screenshot('Screenshot 1', 1080, 5))
+        self.mock_webdriver.execute_script.assert_called()
+        self.mock_webdriver.execute_script.assert_called_once_with('browserstack_executor: {"action": "percyScreenshot", "arguments": {"state": "screenshot", "percyBuildId": "", "screenshotType": "fullpage", "scaleFactor": 5, "options": {"numOfTiles": 1080, "deviceHeight": "Screenshot 1"}}}')

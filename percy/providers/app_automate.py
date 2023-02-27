@@ -67,3 +67,24 @@ class AppAutomate(GenericProvider):
         except Exception as e:
             log('Error occurred during end call', on_debug=True)
             log(e, on_debug=True)
+
+    def execute_percy_screenshot(self, device_height, num_of_tiles, scale_factor=1):
+        try:
+            request_body = {
+                'action': 'percyScreenshot',
+                'arguments': {
+                    'state': 'screenshot',
+                    'percyBuildId':  os.getenv('PERCY_BUILD_ID', ''),
+                    'screenshotType': 'fullpage',
+                    'scaleFactor': scale_factor,
+                    'options': { "numOfTiles": num_of_tiles, "deviceHeight": device_height },
+                }
+            }
+            command = f'browserstack_executor: {json.dumps(request_body)}'
+            response = self.metadata.execute_script(command)
+            response = json.loads(response)
+            return response
+        except Exception as e:
+            log('Error occurred during screenshot call', on_debug=True)
+            log(e, on_debug=True)
+            return None

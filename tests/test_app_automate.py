@@ -1,5 +1,6 @@
 # pylint: disable=[arguments-differ, protected-access]
 import unittest
+import json
 from unittest.mock import MagicMock, patch, PropertyMock
 from appium.webdriver.webdriver import WebDriver
 from percy.providers.app_automate import AppAutomate
@@ -69,6 +70,17 @@ class TestAppAutomate(unittest.TestCase):
     @patch.object(AppAutomate, '_get_tiles', MagicMock(return_value='unique_session_id'))
     def test_get_tiles(self):
         self.app_automate._get_tiles(fullpage_screenshot=True)
-        self.assertIsNone(self.app_automate.execute_percy_screenshot('Screenshot 1', 1080, 5))
+        self.assertIsNone(self.app_automate.execute_percy_screenshot(1080, 5))
         self.mock_webdriver.execute_script.assert_called()
-        self.mock_webdriver.execute_script.assert_called_once_with('browserstack_executor: {"action": "percyScreenshot", "arguments": {"state": "screenshot", "percyBuildId": "", "screenshotType": "fullpage", "scaleFactor": 5, "options": {"numOfTiles": 1080, "deviceHeight": "Screenshot 1"}}}')
+        request_body = {
+                'action': 'percyScreenshot',
+                'arguments': {
+                    'state': 'screenshot',
+                    'percyBuildId':  "",
+                    'screenshotType': 'fullpage',
+                    'scaleFactor': 1,
+                    'options': { "numOfTiles": 5, "deviceHeight": 1080 },
+                }
+            }
+        command = f'browserstack_executor: {json.dumps(request_body)}'
+        self.mock_webdriver.execute_script.assert_called_once_with(command)

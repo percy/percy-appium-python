@@ -1,13 +1,11 @@
 # pylint: disable=[arguments-differ, protected-access]
 import unittest
-import json
 from unittest.mock import MagicMock, patch, PropertyMock
 from appium.webdriver.webdriver import WebDriver
 from percy.providers.app_automate import AppAutomate
 from percy.providers.generic_provider import GenericProvider
 from percy.metadata import AndroidMetadata, Metadata
 from tests.mocks.mock_methods import android_capabilities
-
 
 class TestAppAutomate(unittest.TestCase):
     comparison_response = {'success': True, 'link': 'https://snapshots-url'}
@@ -67,20 +65,17 @@ class TestAppAutomate(unittest.TestCase):
             self.app_automate.screenshot('name')
         mock_screenshot_end.assert_called_with('name', 'https://link', 'failure', str(e.exception))
 
-    @patch.object(AppAutomate, '_get_tiles', MagicMock(return_value='unique_session_id'))
+    @patch.object(AppAutomate, 'execute_percy_screenshot', MagicMock(return_value={
+        'result': [{'sha': 'sha-build', 'header_height': 120, 'footer_height': 80}]
+    }))
+    @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
+    @patch.object(AndroidMetadata, 'device_screen_size', PropertyMock(return_value={'width': 1080, 'height': 1920}))
+    @patch.object(AndroidMetadata, 'navigation_bar_height', PropertyMock(return_value=150))
+    @patch.object(AndroidMetadata, 'status_bar_height', PropertyMock(return_value=100))
     def test_get_tiles(self):
-        self.app_automate._get_tiles(fullpage_screenshot=True)
-        self.assertIsNone(self.app_automate.execute_percy_screenshot(1080, 5))
-        self.mock_webdriver.execute_script.assert_called()
-        request_body = {
-                'action': 'percyScreenshot',
-                'arguments': {
-                    'state': 'screenshot',
-                    'percyBuildId':  "",
-                    'screenshotType': 'fullpage',
-                    'scaleFactor': 1,
-                    'options': { "numOfTiles": 5, "deviceHeight": 1080 },
-                }
-            }
-        command = f'browserstack_executor: {json.dumps(request_body)}'
-        self.mock_webdriver.execute_script.assert_called_once_with(command)
+        result = self.app_automate._get_tiles(fullpage_screenshot=True)[0]
+        self.assertEqual(result.sha, 'sha')
+        self.assertEqual(result.status_bar_height, 100)
+        self.assertEqual(result.nav_bar_height, 150)
+        self.assertEqual(result.header_height, 120)
+        self.assertEqual(result.footer_height, 80)

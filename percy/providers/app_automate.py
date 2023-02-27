@@ -1,6 +1,7 @@
 import json
 import os
 from percy.common import log
+from percy.lib.tile import Tile
 from percy.providers.generic_provider import GenericProvider
 
 
@@ -32,10 +33,18 @@ class AppAutomate(GenericProvider):
 
     def _get_tiles(self, **kwargs):
         fullpage_ss = kwargs.get('fullpage_screenshot', False)
-        tile_count = kwargs.get('num_of_tiles', 5)
         if fullpage_ss:
-            data = self.execute_percy_screenshot(self.metadata.device_height, tile_count, self.metadata.scale_factor)
-            return data.get('result')
+            tile_count = kwargs.get('num_of_tiles', 4)
+            data = self.execute_percy_screenshot(self.metadata.device_screen_size.get('height', 1), tile_count, self.metadata.scale_factor)
+            tiles = []
+            status_bar_height = self.metadata.status_bar_height
+            nav_bar_height = self.metadata.navigation_bar_height
+
+            for tile in data.get('result'):
+                tiles.append(Tile(
+                    status_bar_height, nav_bar_height, tile.get('header_height'), tile.get('footer_height'), sha=tile.get('sha').split("-")[0]
+                ))
+            return tiles
         return super()._get_tiles(**kwargs)
 
     def execute_percy_screenshot_begin(self, name):

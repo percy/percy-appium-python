@@ -37,7 +37,7 @@ class AppAutomate(GenericProvider):
             data = self.execute_percy_screenshot(self.metadata.device_height, tile_count, self.metadata.scale_factor)
             return data.get('result')
         return super()._get_tiles(**kwargs)
-    
+
     def execute_percy_screenshot_begin(self, name):
         try:
             request_body = {

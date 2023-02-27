@@ -4,10 +4,8 @@ from pathlib import Path
 
 from appium.webdriver.webdriver import WebDriver
 
-from percy.errors import TilesException
 from percy.lib.cli_wrapper import CLIWrapper
 from percy.lib.tile import Tile
-from percy.common import log
 
 
 class GenericProvider:

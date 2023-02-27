@@ -30,6 +30,14 @@ class AppAutomate(GenericProvider):
         session_hash = session_details.get("sessionHash")
         self.debug_url = "https://app-automate.browserstack.com/dashboard/v2/builds/" + build_hash + "/sessions/" + session_hash
 
+    def _get_tiles(self, **kwargs):
+        fullpage_ss = kwargs.get('fullpage_screenshot', False)
+        tile_count = kwargs.get('num_of_tiles', 5)
+        if fullpage_ss:
+            data = self.execute_percy_screenshot(self.metadata.device_height, tile_count, self.metadata.scale_factor)
+            return data.get('result')
+        return super()._get_tiles(**kwargs)
+    
     def execute_percy_screenshot_begin(self, name):
         try:
             request_body = {

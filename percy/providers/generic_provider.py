@@ -22,8 +22,6 @@ class GenericProvider:
 
     def screenshot(self, name, **kwargs):
         tiles = self._get_tiles(**kwargs)
-        if tiles is None:
-            raise TilesException
         tag = self._get_tag(**kwargs)
 
         return self._post_screenshots(name, tag, tiles, self.get_debug_url())
@@ -46,15 +44,6 @@ class GenericProvider:
         }
 
     def _get_tiles(self, **kwargs):
-        fullpage_ss = kwargs.get('fullpage_screenshot', False)
-        tile_count = kwargs.get('num_of_tiles', 5)
-        if fullpage_ss:
-            if self.supports(self.metadata.remote_url):
-                data = self.execute_percy_screenshot(self.metadata.device_height, tile_count, self.metadata.scale_factor)
-                return data.get('result')
-            log('Fullpage screenshot is only supported for App Automate Session')
-            return None
-
         png_bytes = self.driver.get_screenshot_as_png()
         directory = self._get_dir()
         path = self._write_screenshot(png_bytes, directory)

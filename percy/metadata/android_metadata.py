@@ -49,7 +49,7 @@ class AndroidMetadata(Metadata):
     @property
     def viewport(self):
         return self.capabilities.get('viewportRect', {})
-    
+
     @property
     def scale_factor(self):
         return 1

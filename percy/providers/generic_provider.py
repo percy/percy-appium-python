@@ -4,6 +4,7 @@ from pathlib import Path
 
 from appium.webdriver.webdriver import WebDriver
 
+from percy.errors import TilesException
 from percy.lib.cli_wrapper import CLIWrapper
 from percy.lib.tile import Tile
 from percy.common import log
@@ -21,6 +22,8 @@ class GenericProvider:
 
     def screenshot(self, name, **kwargs):
         tiles = self._get_tiles(**kwargs)
+        if tiles is None:
+            raise TilesException
         tag = self._get_tag(**kwargs)
 
         return self._post_screenshots(name, tag, tiles, self.get_debug_url())
@@ -49,21 +52,21 @@ class GenericProvider:
             if self.supports(self.metadata.remote_url):
                 data = self.execute_percy_screenshot(self.metadata.device_height, tile_count, self.metadata.scale_factor)
                 return data.get('result')
-            else:
-                log('Fullpage screenshot is only supported for App Automate Session')
-        else:
-            png_bytes = self.driver.get_screenshot_as_png()
-            directory = self._get_dir()
-            path = self._write_screenshot(png_bytes, directory)
+            log('Fullpage screenshot is only supported for App Automate Session')
+            return None
 
-            fullscreen = kwargs.get('full_screen', False)
-            status_bar_height = kwargs.get('status_bar_height') or self.metadata.status_bar_height
-            nav_bar_height = kwargs.get('nav_bar_height') or self.metadata.navigation_bar_height
-            header_height = 0
-            footer_height = 0
-            return [
-                Tile(path, status_bar_height, nav_bar_height, header_height, footer_height, fullscreen)
-            ]
+        png_bytes = self.driver.get_screenshot_as_png()
+        directory = self._get_dir()
+        path = self._write_screenshot(png_bytes, directory)
+
+        fullscreen = kwargs.get('full_screen', False)
+        status_bar_height = kwargs.get('status_bar_height') or self.metadata.status_bar_height
+        nav_bar_height = kwargs.get('nav_bar_height') or self.metadata.navigation_bar_height
+        header_height = 0
+        footer_height = 0
+        return [
+            Tile(path, status_bar_height, nav_bar_height, header_height, footer_height, fullscreen)
+        ]
 
     @staticmethod
     def _post_screenshots(name, tag, tiles, debug_url):

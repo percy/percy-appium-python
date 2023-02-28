@@ -33,19 +33,27 @@ class AppAutomate(GenericProvider):
 
     def _get_tiles(self, **kwargs):
         fullpage_ss = kwargs.get('fullpage_screenshot', False)
-        if fullpage_ss:
-            tile_count = kwargs.get('num_of_tiles', 4)
-            data = self.execute_percy_screenshot(self.metadata.device_screen_size.get('height', 1), tile_count, self.metadata.scale_factor)
-            tiles = []
-            status_bar_height = self.metadata.status_bar_height
-            nav_bar_height = self.metadata.navigation_bar_height
+        if not fullpage_ss:
+            return super()._get_tiles(**kwargs)
+        full_page_screenshot_screen_lengths = kwargs.get('full_page_screenshot_screen_lengths', 4)
+        data = self.execute_percy_screenshot(
+            self.metadata.device_screen_size.get('height', 1),
+            full_page_screenshot_screen_lengths,
+            self.metadata.scale_factor,
+        )
+        tiles = []
+        status_bar_height = self.metadata.status_bar_height
+        nav_bar_height = self.metadata.navigation_bar_height
 
-            for tile in data.get('result'):
-                tiles.append(Tile(
-                    status_bar_height, nav_bar_height, tile.get('header_height'), tile.get('footer_height'), sha=tile.get('sha').split("-")[0]
-                ))
-            return tiles
-        return super()._get_tiles(**kwargs)
+        for tile_data in data.get('result'):
+            tiles.append(Tile(
+                status_bar_height,
+                nav_bar_height,
+                tile_data.get('header_height'),
+                tile_data.get('footer_height'),
+                sha=tile_data.get('sha').split("-")[0]
+            ))
+        return tiles
 
     def execute_percy_screenshot_begin(self, name):
         try:
@@ -85,7 +93,7 @@ class AppAutomate(GenericProvider):
             log('Error occurred during end call', on_debug=True)
             log(e, on_debug=True)
 
-    def execute_percy_screenshot(self, device_height, num_of_tiles, scale_factor=1):
+    def execute_percy_screenshot(self, device_height, full_page_screenshot_screen_lengths, scale_factor=1):
         try:
             request_body = {
                 'action': 'percyScreenshot',
@@ -94,7 +102,7 @@ class AppAutomate(GenericProvider):
                     'percyBuildId':  os.getenv('PERCY_BUILD_ID', ''),
                     'screenshotType': 'fullpage',
                     'scaleFactor': scale_factor,
-                    'options': { "numOfTiles": num_of_tiles, "deviceHeight": device_height },
+                    'options': { "numOfTiles": full_page_screenshot_screen_lengths, "deviceHeight": device_height },
                 }
             }
             command = f'browserstack_executor: {json.dumps(request_body)}'
@@ -104,4 +112,4 @@ class AppAutomate(GenericProvider):
         except Exception as e:
             log('Error occurred during screenshot call', on_debug=True)
             log(e, on_debug=True)
-            return None
+            raise e

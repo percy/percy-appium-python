@@ -62,4 +62,7 @@ class IOSMetadata(Metadata):
 
     @property
     def scale_factor(self):
-        return self.value_from_devices_info('scale_factor', self.device_name)
+        scale_factor = self.value_from_devices_info('scale_factor', self.device_name)
+        if scale_factor == 0:
+            return self.viewport.get('width') / self.get_window_size().get('width')
+        return scale_factor

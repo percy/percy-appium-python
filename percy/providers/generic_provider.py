@@ -43,7 +43,7 @@ class GenericProvider:
         }
 
     def _get_tiles(self, **kwargs):
-        fullpage_ss = kwargs.get('fullpage_screenshot', False)
+        fullpage_ss = kwargs.get('fullpage', False)
         if fullpage_ss:
             log('Full page screeshot is only supported on App Automate. Falling back to single page screenshot.')
 

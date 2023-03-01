@@ -73,7 +73,7 @@ class TestAppAutomate(unittest.TestCase):
     @patch.object(AndroidMetadata, 'navigation_bar_height', PropertyMock(return_value=150))
     @patch.object(AndroidMetadata, 'status_bar_height', PropertyMock(return_value=100))
     def test_get_tiles(self):
-        result = self.app_automate._get_tiles(fullpage_screenshot=True)[0]
+        result = self.app_automate._get_tiles(fullpage=True)[0]
         self.assertEqual(result.sha, 'sha')
         self.assertEqual(result.status_bar_height, 100)
         self.assertEqual(result.nav_bar_height, 150)

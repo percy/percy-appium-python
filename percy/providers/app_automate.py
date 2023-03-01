@@ -32,7 +32,7 @@ class AppAutomate(GenericProvider):
         self.debug_url = "https://app-automate.browserstack.com/dashboard/v2/builds/" + build_hash + "/sessions/" + session_hash
 
     def _get_tiles(self, **kwargs):
-        fullpage_ss = kwargs.get('fullpage_screenshot', False)
+        fullpage_ss = kwargs.get('fullpage', False)
         if not fullpage_ss:
             return super()._get_tiles(**kwargs)
         screen_lengths = kwargs.get('screen_lengths', 4)

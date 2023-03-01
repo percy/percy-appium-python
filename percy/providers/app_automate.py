@@ -44,8 +44,7 @@ class AppAutomate(GenericProvider):
         tiles = []
         status_bar_height = self.metadata.status_bar_height
         nav_bar_height = self.metadata.navigation_bar_height
-
-        for tile_data in data.get('result'):
+        for tile_data in json.loads(data.get('result')):
             tiles.append(Tile(
                 status_bar_height,
                 nav_bar_height,

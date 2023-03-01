@@ -66,7 +66,7 @@ class TestAppAutomate(unittest.TestCase):
         mock_screenshot_end.assert_called_with('name', 'https://link', 'failure', str(e.exception))
 
     @patch.object(AppAutomate, 'execute_percy_screenshot', MagicMock(return_value={
-        'result': [{'sha': 'sha-build', 'header_height': 120, 'footer_height': 80}]
+        "result":"[{\"sha\":\"sha-25568755\",\"status_bar\":null,\"nav_bar\":null,\"header_height\":120,\"footer_height\":80,\"index\":0}]"
     }))
     @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
     @patch.object(AndroidMetadata, 'device_screen_size', PropertyMock(return_value={'width': 1080, 'height': 1920}))

@@ -31,7 +31,7 @@ class CLIWrapper:
             response.raise_for_status()
             data = response.json()
 
-            if not data['success']: raise Exception(data['error'])
+            if not data['success']: raise CLIException(data['error'])
             version = response.headers.get('x-percy-core-version')
 
             if version.split('.')[0] != '1':
@@ -62,4 +62,4 @@ class CLIWrapper:
     @staticmethod
     def _request_body(name, tag, tiles, external_debug_url):
         tiles = list(map(dict, tiles))
-        return dict(name=name, tag=tag, tiles=tiles, external_debug_url=external_debug_url)
+        return {"name": name, "tag": tag, "tiles": tiles, "external_debug_url": external_debug_url}

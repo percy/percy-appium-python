@@ -51,6 +51,10 @@ class AndroidMetadata(Metadata):
         return self.capabilities.get('viewportRect', {})
 
     @property
+    def scale_factor(self):
+        return 1
+
+    @property
     def device_name(self):
         if self._device_name is None:
             desired_caps = self.capabilities.get('desired', {})

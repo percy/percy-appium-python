@@ -61,10 +61,11 @@ $ percy app:exec -- [python test command]
 - `name` (**required**) - The screenshot name; must be unique to each screenshot
 - `device_name` (**optional**) - The device name used for capturing screenshot
 - `orientation` (**optional**) - Orientation of device while capturing screeenshot; Allowed values [`portrait` | `landscape`]
-- `status_bar_height` (**optional**) - Height of status bar; number
-- `nav_bar_height` (**optional**) - Height of navigation bar; number
+- `status_bar_height` (**optional**) - Height of status bar; int
+- `nav_bar_height` (**optional**) - Height of navigation bar; int
 - `full_screen` (**optional**) - Indicate whether app is full screen; boolean
-
+- `fullpage` (**optional**) - [Experimental] only supported on App Automate driver sessions [ needs @percy/cli 1.20.2+ ]; boolean
+- `screen_lengths` (**optional**) - [Experimental] max screen lengths for fullPage [ needs @percy/cli 1.20.2+ ]; boolean
 ### Migrating Config
 
 If you have a previous Percy configuration file, migrate it to the newest version with the

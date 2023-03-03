@@ -51,3 +51,6 @@ class TestAndroidMetadata(TestCase):
         mock_get_system_bars = {'navigationBar': {'height': 1}}
         self.android_metadata.get_system_bars = Mock(return_value=mock_get_system_bars)
         self.assertEqual(self.android_metadata.navigation_bar_height, 0)
+
+    def test_scale_factor(self):
+        self.assertEqual(self.android_metadata.scale_factor, 1)

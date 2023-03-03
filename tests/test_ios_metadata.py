@@ -63,3 +63,15 @@ class TestIOSMetadata(TestCase):
     def test_status_bar(self):
         status_bar = self.ios_metadata.status_bar
         self.assertDictEqual(status_bar, {'height': 40})
+
+    @patch.object(IOSMetadata, 'device_name',  PropertyMock(return_value = 'iPhone 6'))
+    def test_scale_factor_present_in_devices_json(self):
+        self.assertEqual(self.ios_metadata.scale_factor, 2)
+
+    @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
+    @patch.object(IOSMetadata, 'device_name',  PropertyMock(return_value = 'iPhone 14'))
+    def test_scale_factor_not_present_in_devices_json(self):
+        window_size = {'height': 100, 'width': 100}
+        self.mock_webdriver.get_window_size.return_value = window_size
+        self.mock_webdriver.execute_script.return_value = {'height': 100, 'width': 200}
+        self.assertEqual(self.ios_metadata.scale_factor, 2)

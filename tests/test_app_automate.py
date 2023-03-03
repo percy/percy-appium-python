@@ -7,7 +7,6 @@ from percy.providers.generic_provider import GenericProvider
 from percy.metadata import AndroidMetadata, Metadata
 from tests.mocks.mock_methods import android_capabilities
 
-
 class TestAppAutomate(unittest.TestCase):
     comparison_response = {'success': True, 'link': 'https://snapshots-url'}
 
@@ -41,6 +40,11 @@ class TestAppAutomate(unittest.TestCase):
         self.assertIsNone(self.app_automate.execute_percy_screenshot_end('Screenshot 1', self.comparison_response['link'], 'success'))
         self.mock_webdriver.execute_script.assert_called()
 
+    def test_app_automate_execute_percy_screenshot(self):
+        self.mock_webdriver.execute_script.return_value = '{"result": "result"}'
+        self.app_automate.execute_percy_screenshot(1080, 5)
+        self.mock_webdriver.execute_script.assert_called()
+
     @patch('percy.providers.app_automate.log')
     def test_execute_percy_screenshot_end_throws_error(self, mock_log):
         self.mock_webdriver.execute_script.side_effect = Exception('SomeException')
@@ -60,3 +64,18 @@ class TestAppAutomate(unittest.TestCase):
             mock_screenshot_end.side_effect = Exception('RandomException')
             self.app_automate.screenshot('name')
         mock_screenshot_end.assert_called_with('name', 'https://link', 'failure', str(e.exception))
+
+    @patch.object(AppAutomate, 'execute_percy_screenshot', MagicMock(return_value={
+        "result":"[{\"sha\":\"sha-25568755\",\"status_bar\":null,\"nav_bar\":null,\"header_height\":120,\"footer_height\":80,\"index\":0}]"
+    }))
+    @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
+    @patch.object(AndroidMetadata, 'device_screen_size', PropertyMock(return_value={'width': 1080, 'height': 1920}))
+    @patch.object(AndroidMetadata, 'navigation_bar_height', PropertyMock(return_value=150))
+    @patch.object(AndroidMetadata, 'status_bar_height', PropertyMock(return_value=100))
+    def test_get_tiles(self):
+        result = self.app_automate._get_tiles(fullpage=True)[0]
+        self.assertEqual(result.sha, 'sha')
+        self.assertEqual(result.status_bar_height, 100)
+        self.assertEqual(result.nav_bar_height, 150)
+        self.assertEqual(result.header_height, 120)
+        self.assertEqual(result.footer_height, 80)

@@ -13,6 +13,5 @@ class PlatformNotSupported(BaseException):
 class DriverNotSupported(BaseException):
     pass
 
-
 class CLIException(Exception):
     pass

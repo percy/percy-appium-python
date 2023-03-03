@@ -4,6 +4,7 @@ from pathlib import Path
 
 from appium.webdriver.webdriver import WebDriver
 
+from percy.common import log
 from percy.lib.cli_wrapper import CLIWrapper
 from percy.lib.tile import Tile
 
@@ -42,6 +43,10 @@ class GenericProvider:
         }
 
     def _get_tiles(self, **kwargs):
+        fullpage_ss = kwargs.get('fullpage', False)
+        if fullpage_ss:
+            log('Full page screeshot is only supported on App Automate. Falling back to single page screenshot.')
+
         png_bytes = self.driver.get_screenshot_as_png()
         directory = self._get_dir()
         path = self._write_screenshot(png_bytes, directory)
@@ -52,7 +57,7 @@ class GenericProvider:
         header_height = 0
         footer_height = 0
         return [
-            Tile(path, status_bar_height, nav_bar_height, header_height, footer_height, fullscreen)
+            Tile(status_bar_height, nav_bar_height, header_height, footer_height, filepath=path, fullscreen=fullscreen)
         ]
 
     @staticmethod

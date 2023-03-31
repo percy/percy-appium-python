@@ -54,11 +54,15 @@ class TestAppAutomate(unittest.TestCase):
     @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
     @patch.object(GenericProvider, 'screenshot', MagicMock(return_value={'link': 'https://link'}))
     def test_execute_percy_screenshot_end(self):
-        self.app_automate.execute_percy_screenshot_begin = MagicMock()
-        mock_screenshot_end = MagicMock()
+        self.app_automate.execute_percy_screenshot_begin = MagicMock(return_value={'deviceName': 'abc', 'osVersion': '123'})
+        mock_screenshot_end = MagicMock(return_value=None)
         self.app_automate.execute_percy_screenshot_end = mock_screenshot_end
         self.app_automate.screenshot('name')
         mock_screenshot_end.assert_called_once_with('name', 'https://link', 'success')
+
+        # check that code doesnt throw if begin fails
+        self.app_automate.execute_percy_screenshot_begin = MagicMock(return_value=None)
+        self.app_automate.screenshot('name')
 
         with self.assertRaises(Exception) as e:
             mock_screenshot_end.side_effect = Exception('RandomException')

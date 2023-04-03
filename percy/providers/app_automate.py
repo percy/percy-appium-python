@@ -15,9 +15,11 @@ class AppAutomate(GenericProvider):
     def screenshot(self, name: str, **kwargs):
         session_details = self.execute_percy_screenshot_begin(name)
         # Device name and OS version retrieval is custom for App Automate users
-        self.metadata._device_name = kwargs.get('device_name') or session_details.get("deviceName")
-        self.metadata._os_version = session_details.get("osVersion")
-        self.set_debug_url(session_details)
+        if session_details is not None:
+            self.metadata._device_name = kwargs.get('device_name') or session_details.get("deviceName")
+            self.metadata._os_version = session_details.get("osVersion")
+            self.set_debug_url(session_details)
+
         try:
             response = super().screenshot(name, **kwargs)
             percy_screenshot_url = response.get('link', '')
@@ -27,8 +29,8 @@ class AppAutomate(GenericProvider):
             raise e
 
     def set_debug_url(self, session_details):
-        build_hash = session_details.get("buildHash")
-        session_hash = session_details.get("sessionHash")
+        build_hash = str(session_details.get("buildHash"))
+        session_hash = str(session_details.get("sessionHash"))
         self.debug_url = "https://app-automate.browserstack.com/dashboard/v2/builds/" + build_hash + "/sessions/" + session_hash
 
     def _get_tiles(self, **kwargs):

@@ -17,6 +17,7 @@ pip install Percy appium package:
 ```ssh-session
 $ pip install percy-appium-app
 ```
+> Note: This package is tested on Python versions 3.6, 3.8, 3.9 as part of unit tests. It should ideally work on all Python 3.6+ versions
 
 ## Usage
 

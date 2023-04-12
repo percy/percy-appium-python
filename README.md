@@ -67,6 +67,31 @@ $ percy app:exec -- [python test command]
 - `full_screen` (**optional**) - Indicate whether app is full screen; boolean
 - `fullpage` (**optional**) - [Experimental] only supported on App Automate driver sessions [ needs @percy/cli 1.20.2+ ]; boolean
 - `screen_lengths` (**optional**) - [Experimental] max screen lengths for fullPage [ needs @percy/cli 1.20.2+ ]; boolean
+- `scrollable_xpath` (**optional**) - [Experimental] scrollable element xpath for fullpage [ needs @percy/cli 1.20.2+ ]; string
+- `scrollable_id` (**optional**) - [Experimental] scrollable element accessibility id for fullpage [ needs @percy/cli 1.20.2+ ]; string
+- `ignore_regions_xpaths` (**optional**) - elements xpaths that user want to ignore in visual diff [ needs @percy/cli 1.23.0+ ]; list of string
+- `ignore_region_accessibility_ids` (**optional**) - elements accessibility_ids that user want to ignore in visual diff [ needs @percy/cli 1.23.0+ ]; list of string
+- `ignore_region_appium_elements` (**optional**) - appium elements that user want to ignore in visual diff [ needs @percy/cli 1.23.0+ ]; list of appium element object
+- `custom_ignore_regions` (**optional**) - custom locations that user want to ignore in visual diff [ needs @percy/cli 1.23.0+ ]; list of ignore_region object
+  - IgnoreRegion:-
+    - Description: This class represents a rectangular area on a screen that needs to be ignored for visual diff.
+
+    - Constructor:
+      ```
+      init(self, top, bottom, left, right)
+      ```
+
+    - Parameters:
+
+      `top` (int): Top coordinate of the ignore region.
+
+      `bottom` (int): Bottom coordinate of the ignore region.
+
+      `left` (int): Left coordinate of the ignore region.
+
+      `right` (int): Right coordinate of the ignore region.
+    - Raises:ValueError: If top, bottom, left, or right is less than 0 or top is greater than or equal to bottom or left is greater than or equal to right.
+    - valid: Ignore region should be within the boundaries of the screen.
 ### Migrating Config
 
 If you have a previous Percy configuration file, migrate it to the newest version with the

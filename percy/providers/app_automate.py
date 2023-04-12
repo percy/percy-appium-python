@@ -38,9 +38,13 @@ class AppAutomate(GenericProvider):
         if not fullpage_ss:
             return super()._get_tiles(**kwargs)
         screen_lengths = kwargs.get('screen_lengths', 4)
+        scrollable_xpath = kwargs.get('scollable_xpath')
+        scrollable_id = kwargs.get('scrollable_id')
         data = self.execute_percy_screenshot(
             self.metadata.device_screen_size.get('height', 1),
             screen_lengths,
+            scrollable_xpath,
+            scrollable_id,
             self.metadata.scale_factor,
         )
         tiles = []
@@ -94,7 +98,7 @@ class AppAutomate(GenericProvider):
             log('Error occurred during end call', on_debug=True)
             log(e, on_debug=True)
 
-    def execute_percy_screenshot(self, device_height, screen_lengths, scale_factor=1):
+    def execute_percy_screenshot(self, device_height, screen_lengths, scrollable_xpath=None, scrollable_id=None, scale_factor=1):
         try:
             request_body = {
                 'action': 'percyScreenshot',
@@ -103,7 +107,12 @@ class AppAutomate(GenericProvider):
                     'percyBuildId':  os.getenv('PERCY_BUILD_ID', ''),
                     'screenshotType': 'fullpage',
                     'scaleFactor': scale_factor,
-                    'options': { "numOfTiles": screen_lengths, "deviceHeight": device_height },
+                    'options': { 
+                        "numOfTiles": screen_lengths,
+                        "deviceHeight": device_height,
+                        "scrollableXpath":  scrollable_xpath,
+                        "scrollableId": scrollable_id
+                    },
                 }
             }
             command = f'browserstack_executor: {json.dumps(request_body)}'

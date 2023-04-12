@@ -40,8 +40,20 @@ class CLIWrapperTestCase(unittest.TestCase):
         tag = {'name': 'Tag'}
         name = 'some-name'
         debug_url = 'debug-url'
-        response = self.cli_wrapper._request_body(name, tag, [tile], debug_url)
+        ignored_elements_data = {
+            'ignore_elements_data': {
+                'selector': 'xpath: some_xpath',
+                'coOrdinates': {
+                    'top': 123,
+                    'bottom': 234,
+                    'left': 234,
+                    'right': 455
+                }
+            }
+        }
+        response = self.cli_wrapper._request_body(name, tag, [tile], debug_url, ignored_elements_data)
         self.assertEqual(response['name'], name)
         self.assertEqual(response['external_debug_url'], debug_url)
         self.assertDictEqual(response['tag'], tag)
         self.assertListEqual(response['tiles'], [dict(tile)])
+        self.assertDictEqual(response['ignored_elements_data'], ignored_elements_data)

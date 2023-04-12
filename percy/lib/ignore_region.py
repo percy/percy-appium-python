@@ -11,8 +11,8 @@ class IgnoreRegion:
         self.left = left
         self.right = right
 
-    def is_valid(self, height, width):
-        if self.top >= height or self.bottom > height or self.left >= width or self.right > width:
+    def is_valid(self, screen_height, screen_width):
+        if self.top >= screen_height or self.bottom > screen_height or self.left >= screen_width or self.right > screen_width:
             return False
 
         return True

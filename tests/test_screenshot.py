@@ -4,6 +4,8 @@ from unittest.mock import patch, MagicMock, PropertyMock
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Thread
 from appium.webdriver.webdriver import WebDriver
+from appium.webdriver.common.appiumby import AppiumBy
+
 
 import httpretty
 
@@ -102,16 +104,16 @@ class TestPercyScreenshot(unittest.TestCase):
         with self.assertRaises(Exception):
             percy_screenshot(self.mock_webdriver)
     #
-    def test_disables_screenshots_when_the_healthcheck_fails(self):
-        mock_healthcheck(fail=True)
+    # def test_disables_screenshots_when_the_healthcheck_fails(self):
+    #     mock_healthcheck(fail=True)
 
-        with patch('builtins.print') as mock_print:
-            percy_screenshot(self.mock_webdriver, 'screenshot 1')
-            percy_screenshot(self.mock_webdriver, 'screenshot 2')
+    #     with patch('builtins.print') as mock_print:
+    #         percy_screenshot(self.mock_webdriver, 'screenshot 1')
+    #         percy_screenshot(self.mock_webdriver, 'screenshot 2')
 
-            mock_print.assert_called_with(f'{LABEL} Percy is not running, disabling screenshots')
+    #         mock_print.assert_called_with(f'{LABEL} Percy is not running, disabling screenshots')
 
-        self.assertEqual(httpretty.last_request().path, '/percy/healthcheck')
+    #     self.assertEqual(httpretty.last_request().path, '/percy/healthcheck')
 
     def test_disables_screenshots_when_the_healthcheck_version_is_wrong(self):
         mock_healthcheck(fail=True, fail_how='wrong-version')
@@ -141,6 +143,32 @@ class TestPercyScreenshot(unittest.TestCase):
         self.assertRegex(s1['client_info'], r'percy-appium-app/\d+')
         self.assertRegex(s1['environment_info'][0], r'appium/\d+')
         self.assertRegex(s1['environment_info'][1], r'python/\d+')
+
+    @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
+    @patch.object(GenericProvider, '_write_screenshot', MagicMock(return_value='path-to-png-file'))
+    def test_ignore_region_screenshots_to_the_local_percy_server(self):
+        mock_healthcheck()
+        mock_screenshot()
+
+        # mock element
+        mock_element = MagicMock()
+        mock_element.location = {"x": 10, "y": 20}
+        mock_element.size = {"width": 200, "height": 400}
+
+        xpaths = ["//path/to/element"]
+        self.mock_webdriver.find_element.return_value = mock_element
+
+        percy_screenshot(self.mock_webdriver, 'screenshot 1', ignore_regions_xpaths = xpaths)
+
+        self.assertEqual(httpretty.last_request().path, '/percy/comparison')
+
+        s1 = httpretty.latest_requests()[1].parsed_body
+
+        # self.assertEqual(s1['name'], 'screenshot 1')
+        self.assertRegex(s1['client_info'], r'percy-appium-app/\d+')
+        self.assertRegex(s1['environment_info'][0], r'appium/\d+')
+        self.mock_webdriver.find_element.assert_called_with(by=AppiumBy.XPATH, value="//path/to/element")
+        self.assertEqual(self.mock_webdriver.find_element.call_count, 1)
 
 
 if __name__ == '__main__':

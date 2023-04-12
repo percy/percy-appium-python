@@ -4,6 +4,8 @@ from pathlib import Path
 
 from appium.webdriver.webdriver import WebDriver
 from appium.webdriver.common.appiumby import AppiumBy
+from selenium.common.exceptions import NoSuchElementException
+
 
 from percy.common import log
 from percy.lib.cli_wrapper import CLIWrapper
@@ -86,12 +88,12 @@ class GenericProvider:
             "left": location["x"] * scale_factor,
             "right": (location["x"] + size["width"]) * scale_factor
         }
-        json_object = {
+        ignore_region = {
             "selector": selector,
             "coOrdinates": co_ordinates
         }
 
-        return json_object
+        return ignore_region
 
     def ignore_regions_by_xpaths(self, ignored_elements_array, xpaths):
         for xpath in xpaths:
@@ -100,9 +102,9 @@ class GenericProvider:
                 selector = f"xpath: {xpath}"
                 ignored_region = self.ignore_element_object(selector, element)
                 ignored_elements_array.append(ignored_region)
-            except NoSuchElementException:
+            except NoSuchElementException as e:
                 log(f"Appium Element with xpath: {xpath} not found. Ignoring this xpath.")
-                log(sys.exc_info(), on_debug=True)
+                log(e, on_debug=True)
 
     def ignore_regions_by_ids(self, ignored_elements_array, ids):
         for id in ids:
@@ -111,9 +113,9 @@ class GenericProvider:
                 selector = f"id: {id}"
                 ignored_region = self.ignore_element_object(selector, element)
                 ignored_elements_array.append(ignored_region)
-            except NoSuchElementException:
+            except NoSuchElementException as e:
                 log(f"Appium Element with id: {id} not found. Ignoring this id.")
-                log(sys.exc_info(), on_debug=True)
+                log(e, on_debug=True)
 
     def ignore_regions_by_elements(self, ignored_elements_array, elements):
         for idx, element in enumerate(elements):
@@ -122,15 +124,15 @@ class GenericProvider:
                 selector = f"element: {idx} {class_name}"
                 ignored_region = self.ignore_element_object(selector, element)
                 ignored_elements_array.append(ignored_region)
-            except NoSuchElementException:
+            except NoSuchElementException as e:
                 log(f"Correct Element not passed at index {idx}")
-                log(sys.exc_info(), on_debug=True)
+                log(e, on_debug=True)
 
     def add_custom_ignore_regions(self, ignored_elements_array, custom_locations):
         for idx, custom_location in enumerate(custom_locations):
-            width = self.metadata.device_screen_size['width']
-            height = self.metadata.device_screen_size['height']
-            if custom_location.is_valid(height, width):
+            screen_width = self.metadata.device_screen_size['width']
+            screen_height = self.metadata.device_screen_size['height']
+            if custom_location.is_valid(screen_height, screen_width):
                 ignored_region = {
                     "selector": f"custom ignore region: {idx}",
                     "coOrdinates": {
@@ -143,7 +145,6 @@ class GenericProvider:
                 ignored_elements_array.append(ignored_region)
             else:
                 log(f"Values passed in custom ignored region at index: {idx} is not valid")
-                
 
     @staticmethod
     def _post_screenshots(name, tag, tiles, ignored_regions, debug_url):

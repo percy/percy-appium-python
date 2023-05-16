@@ -19,6 +19,8 @@ $ pip install percy-appium-app
 ```
 > Note: This package is tested on Python versions 3.6, 3.8, 3.9 as part of unit tests. It should ideally work on all Python 3.6+ versions
 
+[NOTE] Appium-Python-Client(>= v2.9.0) is having compatibility issues with urllib3 latest versions. To solve the issue it is recommended to add `urllib3>=1.26.15,<2` in your requirements.txt file.
+
 ## Usage
 
 This is an example test using the `percy_screenshot` function.

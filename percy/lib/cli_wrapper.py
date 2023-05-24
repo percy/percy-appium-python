@@ -8,15 +8,10 @@ from percy.errors import CLIException
 
 from percy.version import __version__ as SDK_VERSION
 from percy.common import log
-
-
-# Collect client and environment information
-CLIENT_INFO = 'percy-appium-app/' + SDK_VERSION
-ENV_INFO = ['appium/' + APPIUM_VERSION, 'python/' + platform.python_version()]
+from percy.environment import Environment
 
 # Maybe get the CLI API address from the environment
 PERCY_CLI_API = os.environ.get('PERCY_CLI_API') or 'http://localhost:5338'
-
 
 class CLIWrapper:
     def __init__(self) -> None:
@@ -32,6 +27,8 @@ class CLIWrapper:
             data = response.json()
 
             if not data['success']: raise CLIException(data['error'])
+            Environment.percy_build_id = data['build']['id']
+            Environment.percy_build_url = data['build']['url']
             version = response.headers.get('x-percy-core-version')
 
             if version.split('.')[0] != '1':
@@ -47,8 +44,8 @@ class CLIWrapper:
     def post_screenshots(self, name, tag, tiles, external_debug_url=None, ignored_elements_data=None):
         body = self._request_body(name, tag, tiles, external_debug_url, ignored_elements_data)
 
-        body['client_info'] = CLIENT_INFO
-        body['environment_info'] = ENV_INFO
+        body['client_info'] = Environment._get_client_info()
+        body['environment_info'] = Environment._get_env_info()
 
         response = requests.post(f'{PERCY_CLI_API}/percy/comparison', json=body, timeout=30)
         # Handle errors

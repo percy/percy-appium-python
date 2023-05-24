@@ -36,7 +36,7 @@ mock_server_thread.start()
 
 # mock helpers
 def mock_healthcheck(fail=False, fail_how="error"):
-    health_body = '{ "success": true }'
+    health_body = '{ "success": true, "build": {"id": "123", "url": "dummy_url"} }'
     health_headers = {"X-Percy-Core-Version": "1.0.0"}
     health_status = 200
 

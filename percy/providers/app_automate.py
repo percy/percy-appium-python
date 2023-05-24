@@ -3,7 +3,7 @@ import os
 from percy.common import log
 from percy.lib.tile import Tile
 from percy.providers.generic_provider import GenericProvider
-
+from percy.environment import Environment
 
 class AppAutomate(GenericProvider):
     @staticmethod
@@ -66,8 +66,8 @@ class AppAutomate(GenericProvider):
                 'action': 'percyScreenshot',
                 'arguments': {
                     'state': 'begin',
-                    'percyBuildId':  os.getenv('PERCY_BUILD_ID', ''),
-                    'percyBuildUrl': os.getenv('PERCY_BUILD_URL', ''),
+                    'percyBuildId':  Environment.percy_build_id,
+                    'percyBuildUrl': Environment.percy_build_url,
                     'name': name
                 }
             }
@@ -104,7 +104,7 @@ class AppAutomate(GenericProvider):
                 'action': 'percyScreenshot',
                 'arguments': {
                     'state': 'screenshot',
-                    'percyBuildId':  os.getenv('PERCY_BUILD_ID', ''),
+                    'percyBuildId':  Environment.percy_build_id,
                     'screenshotType': 'fullpage',
                     'scaleFactor': scale_factor,
                     'options': { 

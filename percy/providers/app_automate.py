@@ -8,8 +8,9 @@ from percy.providers.generic_provider import GenericProvider
 class AppAutomate(GenericProvider):
     @staticmethod
     def supports(remote_url) -> bool:
-        if isinstance(remote_url, str) and remote_url.rfind('browserstack') > -1:
-            return True
+        if isinstance(remote_url, str):
+            if remote_url.rfind("browserstack" if os.getenv("AA_DOMAIN") is None else os.getenv("AA_DOMAIN")) > -1:
+                return True
         return False
 
     def screenshot(self, name: str, **kwargs):

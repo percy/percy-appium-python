@@ -1,12 +1,8 @@
 from functools import lru_cache
 import os
-import platform
-
-from appium.version import version as APPIUM_VERSION
 import requests
-from percy.errors import CLIException
 
-from percy.version import __version__ as SDK_VERSION
+from percy.errors import CLIException
 from percy.common import log
 from percy.environment import Environment
 

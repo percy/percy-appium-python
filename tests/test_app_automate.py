@@ -1,5 +1,6 @@
 # pylint: disable=[arguments-differ, protected-access]
 import unittest
+import os
 from unittest.mock import MagicMock, patch, PropertyMock
 from appium.webdriver.webdriver import WebDriver
 from percy.providers.app_automate import AppAutomate
@@ -28,6 +29,19 @@ class TestAppAutomate(unittest.TestCase):
         self.app_automate.set_debug_url({'deviceName': 'Google Pixel 4', 'osVersion': '12.0', 'buildHash': 'abc', 'sessionHash': 'def'})
         debug_url = self.app_automate.get_debug_url()
         self.assertEqual(debug_url, 'https://app-automate.browserstack.com/dashboard/v2/builds/abc/sessions/def')
+
+    def test_app_automate_supports_with_correct_url(self):
+        app_automate_session = self.app_automate.supports('https://hub-cloud.browserstack.com/wd/hub')
+        self.assertEqual(app_automate_session, True)
+
+    def test_app_automate_supports_with_incorrect_url(self):
+        app_automate_session = self.app_automate.supports('https://hub-cloud.generic.com/wd/hub')
+        self.assertEqual(app_automate_session, False)
+
+    @patch.dict(os.environ, {"AA_DOMAIN": "bsstag"})
+    def test_app_automate_supports_with_AA_DOMAIN(self):
+        app_automate_session = self.app_automate.supports('bsstag.com')
+        self.assertEqual(app_automate_session, True)
 
     @patch('percy.providers.app_automate.log')
     def test_app_automate_execute_percy_screenshot_begin(self, _mocked_log):

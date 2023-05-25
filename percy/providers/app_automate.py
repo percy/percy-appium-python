@@ -9,7 +9,7 @@ class AppAutomate(GenericProvider):
     @staticmethod
     def supports(remote_url) -> bool:
         if isinstance(remote_url, str):
-            if (remote_url.rfind('browserstack') > -1) or (os.getenv('AA_DOMAIN') and remote_url.rfind(os.getenv('AA_DOMAIN')) > -1):
+            if remote_url.rfind("browserstack" if os.getenv("AA_DOMAIN") is None else os.getenv("AA_DOMAIN")) > -1:
                 return True
         return False
 

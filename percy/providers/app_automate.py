@@ -1,4 +1,5 @@
 import json
+import os
 from percy.common import log
 from percy.lib.tile import Tile
 from percy.providers.generic_provider import GenericProvider

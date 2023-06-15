@@ -278,8 +278,7 @@ class TestPercyScreenshot(unittest.TestCase):
         self.assertRegex(s1['client_info'], r'percy-appium-app/\d+')
         self.assertRegex(s1['environment_info'][0], r'appium/\d+')
         self.assertRegex(s1['environment_info'][1], r'python/\d+')
-
-        s2 = httpretty.latest_requests()[2].parsed_body
+        s2 = httpretty.latest_requests()[-1].parsed_body
         self.assertEqual(s2['snapshotName'], 'Snapshot 2')
         self.assertEqual(s2['options']['enable_javascript'], True)
         self.assertEqual(s2['options']['ignore_region_elements'], ['Dummy_id'])

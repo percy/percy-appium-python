@@ -8,7 +8,7 @@ def percy_screenshot(driver, name: str, **kwargs):
         cli_status = CLIWrapper.is_percy_enabled()
         if not cli_status:
             return None
-        
+
         ProviderClass = PercyOnAutomate if cli_status == 'automate' else AppPercy
         app_percy = None
         app_percy = ProviderClass(driver)

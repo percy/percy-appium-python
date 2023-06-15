@@ -1,6 +1,9 @@
-import os, requests
-from percy.common import log
+import os
+import requests
 from appium.webdriver.webdriver import WebDriver
+
+from percy.common import log
+from percy.errors import CLIException
 from percy.errors import DriverNotSupported
 from percy.lib.percy_options import PercyOptions
 from percy.environment import Environment
@@ -41,7 +44,8 @@ class PercyOnAutomate:
             # Handle errors
             response.raise_for_status()
             data = response.json()
-            if not data['success']: raise Exception(data['error'])
+            if not data['success']: raise CLIException(data['error'])
         except Exception as e:
             log(f'Could not take Screenshot "{name}"')
             log(f'{e}')
+        return None

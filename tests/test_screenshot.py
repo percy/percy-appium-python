@@ -259,7 +259,7 @@ class TestPercyScreenshot(unittest.TestCase):
         driver.desired_capabilities = { 'key': 'value' }
         driver.command_executor = Mock()
         driver.command_executor._url = 'https://hub-cloud.browserstack.com/wd/hub'
-        self.driver = driver
+
         element = Mock()
         element.id = 'Dummy_id'
         self.mock_webdriver.capabilities = { 'key': 'value' }
@@ -271,10 +271,10 @@ class TestPercyScreenshot(unittest.TestCase):
 
         s1 = httpretty.latest_requests()[1].parsed_body
         self.assertEqual(s1['snapshotName'], 'Snapshot 1')
-        self.assertEqual(s1['sessionId'], self.driver.session_id)
-        self.assertEqual(s1['commandExecutorUrl'], self.driver.command_executor._url) # pylint: disable=W0212
-        self.assertEqual(s1['capabilities'], dict(self.driver.capabilities))
-        self.assertEqual(s1['sessionCapabilites'], dict(self.driver.desired_capabilities))
+        self.assertEqual(s1['sessionId'], driver.session_id)
+        self.assertEqual(s1['commandExecutorUrl'], driver.command_executor._url) # pylint: disable=W0212
+        self.assertEqual(s1['capabilities'], dict(driver.capabilities))
+        self.assertEqual(s1['sessionCapabilites'], dict(driver.desired_capabilities))
         self.assertRegex(s1['client_info'], r'percy-appium-app/\d+')
         self.assertRegex(s1['environment_info'][0], r'appium/\d+')
         self.assertRegex(s1['environment_info'][1], r'python/\d+')

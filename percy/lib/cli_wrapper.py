@@ -31,7 +31,7 @@ class CLIWrapper:
                 log(f'Unsupported Percy CLI version, {version}')
                 return False
 
-            return True
+            return data['type']
         except Exception as e:
             log('Percy is not running, disabling screenshots')
             log(e, on_debug=True)

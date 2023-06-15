@@ -1,6 +1,7 @@
 # pylint: disable=[arguments-differ]
 import unittest
-from unittest.mock import patch, MagicMock, PropertyMock
+import json
+from unittest.mock import patch, MagicMock, PropertyMock, Mock
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Thread
 from appium.webdriver.webdriver import WebDriver
@@ -35,8 +36,8 @@ mock_server_thread.start()
 
 
 # mock helpers
-def mock_healthcheck(fail=False, fail_how="error"):
-    health_body = '{ "success": true, "build": {"id": "123", "url": "dummy_url"} }'
+def mock_healthcheck(fail=False, fail_how="error", type="AppPercy"):
+    health_body = json.dumps({ "success": True, "build": {"id": "123", "url": "dummy_url"}, "type": type })
     health_headers = {"X-Percy-Core-Version": "1.0.0"}
     health_status = 200
 
@@ -61,6 +62,16 @@ def mock_screenshot(fail=False):
     httpretty.register_uri(
         httpretty.POST,
         "http://localhost:5338/percy/comparison",
+        body=(
+            '{ "success": ' + ("true" if not fail else 'false, "error": "test"') + "}"
+        ),
+        status=(500 if fail else 200),
+    )
+
+def mock_poa_screenshot(fail=False):
+    httpretty.register_uri(
+        httpretty.POST,
+        "http://localhost:5338/percy/automateScreenshot",
         body=(
             '{ "success": ' + ("true" if not fail else 'false, "error": "test"') + "}"
         ),
@@ -223,6 +234,55 @@ class TestPercyScreenshot(unittest.TestCase):
         )
         self.assertEqual(self.mock_webdriver.find_element.call_count, 1)
 
+    def test_throws_error_when_a_driver_is_not_provided_poa(self):
+        mock_healthcheck(type="automate")
+        with self.assertRaises(Exception):
+            percy_screenshot()
+
+    def test_throws_error_when_invalid_driver_provided_poa(self):
+        mock_healthcheck(type="automate")
+        with self.assertRaises(Exception):
+            percy_screenshot("Wrong driver")
+
+    def test_throws_error_when_a_name_is_not_provided_poa(self):
+        mock_healthcheck(type="automate")
+        with self.assertRaises(Exception):
+            percy_screenshot(self.mock_webdriver)
+
+    def test_posts_screenshot_poa(self):
+        mock_healthcheck(type="automate")
+        mock_poa_screenshot()
+
+        driver = Mock(spec=WebDriver)
+        driver.session_id = 'Dummy_session_id'
+        driver.capabilities = { 'key': 'value' }
+        driver.desired_capabilities = { 'key': 'value' }
+        driver.command_executor = Mock()
+        driver.command_executor._url = 'https://hub-cloud.browserstack.com/wd/hub'
+        self.driver = driver
+        element = Mock()
+        element.id = 'Dummy_id'
+        self.mock_webdriver.capabilities = { 'key': 'value' }
+        percy_screenshot(driver, 'Snapshot 1')
+        percy_screenshot(driver, 'Snapshot 2', enable_javascript=True,
+                          ignore_region_appium_elements= [element])
+
+        self.assertEqual(httpretty.last_request().path, '/percy/automateScreenshot')
+
+        s1 = httpretty.latest_requests()[1].parsed_body
+        self.assertEqual(s1['snapshotName'], 'Snapshot 1')
+        self.assertEqual(s1['sessionId'], self.driver.session_id)
+        self.assertEqual(s1['commandExecutorUrl'], self.driver.command_executor._url) # pylint: disable=W0212
+        self.assertEqual(s1['capabilities'], dict(self.driver.capabilities))
+        self.assertEqual(s1['sessionCapabilites'], dict(self.driver.desired_capabilities))
+        self.assertRegex(s1['client_info'], r'percy-appium-app/\d+')
+        self.assertRegex(s1['environment_info'][0], r'appium/\d+')
+        self.assertRegex(s1['environment_info'][1], r'python/\d+')
+
+        s2 = httpretty.latest_requests()[2].parsed_body
+        self.assertEqual(s2['snapshotName'], 'Snapshot 2')
+        self.assertEqual(s2['options']['enable_javascript'], True)
+        self.assertEqual(s2['options']['ignore_region_elements'], ['Dummy_id'])
 
 if __name__ == "__main__":
     unittest.main()

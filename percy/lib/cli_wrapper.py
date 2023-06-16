@@ -52,7 +52,7 @@ class CLIWrapper:
         if response.status_code != 200:
             raise CLIException(data.get('error', 'UnknownException'))
         return data
-    
+
     def post_poa_screenshots(self, name, session_id, command_executor_url, capabilities, desired_capabilities, options=None):
         body = {
                 'sessionId': session_id,

@@ -1,4 +1,3 @@
-import os
 from appium.webdriver.webdriver import WebDriver
 
 from percy.common import log

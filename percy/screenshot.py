@@ -1,15 +1,14 @@
 from percy.common import log
 from percy.lib import AppPercy, PercyOnAutomate
 from percy.lib.cli_wrapper import CLIWrapper
-
+from percy.environment import Environment
 
 def percy_screenshot(driver, name: str, **kwargs):
     try:
-        cli_status = CLIWrapper.is_percy_enabled()
-        if not cli_status:
+        if not CLIWrapper.is_percy_enabled():
             return None
 
-        ProviderClass = PercyOnAutomate if cli_status == 'automate' else AppPercy
+        ProviderClass = PercyOnAutomate if Environment.session_type == 'automate' else AppPercy
         app_percy = None
         app_percy = ProviderClass(driver)
         return app_percy.screenshot(name, **kwargs)

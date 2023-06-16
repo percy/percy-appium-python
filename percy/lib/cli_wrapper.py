@@ -25,13 +25,14 @@ class CLIWrapper:
             if not data['success']: raise CLIException(data['error'])
             Environment.percy_build_id = data['build']['id']
             Environment.percy_build_url = data['build']['url']
+            Environment.session_type = data['type']
             version = response.headers.get('x-percy-core-version')
 
             if version.split('.')[0] != '1':
                 log(f'Unsupported Percy CLI version, {version}')
                 return False
 
-            return data['type']
+            return True
         except Exception as e:
             log('Percy is not running, disabling screenshots')
             log(e, on_debug=True)
@@ -44,6 +45,28 @@ class CLIWrapper:
         body['environment_info'] = Environment._get_env_info()
 
         response = requests.post(f'{PERCY_CLI_API}/percy/comparison', json=body, timeout=30)
+        # Handle errors
+        response.raise_for_status()
+        data = response.json()
+
+        if response.status_code != 200:
+            raise CLIException(data.get('error', 'UnknownException'))
+        return data
+    
+    def post_poa_screenshots(self, name, session_id, command_executor_url, capabilities, desired_capabilities, options=None):
+        body = {
+                'sessionId': session_id,
+                'commandExecutorUrl': command_executor_url,
+                'capabilities': dict(capabilities),
+                'sessionCapabilites':dict(desired_capabilities),
+                'snapshotName': name,
+                'options': options
+            }
+
+        body['client_info'] = Environment._get_client_info()
+        body['environment_info'] = Environment._get_env_info()
+
+        response = requests.post(f'{PERCY_CLI_API}/percy/automateScreenshot', json=body, timeout=30)
         # Handle errors
         response.raise_for_status()
         data = response.json()

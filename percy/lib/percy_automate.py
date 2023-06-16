@@ -3,10 +3,9 @@ import requests
 from appium.webdriver.webdriver import WebDriver
 
 from percy.common import log
-from percy.errors import CLIException
 from percy.errors import DriverNotSupported
 from percy.lib.percy_options import PercyOptions
-from percy.environment import Environment
+from percy.lib.cli_wrapper import CLIWrapper
 
 # Maybe get the CLI API address from the environment
 PERCY_CLI_API = os.environ.get('PERCY_CLI_API') or 'http://localhost:5338'
@@ -29,23 +28,15 @@ class PercyOnAutomate:
             ignore_region_elements = [element.id for element in kwargs.get(IGNORE_ELEMENT_KEY, [])]
             kwargs.pop(IGNORE_ELEMENT_KEY, None)
 
-            # Post to automateScreenshot endpoint with driver options and other info
-            response = requests.post(f'{PERCY_CLI_API}/percy/automateScreenshot', json={
-                'client_info': Environment._get_client_info(),
-                'environment_info': Environment._get_env_info(),
-                'sessionId': self.driver.session_id,
-                'commandExecutorUrl': self.driver.command_executor._url, # pylint: disable=W0212
-                'capabilities': dict(self.driver.capabilities),
-                'sessionCapabilites':dict(self.driver.desired_capabilities),
-                'snapshotName': name,
-                'options': { **kwargs, "ignore_region_elements": ignore_region_elements }
-            }, timeout=30)
-
-            # Handle errors
-            response.raise_for_status()
-            data = response.json()
-            if not data['success']: raise CLIException(data['error'])
+            CLIWrapper().post_poa_screenshots(
+                name,
+                self.driver.session_id,
+                self.driver.command_executor._url,
+                self.driver.capabilities,
+                self.driver.desired_capabilities,
+                { **kwargs, "ignore_region_elements": ignore_region_elements }
+            )
         except Exception as e:
             log(f'Could not take Screenshot "{name}"')
-            log(f'{e}')
+            log(f'{e}', on_debug=True)
         return None

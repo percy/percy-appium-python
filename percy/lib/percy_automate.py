@@ -6,8 +6,6 @@ from percy.errors import DriverNotSupported
 from percy.lib.percy_options import PercyOptions
 from percy.lib.cli_wrapper import CLIWrapper
 
-# Maybe get the CLI API address from the environment
-PERCY_CLI_API = os.environ.get('PERCY_CLI_API') or 'http://localhost:5338'
 IGNORE_ELEMENT_KEY = 'ignore_region_appium_elements'
 
 class PercyOnAutomate:

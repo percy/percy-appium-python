@@ -86,14 +86,33 @@ $ percy app:exec -- [python test command]
     - Parameters:
 
       `top` (int): Top coordinate of the ignore region.
-
       `bottom` (int): Bottom coordinate of the ignore region.
-
       `left` (int): Left coordinate of the ignore region.
-
       `right` (int): Right coordinate of the ignore region.
     - Raises:ValueError: If top, bottom, left, or right is less than 0 or top is greater than or equal to bottom or left is greater than or equal to right.
     - valid: Ignore region should be within the boundaries of the screen.
+
+## Running with Hybrid Apps
+
+For a hybrid app, we need to switch to native context before taking screenshot.
+
+- Add a helper method similar to following for say flutter based hybrid app:
+```python
+def percy_screenshot_flutter(driver, name: str, **kwargs):
+  driver.switch_to.context('NATIVE_APP')
+  percy_screenshot(driver, name, **kwargs)
+  driver.switch_to.context('FLUTTER')
+```
+
+- Call PercyScreenshotFlutter helper function when you want to take screenshot.
+```python
+percy_screenshot_flutter(driver, name, **kwargs)
+```
+
+> Note: 
+>
+> For other hybrid apps the `driver.switch_to.context('FLUTTER')` would change to context that it uses like say WEBVIEW etc.
+>
 ### Migrating Config
 
 If you have a previous Percy configuration file, migrate it to the newest version with the

@@ -40,6 +40,7 @@ class AppAutomate(GenericProvider):
             return super()._get_tiles(**kwargs)
         screen_lengths = kwargs.get('screen_lengths', 4)
         scrollable_xpath = kwargs.get('scollable_xpath')
+        force_full_page = kwargs.get('force_full_page')
         scrollable_id = kwargs.get('scrollable_id')
         data = self.execute_percy_screenshot(
             self.metadata.device_screen_size.get('height', 1),
@@ -47,6 +48,7 @@ class AppAutomate(GenericProvider):
             scrollable_xpath,
             scrollable_id,
             self.metadata.scale_factor,
+            force_full_page
         )
         tiles = []
         status_bar_height = self.metadata.status_bar_height
@@ -99,7 +101,15 @@ class AppAutomate(GenericProvider):
             log('Error occurred during end call', on_debug=True)
             log(e, on_debug=True)
 
-    def execute_percy_screenshot(self, device_height, screen_lengths, scrollable_xpath=None, scrollable_id=None, scale_factor=1):
+    def execute_percy_screenshot(
+        self,
+        device_height,
+        screen_lengths,
+        scrollable_xpath=None,
+        scrollable_id=None,
+        scale_factor=1,
+        force_full_page=False
+    ):
         try:
             request_body = {
                 'action': 'percyScreenshot',
@@ -112,7 +122,8 @@ class AppAutomate(GenericProvider):
                         "numOfTiles": screen_lengths,
                         "deviceHeight": device_height,
                         "scrollableXpath":  scrollable_xpath,
-                        "scrollableId": scrollable_id
+                        "scrollableId": scrollable_id,
+                        "FORCE_FULL_PAGE": force_full_page
                     },
                 }
             }

@@ -40,15 +40,13 @@ class AppAutomate(GenericProvider):
             return super()._get_tiles(**kwargs)
         screen_lengths = kwargs.get('screen_lengths', 4)
         scrollable_xpath = kwargs.get('scollable_xpath')
-        force_full_page = kwargs.get('force_full_page')
         scrollable_id = kwargs.get('scrollable_id')
         data = self.execute_percy_screenshot(
             self.metadata.device_screen_size.get('height', 1),
             screen_lengths,
             scrollable_xpath,
             scrollable_id,
-            self.metadata.scale_factor,
-            force_full_page
+            self.metadata.scale_factor
         )
         tiles = []
         status_bar_height = self.metadata.status_bar_height
@@ -107,8 +105,7 @@ class AppAutomate(GenericProvider):
         screen_lengths,
         scrollable_xpath=None,
         scrollable_id=None,
-        scale_factor=1,
-        force_full_page=False
+        scale_factor=1
     ):
         try:
             request_body = {
@@ -123,7 +120,7 @@ class AppAutomate(GenericProvider):
                         "deviceHeight": device_height,
                         "scrollableXpath":  scrollable_xpath,
                         "scrollableId": scrollable_id,
-                        "FORCE_FULL_PAGE": force_full_page
+                        "FORCE_FULL_PAGE": os.environ.get('FORCE_FULL_PAGE') == 'true'
                     },
                 }
             }

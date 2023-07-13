@@ -15,14 +15,15 @@ class PercyOnAutomate:
         self.percy_options = PercyOptions(self.driver.capabilities)
 
     def screenshot(self, name: str, **kwargs):
+        options = kwargs['options']
         if not self.percy_options.enabled:
             return None
         if not isinstance(name, str):
             raise TypeError('Argument name should be a string')
 
         try:
-            ignore_region_elements = [element.id for element in kwargs.get(IGNORE_ELEMENT_KEY, [])]
-            kwargs.pop(IGNORE_ELEMENT_KEY, None)
+            ignore_region_elements = [element.id for element in options.get(IGNORE_ELEMENT_KEY, [])]
+            options.pop(IGNORE_ELEMENT_KEY, None)
 
             CLIWrapper().post_poa_screenshots(
                 name,
@@ -30,7 +31,7 @@ class PercyOnAutomate:
                 self.driver.command_executor._url,
                 self.driver.capabilities,
                 self.driver.desired_capabilities,
-                { **kwargs, "ignore_region_elements": ignore_region_elements }
+                { **options, "ignore_region_elements": ignore_region_elements }
             )
         except Exception as e:
             log(f'Could not take Screenshot "{name}"')

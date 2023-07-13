@@ -264,8 +264,8 @@ class TestPercyScreenshot(unittest.TestCase):
         element.id = 'Dummy_id'
         self.mock_webdriver.capabilities = { 'key': 'value' }
         percy_screenshot(driver, 'Snapshot 1')
-        percy_screenshot(driver, 'Snapshot 2', enable_javascript=True,
-                          ignore_region_appium_elements= [element])
+        percy_screenshot(driver, 'Snapshot 2', options = {'enable_javascript': True,
+                          'ignore_region_appium_elements': [element]})
 
         self.assertEqual(httpretty.last_request().path, '/percy/automateScreenshot')
 

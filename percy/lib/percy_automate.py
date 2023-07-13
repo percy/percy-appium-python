@@ -15,11 +15,13 @@ class PercyOnAutomate:
         self.percy_options = PercyOptions(self.driver.capabilities)
 
     def screenshot(self, name: str, **kwargs):
-        options = kwargs['options'] if 'options' in kwargs else {}
         if not self.percy_options.enabled:
             return None
         if not isinstance(name, str):
             raise TypeError('Argument name should be a string')
+        if 'options' not in kwargs:
+            raise KeyError('Please pass last parameter as "options" = ...')
+        options = kwargs['options'] if 'options' in kwargs else {}
 
         try:
             ignore_region_elements = [element.id for element in options.get(IGNORE_ELEMENT_KEY, [])]

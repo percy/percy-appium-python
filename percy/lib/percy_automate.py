@@ -15,7 +15,7 @@ class PercyOnAutomate:
         self.percy_options = PercyOptions(self.driver.capabilities)
 
     def screenshot(self, name: str, **kwargs):
-        options = kwargs['options']
+        options = kwargs['options'] if 'options' in kwargs else {}
         if not self.percy_options.enabled:
             return None
         if not isinstance(name, str):

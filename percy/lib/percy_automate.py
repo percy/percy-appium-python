@@ -19,7 +19,7 @@ class PercyOnAutomate:
             return None
         if not isinstance(name, str):
             raise TypeError('Argument name should be a string')
-        if 'options' not in kwargs:
+        if kwargs and 'options' not in kwargs:
             raise KeyError('Please pass last parameter as "options" = ...')
         options = kwargs['options'] if 'options' in kwargs else {}
 

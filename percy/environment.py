@@ -6,6 +6,7 @@ from percy.version import __version__ as SDK_VERSION
 class Environment:
     percy_build_id = None
     percy_build_url = None
+    session_type = None
 
     @staticmethod
     def _get_client_info():

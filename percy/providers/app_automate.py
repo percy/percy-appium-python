@@ -38,9 +38,7 @@ class AppAutomate(GenericProvider):
         fullpage_ss = kwargs.get('fullpage', False)
         if os.environ.get('PERCY_DISABLE_REMOTE_UPLOADS') == 'true':
             return super()._get_tiles(**kwargs)
-        screenshotType = 'singlepage'
-        if fullpage_ss:
-            screenshotType = 'fullpage'
+        screenshotType = 'fullpage' if fullpage_ss else 'singlepage'
         screen_lengths = kwargs.get('screen_lengths', 4)
         scrollable_xpath = kwargs.get('scollable_xpath')
         scrollable_id = kwargs.get('scrollable_id')
@@ -113,9 +111,7 @@ class AppAutomate(GenericProvider):
         scale_factor=1
     ):
         try:
-            projectId = 'percy-prod'
-            if os.environ.get('PERCY_ENABLE_DEV') == 'true':
-                projectId = 'percy-dev'
+            projectId = 'percy-dev' if os.environ.get('PERCY_ENABLE_DEV') == 'true' else 'percy-prod'
             request_body = {
                 'action': 'percyScreenshot',
                 'arguments': {

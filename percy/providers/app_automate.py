@@ -46,7 +46,7 @@ class AppAutomate(GenericProvider):
             screen_lengths,
             scrollable_xpath,
             scrollable_id,
-            self.metadata.scale_factor,
+            self.metadata.scale_factor
         )
         tiles = []
         status_bar_height = self.metadata.status_bar_height
@@ -99,7 +99,14 @@ class AppAutomate(GenericProvider):
             log('Error occurred during end call', on_debug=True)
             log(e, on_debug=True)
 
-    def execute_percy_screenshot(self, device_height, screen_lengths, scrollable_xpath=None, scrollable_id=None, scale_factor=1):
+    def execute_percy_screenshot(
+        self,
+        device_height,
+        screen_lengths,
+        scrollable_xpath=None,
+        scrollable_id=None,
+        scale_factor=1
+    ):
         try:
             request_body = {
                 'action': 'percyScreenshot',
@@ -112,7 +119,8 @@ class AppAutomate(GenericProvider):
                         "numOfTiles": screen_lengths,
                         "deviceHeight": device_height,
                         "scrollableXpath":  scrollable_xpath,
-                        "scrollableId": scrollable_id
+                        "scrollableId": scrollable_id,
+                        "FORCE_FULL_PAGE": os.environ.get('FORCE_FULL_PAGE') == 'true'
                     },
                 }
             }

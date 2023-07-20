@@ -1,6 +1,7 @@
 # pylint: disable=[arguments-differ, protected-access]
 import copy
 import unittest
+import os
 from unittest.mock import patch, Mock, MagicMock, PropertyMock
 
 from appium.webdriver.webdriver import WebDriver
@@ -15,7 +16,7 @@ from percy.providers.generic_provider import GenericProvider
 from percy.metadata import AndroidMetadata
 from tests.mocks.mock_methods import android_capabilities, ios_capabilities
 
-
+@patch.dict(os.environ, {"PERCY_DISABLE_REMOTE_UPLOADS": "true"})
 class TestAppPercy(unittest.TestCase):
     comparison_response = {'link': 'https://snapshot_url', 'success': True}
 

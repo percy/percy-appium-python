@@ -16,7 +16,6 @@ from percy.providers.generic_provider import GenericProvider
 from percy.metadata import AndroidMetadata
 from tests.mocks.mock_methods import android_capabilities, ios_capabilities
 
-@patch.dict(os.environ, {"PERCY_DISABLE_REMOTE_UPLOADS": "true"})
 class TestAppPercy(unittest.TestCase):
     comparison_response = {'link': 'https://snapshot_url', 'success': True}
 
@@ -48,6 +47,7 @@ class TestAppPercy(unittest.TestCase):
     }))
     @patch.object(AppAutomate, 'execute_percy_screenshot_end', MagicMock(return_value=None))
     @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
+    @patch.dict(os.environ, {"PERCY_DISABLE_REMOTE_UPLOADS": "true"})
     def test_android_on_app_automate(self):
         with patch('percy.metadata.AndroidMetadata.remote_url', new_callable=PropertyMock) as mock_remote_url:
             mock_remote_url.return_value = 'url-of-browserstack-cloud'
@@ -79,7 +79,22 @@ class TestAppPercy(unittest.TestCase):
         'sessionHash': 'def'
     }))
     @patch.object(AppAutomate, 'execute_percy_screenshot_end', MagicMock(return_value=None))
+    @patch.dict(os.environ, {"PERCY_DISABLE_REMOTE_UPLOADS": "true"})
     def test_ios_on_app_automate(self):
+        with patch('percy.metadata.IOSMetadata.remote_url', new_callable=PropertyMock) as mock_remote_url:
+            mock_remote_url.return_value = 'url-of-browserstack-cloud'
+            app_percy = AppPercy(self.mock_ios_webdriver)
+            app_percy.screenshot('screenshot 1')
+            self.assertTrue(isinstance(app_percy.metadata, IOSMetadata))
+            self.assertTrue(isinstance(app_percy.provider, AppAutomate))
+
+    @patch.object(AppAutomate, 'execute_percy_screenshot_end', MagicMock(return_value=None))
+    @patch.object(AppAutomate, 'execute_percy_screenshot', MagicMock(return_value={
+        "result":"[{\"sha\":\"sha-25568755\",\"status_bar\":null,\"nav_bar\":null,\"header_height\":120,\"footer_height\":80,\"index\":0}]"
+    }))
+    @patch.object(CLIWrapper, 'post_screenshots', MagicMock(return_value=comparison_response))
+    @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
+    def test_ios_on_app_automate_with_remote_upload(self):
         with patch('percy.metadata.IOSMetadata.remote_url', new_callable=PropertyMock) as mock_remote_url:
             mock_remote_url.return_value = 'url-of-browserstack-cloud'
             app_percy = AppPercy(self.mock_ios_webdriver)

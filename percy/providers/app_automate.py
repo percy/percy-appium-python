@@ -37,6 +37,8 @@ class AppAutomate(GenericProvider):
     def _get_tiles(self, **kwargs):
         fullpage_ss = kwargs.get('fullpage', False)
         if os.environ.get('PERCY_DISABLE_REMOTE_UPLOADS') == 'true':
+            if fullpage_ss:
+                log('Full page screenshots are only supported when "PERCY_DISABLE_REMOTE_UPLOADS" is not set')
             return super()._get_tiles(**kwargs)
         screenshotType = 'fullpage' if fullpage_ss else 'singlepage'
         screen_lengths = kwargs.get('screen_lengths', 4)

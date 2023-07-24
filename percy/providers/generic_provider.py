@@ -25,9 +25,24 @@ class GenericProvider:
     def screenshot(self, name, **kwargs):
         tiles = self._get_tiles(**kwargs)
         tag = self._get_tag(**kwargs)
-        ignore_regions = self._find_ignored_regions(**kwargs)
+        ignore_regions = {
+            'ignoreElementsData': self._find_regions(
+                xpaths = kwargs.get("ignore_regions_xpaths", []),
+                accessibility_ids = kwargs.get("ignore_region_accessibility_ids", []),
+                appium_elements = kwargs.get("ignore_region_appium_elements", []),
+                custom_locations = kwargs.get("custom_ignore_regions", [])
+            )
+        }
+        consider_regions = {
+            'considerElementsData': self._find_regions(
+                xpaths = kwargs.get("consider_regions_xpaths", []),
+                accessibility_ids = kwargs.get("consider_region_accessibility_ids", []),
+                appium_elements = kwargs.get("consider_region_appium_elements", []),
+                custom_locations = kwargs.get("custom_consider_regions", [])
+            )
+        }
 
-        return self._post_screenshots(name, tag, tiles, self.get_debug_url(), ignore_regions)
+        return self._post_screenshots(name, tag, tiles, self.get_debug_url(), ignore_regions, consider_regions)
 
     def _get_tag(self, **kwargs):
         name = kwargs.get('device_name', self.metadata.device_name)
@@ -64,21 +79,15 @@ class GenericProvider:
             Tile(status_bar_height, nav_bar_height, header_height, footer_height, filepath=path, fullscreen=fullscreen)
         ]
 
-    def _find_ignored_regions(self, **kwargs):
-        ignored_elements_array = []
-        ignore_region_xpaths = kwargs.get("ignore_regions_xpaths", [])
-        ignore_region_accessibility_ids = kwargs.get("ignore_region_accessibility_ids", [])
-        ignore_region_appium_elements = kwargs.get("ignore_region_appium_elements", [])
-        custom_ignore_regions = kwargs.get("custom_ignore_regions", [])
-        self.ignore_regions_by_xpaths(ignored_elements_array, ignore_region_xpaths)
-        self.ignore_regions_by_ids(ignored_elements_array, ignore_region_accessibility_ids)
-        self.ignore_regions_by_elements(ignored_elements_array, ignore_region_appium_elements)
-        self.add_custom_ignore_regions(ignored_elements_array, custom_ignore_regions)
-        return {
-            "ignoreElementsData": ignored_elements_array
-        }
+    def _find_regions(self, xpaths, accessibility_ids, appium_elements, custom_locations):
+        elementsArray = []
+        self.get_regions_by_xpath(elementsArray, xpaths)
+        self.get_regions_by_ids(elementsArray, accessibility_ids)
+        self.get_regions_by_elements(elementsArray, appium_elements)
+        self.get_regions_by_location(elementsArray, custom_locations)
+        return elementsArray
 
-    def ignore_element_object(self, selector, element):
+    def get_region_object(self, selector, element):
         scale_factor = self.metadata.scale_factor
         location = element.location
         size = element.size
@@ -95,45 +104,45 @@ class GenericProvider:
 
         return ignore_region
 
-    def ignore_regions_by_xpaths(self, ignored_elements_array, xpaths):
+    def get_regions_by_xpath(self, elements_array, xpaths):
         for xpath in xpaths:
             try:
                 element = self.driver.find_element(by=AppiumBy.XPATH, value=xpath)
                 selector = f"xpath: {xpath}"
-                ignored_region = self.ignore_element_object(selector, element)
-                ignored_elements_array.append(ignored_region)
+                region = self.get_region_object(selector, element)
+                elements_array.append(region)
             except NoSuchElementException as e:
                 log(f"Appium Element with xpath: {xpath} not found. Ignoring this xpath.")
                 log(e, on_debug=True)
 
-    def ignore_regions_by_ids(self, ignored_elements_array, ids):
+    def get_regions_by_ids(self, elements_array, ids):
         for id in ids:
             try:
                 element = self.driver.find_element(by=AppiumBy.ACCESSIBILITY_ID, value=id)
                 selector = f"id: {id}"
-                ignored_region = self.ignore_element_object(selector, element)
-                ignored_elements_array.append(ignored_region)
+                region = self.get_region_object(selector, element)
+                elements_array.append(region)
             except NoSuchElementException as e:
                 log(f"Appium Element with id: {id} not found. Ignoring this id.")
                 log(e, on_debug=True)
 
-    def ignore_regions_by_elements(self, ignored_elements_array, elements):
+    def get_regions_by_elements(self, elements_array, elements):
         for idx, element in enumerate(elements):
             try:
                 class_name = element.get_attribute('class')
                 selector = f"element: {idx} {class_name}"
-                ignored_region = self.ignore_element_object(selector, element)
-                ignored_elements_array.append(ignored_region)
+                region = self.get_region_object(selector, element)
+                elements_array.append(region)
             except NoSuchElementException as e:
                 log(f"Correct Element not passed at index {idx}")
                 log(e, on_debug=True)
 
-    def add_custom_ignore_regions(self, ignored_elements_array, custom_locations):
+    def get_regions_by_location(self, elements_array, custom_locations):
         for idx, custom_location in enumerate(custom_locations):
             screen_width = self.metadata.device_screen_size['width']
             screen_height = self.metadata.device_screen_size['height']
             if custom_location.is_valid(screen_height, screen_width):
-                ignored_region = {
+                region = {
                     "selector": f"custom ignore region: {idx}",
                     "coOrdinates": {
                         "top": custom_location.top,
@@ -142,13 +151,13 @@ class GenericProvider:
                         "right": custom_location.right
                     }
                 }
-                ignored_elements_array.append(ignored_region)
+                elements_array.append(region)
             else:
                 log(f"Values passed in custom ignored region at index: {idx} is not valid")
 
     @staticmethod
-    def _post_screenshots(name, tag, tiles, debug_url, ignored_regions):
-        response = CLIWrapper().post_screenshots(name, tag, tiles, debug_url, ignored_regions)
+    def _post_screenshots(name, tag, tiles, debug_url, ignored_regions, considered_regions):
+        response = CLIWrapper().post_screenshots(name, tag, tiles, debug_url, ignored_regions, considered_regions)
         return response
 
     def _write_screenshot(self, png_bytes, directory):

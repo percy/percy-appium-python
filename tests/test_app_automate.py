@@ -56,7 +56,7 @@ class TestAppAutomate(unittest.TestCase):
 
     def test_app_automate_execute_percy_screenshot(self):
         self.mock_webdriver.execute_script.return_value = '{"result": "result"}'
-        self.app_automate.execute_percy_screenshot(1080, 5)
+        self.app_automate.execute_percy_screenshot(1080, 'singlepage', 5)
         self.mock_webdriver.execute_script.assert_called()
 
     @patch('percy.providers.app_automate.log')

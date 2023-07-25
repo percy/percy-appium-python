@@ -36,13 +36,17 @@ class AppAutomate(GenericProvider):
 
     def _get_tiles(self, **kwargs):
         fullpage_ss = kwargs.get('fullpage', False)
-        if not fullpage_ss:
+        if os.environ.get('PERCY_DISABLE_REMOTE_UPLOADS') == 'true':
+            if fullpage_ss:
+                log('Full page screenshots are only supported when "PERCY_DISABLE_REMOTE_UPLOADS" is not set')
             return super()._get_tiles(**kwargs)
+        screenshotType = 'fullpage' if fullpage_ss else 'singlepage'
         screen_lengths = kwargs.get('screen_lengths', 4)
         scrollable_xpath = kwargs.get('scollable_xpath')
         scrollable_id = kwargs.get('scrollable_id')
         data = self.execute_percy_screenshot(
             self.metadata.device_screen_size.get('height', 1),
+            screenshotType,
             screen_lengths,
             scrollable_xpath,
             scrollable_id,
@@ -102,18 +106,21 @@ class AppAutomate(GenericProvider):
     def execute_percy_screenshot(
         self,
         device_height,
+        screenshotType,
         screen_lengths,
         scrollable_xpath=None,
         scrollable_id=None,
         scale_factor=1
     ):
         try:
+            projectId = 'percy-dev' if os.environ.get('PERCY_ENABLE_DEV') == 'true' else 'percy-prod'
             request_body = {
                 'action': 'percyScreenshot',
                 'arguments': {
                     'state': 'screenshot',
                     'percyBuildId':  Environment.percy_build_id,
-                    'screenshotType': 'fullpage',
+                    'screenshotType': screenshotType,
+                    'projectId': projectId,
                     'scaleFactor': scale_factor,
                     'options': { 
                         "numOfTiles": screen_lengths,

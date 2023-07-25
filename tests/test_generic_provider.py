@@ -11,7 +11,7 @@ from selenium.common.exceptions import NoSuchElementException
 from percy.lib.cli_wrapper import CLIWrapper
 from percy.metadata import AndroidMetadata, Metadata
 from percy.providers.generic_provider import GenericProvider
-from percy.lib.ignore_region import IgnoreRegion
+from percy.lib.region import Region
 from tests.mocks.mock_methods import android_capabilities
 
 
@@ -315,8 +315,8 @@ class TestGenericProvider(unittest.TestCase):
 
     def test_get_regions_by_location(self):
         # width 1080 height 2280
-        valid_ignore_region = IgnoreRegion(100, 200, 200, 300)
-        invalid_ignore_region = IgnoreRegion(100, 2390, 200, 300)
+        valid_ignore_region = Region(100, 200, 200, 300)
+        invalid_ignore_region = Region(100, 2390, 200, 300)
         # call the function with mock elements_array and custom_locations
         elements_array = []
         custom_locations = [valid_ignore_region, invalid_ignore_region]

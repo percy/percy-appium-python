@@ -262,10 +262,13 @@ class TestPercyScreenshot(unittest.TestCase):
 
         element = Mock()
         element.id = 'Dummy_id'
+
+        consider_element = Mock()
+        consider_element.id = 'Consider_Dummy_id'
         self.mock_webdriver.capabilities = { 'key': 'value' }
         percy_screenshot(driver, 'Snapshot 1')
         percy_screenshot(driver, 'Snapshot 2', options = {'enable_javascript': True,
-                          'ignore_region_appium_elements': [element]})
+                          'ignore_region_appium_elements': [element], 'consider_region_appium_elements' : [consider_element]})
 
         self.assertEqual(httpretty.last_request().path, '/percy/automateScreenshot')
 
@@ -282,6 +285,7 @@ class TestPercyScreenshot(unittest.TestCase):
         self.assertEqual(s2['snapshotName'], 'Snapshot 2')
         self.assertEqual(s2['options']['enable_javascript'], True)
         self.assertEqual(s2['options']['ignore_region_elements'], ['Dummy_id'])
+        self.assertEqual(s2['options']['consider_region_elements'], ['Consider_Dummy_id'])
 
 if __name__ == "__main__":
     unittest.main()

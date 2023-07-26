@@ -38,8 +38,8 @@ class CLIWrapper:
             log(e, on_debug=True)
             return False
 
-    def post_screenshots(self, name, tag, tiles, external_debug_url=None, ignored_elements_data=None):
-        body = self._request_body(name, tag, tiles, external_debug_url, ignored_elements_data)
+    def post_screenshots(self, name, tag, tiles, external_debug_url=None, ignored_elements_data=None, considered_elements_data=None):
+        body = self._request_body(name, tag, tiles, external_debug_url, ignored_elements_data, considered_elements_data)
 
         body['client_info'] = Environment._get_client_info()
         body['environment_info'] = Environment._get_env_info()
@@ -76,6 +76,13 @@ class CLIWrapper:
         return data
 
     @staticmethod
-    def _request_body(name, tag, tiles, external_debug_url, ignored_elements_data):
+    def _request_body(name, tag, tiles, external_debug_url, ignored_elements_data, considered_elements_data):
         tiles = list(map(dict, tiles))
-        return {"name": name, "tag": tag, "tiles": tiles, "ignored_elements_data": ignored_elements_data, "external_debug_url": external_debug_url}
+        return {
+            "name": name,
+            "tag": tag,
+            "tiles": tiles,
+            "ignored_elements_data": ignored_elements_data,
+            "external_debug_url": external_debug_url,
+            "considered_elements_data": considered_elements_data 
+        }

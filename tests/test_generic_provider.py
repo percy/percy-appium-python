@@ -11,7 +11,7 @@ from selenium.common.exceptions import NoSuchElementException
 from percy.lib.cli_wrapper import CLIWrapper
 from percy.metadata import AndroidMetadata, Metadata
 from percy.providers.generic_provider import GenericProvider
-from percy.lib.ignore_region import IgnoreRegion
+from percy.lib.region import Region
 from tests.mocks.mock_methods import android_capabilities
 
 
@@ -148,7 +148,7 @@ class TestGenericProvider(unittest.TestCase):
         tag = self.generic_provider._get_tag()
         tiles = self.generic_provider._get_tiles()
         response = self.generic_provider._post_screenshots(
-            "screenshot 1", tag, tiles, "", []
+            "screenshot 1", tag, tiles, "", [], []
         )
         self.assertEqual(response, self.comparison_response)
 
@@ -177,14 +177,14 @@ class TestGenericProvider(unittest.TestCase):
         device_name = self.generic_provider.get_device_name()
         self.assertEqual(device_name, "")
 
-    def test_ignore_element_object(self):
+    def test_get_region_object(self):
         # create a mock element object
         mock_element = MagicMock()
         mock_element.location = {"x": 10, "y": 20}
         mock_element.size = {"width": 100, "height": 200}
 
         # call the function with the mock inputs
-        result = self.generic_provider.ignore_element_object(
+        result = self.generic_provider.get_region_object(
             "my-selector", mock_element
         )
         expected_result = {
@@ -194,7 +194,7 @@ class TestGenericProvider(unittest.TestCase):
         # check the result
         self.assertDictEqual(result, expected_result)
 
-    def test_ignore_regions_by_xpaths(self):
+    def test_get_regions_by_xpath(self):
         # create a mock driver object with a mock find_element() method
         mock_element = MagicMock()
         mock_element.location = {"x": 10, "y": 20}
@@ -208,13 +208,13 @@ class TestGenericProvider(unittest.TestCase):
         }
 
         # call the function with a mock ignored_elements_array and xpaths
-        ignored_elements_array = []
+        elements_array = []
         xpaths = ["//path/to/element"]
-        self.generic_provider.ignore_regions_by_xpaths(ignored_elements_array, xpaths)
+        self.generic_provider.get_regions_by_xpath(elements_array, xpaths)
 
         # check the result
-        expected_ignored_elements_array = [expected_result]
-        self.assertEqual(ignored_elements_array, expected_ignored_elements_array)
+        expected_elements_array = [expected_result]
+        self.assertEqual(elements_array, expected_elements_array)
 
         # check that the driver's find_element() method was called twice
         self.mock_webdriver.find_element.assert_called_with(
@@ -222,18 +222,18 @@ class TestGenericProvider(unittest.TestCase):
         )
         self.assertEqual(self.mock_webdriver.find_element.call_count, 1)
 
-    def test_ignore_regions_by_xpaths_with_non_existing_element(self):
+    def test_get_regions_by_xpath_with_non_existing_element(self):
         # mock find_element method of the driver to raise NoSuchElementException
         self.mock_webdriver.find_element.side_effect = NoSuchElementException
 
-        ignored_elements_array = []
+        elements_array = []
         xpaths = ["xpath1"]
-        self.generic_provider.ignore_regions_by_xpaths(ignored_elements_array, xpaths)
+        self.generic_provider.get_regions_by_xpath(elements_array, xpaths)
 
         # check the result
-        self.assertEqual(len(ignored_elements_array), 0)
+        self.assertEqual(len(elements_array), 0)
 
-    def test_ignore_regions_by_ids(self):
+    def test_get_regions_by_ids(self):
         # create a mock driver object with a mock find_element() method
         mock_element = MagicMock()
         mock_element.location = {"x": 10, "y": 20}
@@ -246,14 +246,14 @@ class TestGenericProvider(unittest.TestCase):
             "coOrdinates": {"top": 20, "bottom": 220, "left": 10, "right": 110},
         }
 
-        # call the function with a mock ignored_elements_array and xpaths
-        ignored_elements_array = []
+        # call the function with a mock elements_array and xpaths
+        elements_array = []
         ids = ["some_id"]
-        self.generic_provider.ignore_regions_by_ids(ignored_elements_array, ids)
+        self.generic_provider.get_regions_by_ids(elements_array, ids)
 
         # check the result
-        expected_ignored_elements_array = [expected_result]
-        self.assertEqual(ignored_elements_array, expected_ignored_elements_array)
+        expected_elements_array = [expected_result]
+        self.assertEqual(elements_array, expected_elements_array)
 
         # check that the driver's find_element() method was called twice
         self.mock_webdriver.find_element.assert_called_with(
@@ -261,18 +261,18 @@ class TestGenericProvider(unittest.TestCase):
         )
         self.assertEqual(self.mock_webdriver.find_element.call_count, 1)
 
-    def test_ignore_regions_by_ids_with_non_existing_element(self):
+    def test_get_regions_by_ids_with_non_existing_element(self):
         # mock find_element method of the driver to raise NoSuchElementException
         self.mock_webdriver.find_element.side_effect = NoSuchElementException
 
-        ignored_elements_array = []
+        elements_array = []
         ids = ["id1", "id2", "id3"]
-        self.generic_provider.ignore_regions_by_ids(ignored_elements_array, ids)
+        self.generic_provider.get_regions_by_ids(elements_array, ids)
 
         # check the result
-        self.assertEqual(len(ignored_elements_array), 0)
+        self.assertEqual(len(elements_array), 0)
 
-    def test_ignore_regions_by_elements(self):
+    def test_get_regions_by_elements(self):
         # create a mock driver object with a mock find_element() method
         mock_element = MagicMock()
         mock_element.location = {"x": 10, "y": 20}
@@ -284,51 +284,51 @@ class TestGenericProvider(unittest.TestCase):
             "coOrdinates": {"top": 20, "bottom": 220, "left": 10, "right": 110},
         }
 
-        # call the function with a mock ignored_elements_array and xpaths
-        ignored_elements_array = []
+        # call the function with a mock elements_array and xpaths
+        elements_array = []
         elements = [mock_element]
-        self.generic_provider.ignore_regions_by_elements(
-            ignored_elements_array, elements
+        self.generic_provider.get_regions_by_elements(
+            elements_array, elements
         )
 
         # check the result
-        expected_ignored_elements_array = [expected_result]
-        self.assertEqual(ignored_elements_array, expected_ignored_elements_array)
+        expected_elements_array = [expected_result]
+        self.assertEqual(elements_array, expected_elements_array)
 
         # check that the driver's find_element() method was called twice
         mock_element.get_attribute.assert_called_with("class")
         self.assertEqual(mock_element.get_attribute.call_count, 1)
 
-    def test_ignore_regions_by_elements_with_non_existing_element(self):
+    def test_get_regions_by_elements_with_non_existing_element(self):
         # mock find_element method of the driver to raise NoSuchElementException
         mock_element = MagicMock()
         mock_element.get_attribute.side_effect = NoSuchElementException
 
-        ignored_elements_array = []
+        elements_array = []
         elements = [mock_element]
-        self.generic_provider.ignore_regions_by_elements(
-            ignored_elements_array, elements
+        self.generic_provider.get_regions_by_elements(
+            elements_array, elements
         )
 
         # check the result
-        self.assertEqual(len(ignored_elements_array), 0)
+        self.assertEqual(len(elements_array), 0)
 
-    def test_add_custom_ignore_regions(self):
+    def test_get_regions_by_location(self):
         # width 1080 height 2280
-        valid_ignore_region = IgnoreRegion(100, 200, 200, 300)
-        invalid_ignore_region = IgnoreRegion(100, 2390, 200, 300)
-        # call the function with mock ignored_elements_array and custom_locations
-        ignored_elements_array = []
-        custom_ignore_regions = [valid_ignore_region, invalid_ignore_region]
-        self.generic_provider.add_custom_ignore_regions(
-            ignored_elements_array, custom_ignore_regions
+        valid_ignore_region = Region(100, 200, 200, 300)
+        invalid_ignore_region = Region(100, 2390, 200, 300)
+        # call the function with mock elements_array and custom_locations
+        elements_array = []
+        custom_locations = [valid_ignore_region, invalid_ignore_region]
+        self.generic_provider.get_regions_by_location(
+            elements_array, custom_locations
         )
         # check the result
-        expected_ignored_elements_array = [
+        expected_elements_array = [
             {
                 "selector": "custom ignore region: 0",
                 "coOrdinates": {"top": 100, "bottom": 200, "left": 200, "right": 300},
             }
         ]
-        self.assertEqual(len(ignored_elements_array), 1)
-        self.assertEqual(ignored_elements_array, expected_ignored_elements_array)
+        self.assertEqual(len(elements_array), 1)
+        self.assertEqual(elements_array, expected_elements_array)

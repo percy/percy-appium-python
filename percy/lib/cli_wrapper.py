@@ -25,11 +25,15 @@ class CLIWrapper:
             if not data['success']: raise CLIException(data['error'])
             Environment.percy_build_id = data['build']['id']
             Environment.percy_build_url = data['build']['url']
-            Environment.session_type = data['type']
+            Environment.session_type = data.get('type', None)
             version = response.headers.get('x-percy-core-version')
 
             if version.split('.')[0] != '1':
                 log(f'Unsupported Percy CLI version, {version}')
+                return False
+
+            if int(version.split('.')[1]) < 27:
+                log(f'Please upgrade to latest CLI version for using this SDK. Minimum compatible version is 1.27.0-beta.0')
                 return False
 
             return True

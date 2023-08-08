@@ -113,6 +113,34 @@ percy_screenshot_flutter(driver, name, **kwargs)
 >
 > For other hybrid apps the `driver.switch_to.context('FLUTTER')` would change to context that it uses like say WEBVIEW etc.
 >
+
+## Running Percy on Automate
+`percy_screenshot(driver, name, options)` [ needs @percy/cli 1.27.0-beta.0+ ];
+- `driver` (**required**) - A appium driver instance
+- `name` (**required**) - The screenshot name; must be unique to each screenshot
+- `options` (**optional**) - There are various options supported by percy_screenshot to server further functionality.
+    - `freeze_animation` - Boolean value by default it falls back to `false`, you can pass `true` and percy will freeze image based animations.
+    - `percy_css` - Custom CSS to be added to DOM before the screenshot being taken. Note: This gets removed once the screenshot is taken.
+    - `ignore_region_xpaths` - elements in the DOM can be ignored using xpath
+    - `ignore_region_selectors` - elements in the DOM can be ignored using selectors.
+    - `ignore_region_appium_elements` - elements can be ignored using appium_elements.
+    - `custom_ignore_regions` - elements can be ignored using custom boundaries
+      - IgnoreRegion:-
+        - Description: This class represents a rectangular area on a screen that needs to be ignored for visual diff.
+
+        - Constructor:
+          ```
+          init(self, top, bottom, left, right)
+          ```
+
+        - Parameters:
+
+          `top` (int): Top coordinate of the ignore region.
+          `bottom` (int): Bottom coordinate of the ignore region.
+          `left` (int): Left coordinate of the ignore region.
+          `right` (int): Right coordinate of the ignore region.
+        - Raises:ValueError: If top, bottom, left, or right is less than 0 or top is greater than or equal to bottom or left is greater than or equal to right.
+        - valid: Ignore region should be within the boundaries of the screen.
 ### Migrating Config
 
 If you have a previous Percy configuration file, migrate it to the newest version with the

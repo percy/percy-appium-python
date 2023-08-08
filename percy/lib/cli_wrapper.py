@@ -33,7 +33,7 @@ class CLIWrapper:
                 return False
 
             if int(version.split('.')[1]) < 27:
-                log(f'Please upgrade to latest CLI version for using this SDK. Minimum compatible version is 1.27.0-beta.0')
+                log('Please upgrade to latest CLI version for using this SDK. Minimum compatible version is 1.27.0-beta.0')
                 return False
 
             return True

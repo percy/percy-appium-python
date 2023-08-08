@@ -141,6 +141,23 @@ percy_screenshot_flutter(driver, name, **kwargs)
           `right` (int): Right coordinate of the ignore region.
         - Raises:ValueError: If top, bottom, left, or right is less than 0 or top is greater than or equal to bottom or left is greater than or equal to right.
         - valid: Ignore region should be within the boundaries of the screen.
+
+### Creating Percy on automate build
+Note: Automate Percy Token starts with `auto` keyword. The command can be triggered using `exec` keyword.
+
+```sh-session
+$ export PERCY_TOKEN=[your-project-token]
+$ percy exec -- [python test command]
+[percy] Percy has started!
+[percy] [Python example] : Starting automate screenshot ...
+[percy] Screenshot taken "Python example"
+[percy] Stopping percy...
+[percy] Finalized build #1: https://percy.io/[your-project]
+[percy] Done!
+```
+
+Refer to docs here: [Percy on Automate](https://docs.percy.io/docs/integrate-functional-testing-with-visual-testing)
+
 ### Migrating Config
 
 If you have a previous Percy configuration file, migrate it to the newest version with the

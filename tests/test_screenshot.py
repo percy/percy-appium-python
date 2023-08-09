@@ -38,7 +38,7 @@ mock_server_thread.start()
 # mock helpers
 def mock_healthcheck(fail=False, fail_how="error", type="AppPercy"):
     health_body = json.dumps({ "success": True, "build": {"id": "123", "url": "dummy_url"}, "type": type })
-    health_headers = {"X-Percy-Core-Version": "1.0.0"}
+    health_headers = {"X-Percy-Core-Version": "1.27.0-beta.1"}
     health_status = 200
 
     if fail and fail_how == "error":

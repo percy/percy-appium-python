@@ -4,6 +4,7 @@ from percy.common import log
 from percy.errors import DriverNotSupported
 from percy.lib.percy_options import PercyOptions
 from percy.lib.cli_wrapper import CLIWrapper
+from percy.metadata.driver_metadata import DriverMetaData
 
 IGNORE_ELEMENT_KEY = 'ignore_region_appium_elements'
 IGNORE_ELEMENT_ALT_KEY = 'ignoreRegionAppiumElements'
@@ -24,6 +25,8 @@ class PercyOnAutomate:
             raise TypeError('Argument name should be a string')
         if kwargs and 'options' not in kwargs:
             raise KeyError('Please pass last parameter as "options" = ...')
+
+        metadata = DriverMetaData(self.driver)
         options = kwargs['options'] if 'options' in kwargs else {}
 
         try:
@@ -41,10 +44,10 @@ class PercyOnAutomate:
 
             CLIWrapper().post_poa_screenshots(
                 name,
-                self.driver.session_id,
-                self.driver.command_executor._url,
-                self.driver.capabilities,
-                self.driver.desired_capabilities,
+                metadata.session_id,
+                metadata.command_executor._url,
+                metadata.capabilities,
+                metadata.desired_capabilities,
                 { **options, "ignore_region_elements": ignore_region_elements, "consider_region_elements" : consider_region_elements }
             )
         except Exception as e:

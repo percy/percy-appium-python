@@ -52,7 +52,9 @@ class AppAutomate(GenericProvider):
             screen_lengths,
             scrollable_xpath,
             scrollable_id,
-            self.metadata.scale_factor
+            self.metadata.scale_factor,
+            top_scrollview_offset,
+            bottom_scrollview_offset
         )
         tiles = []
         status_bar_height = self.metadata.status_bar_height

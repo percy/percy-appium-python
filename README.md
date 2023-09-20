@@ -85,10 +85,10 @@ $ percy app:exec -- [python test command]
       init(self, top, bottom, left, right)
       ```
     - Parameters:
-      `top` (int): Top coordinate of the ignore region.
-      `bottom` (int): Bottom coordinate of the ignore region.
-      `left` (int): Left coordinate of the ignore region.
-      `right` (int): Right coordinate of the ignore region.
+      - `top` (int): Top coordinate of the ignore region.
+      - `bottom` (int): Bottom coordinate of the ignore region.
+      - `left` (int): Left coordinate of the ignore region.
+      - `right` (int): Right coordinate of the ignore region.
 
 ## Running with Hybrid Apps
 
@@ -130,10 +130,10 @@ percy_screenshot_flutter(driver, name, **kwargs)
           init(self, top, bottom, left, right)
           ```
         - Parameters:
-          `top` (int): Top coordinate of the ignore region.
-          `bottom` (int): Bottom coordinate of the ignore region.
-          `left` (int): Left coordinate of the ignore region.
-          `right` (int): Right coordinate of the ignore region.
+          - `top` (int): Top coordinate of the ignore region.
+          - `bottom` (int): Bottom coordinate of the ignore region.
+          - `left` (int): Left coordinate of the ignore region.
+          - `right` (int): Right coordinate of the ignore region.
 
 ### Creating Percy on automate build
 Note: Automate Percy Token starts with `auto` keyword. The command can be triggered using `exec` keyword.

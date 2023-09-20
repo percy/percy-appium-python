@@ -66,12 +66,12 @@ $ percy app:exec -- [python test command]
 - `orientation` (**optional**) - Orientation of device while capturing screeenshot; Allowed values [`portrait` | `landscape`]
 - `status_bar_height` (**optional**) - Height of status bar; int
 - `nav_bar_height` (**optional**) - Height of navigation bar; int
-- `full_screen` (**optional**) - Indicate whether app is full screen; boolean
 - `fullpage` (**optional**) - [Experimental] only supported on App Automate driver sessions [ needs @percy/cli 1.20.2+ ]; boolean
-- `screen_lengths` (**optional**) - [Experimental] max screen lengths for fullPage [ needs @percy/cli 1.20.2+ ]; boolean
-- In case scrollview is overlapping with other app elements. Offsets can be provided to reduce the area which needs to be considered for scrolling:
-  - `top_scrollview_offset`: (**optional**) - [Experimental] offset from top of scrollview [ needs @percy/cli 1.20.2+ ]; int
-  - `bottom_scrollview_offset` (**optional**) - [Experimental] offset from bottom of scrollview [ needs @percy/cli 1.20.2+ ]; int
+  - `screen_lengths` (**optional**) - [Experimental] max screen lengths for fullPage; int
+  - In case scrollview is overlapping with other app elements. Offsets can be provided to reduce the area which needs to be considered for scrolling:
+    - `top_scrollview_offset`: (**optional**) - [Experimental] offset from top of scrollview; int
+    - `bottom_scrollview_offset` (**optional**) - [Experimental] offset from bottom of scrollview; int
+- `full_screen` (**optional**) - Indicate whether app is full screen; boolean [ needs @percy/cli 1.20.2+ ];
 - `scrollable_xpath` (**optional**) - [Experimental] scrollable element xpath for fullpage [ needs @percy/cli 1.20.2+ ]; string
 - `scrollable_id` (**optional**) - [Experimental] scrollable element accessibility id for fullpage [ needs @percy/cli 1.20.2+ ]; string
 - `ignore_regions_xpaths` (**optional**) - elements xpaths that user want to ignore in visual diff [ needs @percy/cli 1.23.0+ ]; list of string
@@ -80,14 +80,11 @@ $ percy app:exec -- [python test command]
 - `custom_ignore_regions` (**optional**) - custom locations that user want to ignore in visual diff [ needs @percy/cli 1.23.0+ ]; list of ignore_region object
   - IgnoreRegion:-
     - Description: This class represents a rectangular area on a screen that needs to be ignored for visual diff.
-
     - Constructor:
       ```
       init(self, top, bottom, left, right)
       ```
-
     - Parameters:
-
       `top` (int): Top coordinate of the ignore region.
       `bottom` (int): Bottom coordinate of the ignore region.
       `left` (int): Left coordinate of the ignore region.
@@ -130,14 +127,11 @@ percy_screenshot_flutter(driver, name, **kwargs)
     - `custom_ignore_regions` - elements can be ignored using custom boundaries
       - IgnoreRegion:-
         - Description: This class represents a rectangular area on a screen that needs to be ignored for visual diff.
-
         - Constructor:
           ```
           init(self, top, bottom, left, right)
           ```
-
         - Parameters:
-
           `top` (int): Top coordinate of the ignore region.
           `bottom` (int): Bottom coordinate of the ignore region.
           `left` (int): Left coordinate of the ignore region.

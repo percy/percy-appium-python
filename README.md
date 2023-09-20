@@ -66,14 +66,14 @@ $ percy app:exec -- [python test command]
 - `orientation` (**optional**) - Orientation of device while capturing screeenshot; Allowed values [`portrait` | `landscape`]
 - `status_bar_height` (**optional**) - Height of status bar; int
 - `nav_bar_height` (**optional**) - Height of navigation bar; int
-- `fullpage` (**optional**) - [Experimental] Only supported on App Automate driver sessions [ needs @percy/cli 1.20.2+ ]; boolean
-  - `screen_lengths` (**optional**) - [Experimental] Max screen lengths for fullPage; int
+- `fullpage` (**optional**) - [Alpha] Only supported on App Automate driver sessions [ needs @percy/cli 1.20.2+ ]; boolean
+  - `screen_lengths` (**optional**) - [Alpha] Max screen lengths for fullPage; int
   - In case scrollview is overlapping with other app elements. Offsets can be provided to reduce the area which needs to be considered for scrolling:
-    - `top_scrollview_offset`: (**optional**) - [Experimental] Offset from top of scrollview; int
-    - `bottom_scrollview_offset` (**optional**) - [Experimental] Offset from bottom of scrollview; int
+    - `top_scrollview_offset`: (**optional**) - [Alpha] Offset from top of scrollview; int
+    - `bottom_scrollview_offset` (**optional**) - [Alpha] Offset from bottom of scrollview; int
 - `full_screen` (**optional**) - Indicate whether app is full screen; boolean [ needs @percy/cli 1.20.2+ ];
-- `scrollable_xpath` (**optional**) - [Experimental] Scrollable element xpath for fullpage [ needs @percy/cli 1.20.2+ ]; string
-- `scrollable_id` (**optional**) - [Experimental] Scrollable element accessibility id for fullpage [ needs @percy/cli 1.20.2+ ]; string
+- `scrollable_xpath` (**optional**) - [Alpha] Scrollable element xpath for fullpage [ needs @percy/cli 1.20.2+ ]; string
+- `scrollable_id` (**optional**) - [Alpha] Scrollable element accessibility id for fullpage [ needs @percy/cli 1.20.2+ ]; string
 - `ignore_regions_xpaths` (**optional**) - Elements xpaths that user want to ignore in visual diff [ needs @percy/cli 1.23.0+ ]; list of string
 - `ignore_region_accessibility_ids` (**optional**) - Elements accessibility_ids that user want to ignore in visual diff [ needs @percy/cli 1.23.0+ ]; list of string
 - `ignore_region_appium_elements` (**optional**) - Appium elements that user want to ignore in visual diff [ needs @percy/cli 1.23.0+ ]; list of appium element object

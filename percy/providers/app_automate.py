@@ -44,13 +44,17 @@ class AppAutomate(GenericProvider):
         screen_lengths = kwargs.get('screen_lengths', 4)
         scrollable_xpath = kwargs.get('scollable_xpath')
         scrollable_id = kwargs.get('scrollable_id')
+        top_scrollview_offset= kwargs.get('top_scrollview_offset')
+        bottom_scrollview_offset= kwargs.get('bottom_scrollview_offset')
         data = self.execute_percy_screenshot(
             self.metadata.device_screen_size.get('height', 1),
             screenshotType,
             screen_lengths,
             scrollable_xpath,
             scrollable_id,
-            self.metadata.scale_factor
+            self.metadata.scale_factor,
+            top_scrollview_offset,
+            bottom_scrollview_offset
         )
         tiles = []
         status_bar_height = self.metadata.status_bar_height
@@ -110,7 +114,9 @@ class AppAutomate(GenericProvider):
         screen_lengths,
         scrollable_xpath=None,
         scrollable_id=None,
-        scale_factor=1
+        scale_factor=1,
+        top_scrollview_offset=0,
+        bottom_scrollview_offset=0
     ):
         try:
             projectId = 'percy-dev' if os.environ.get('PERCY_ENABLE_DEV') == 'true' else 'percy-prod'
@@ -127,6 +133,8 @@ class AppAutomate(GenericProvider):
                         "deviceHeight": device_height,
                         "scrollableXpath":  scrollable_xpath,
                         "scrollableId": scrollable_id,
+                        "topScrollviewOffset": top_scrollview_offset,
+                        "bottomScrollviewOffset": bottom_scrollview_offset,
                         "FORCE_FULL_PAGE": os.environ.get('FORCE_FULL_PAGE') == 'true'
                     },
                 }

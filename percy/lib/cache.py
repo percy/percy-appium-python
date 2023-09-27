@@ -6,10 +6,14 @@ class Cache:
     CACHE_TIMEOUT = 5 * 60  # 5 * 60 seconds
     TIMEOUT_KEY = 'last_access_time'
 
+    # Caching Keys
     session_details = 'session_details'
     system_bars = 'system_bars'
     window_size = 'window_size'
     viewport = 'viewport'
+    session_capabilities = 'session_capabilities'
+    capabilities = 'capabilities'
+    command_executor_url = 'command_executor_url'
 
     @classmethod
     def set_cache(cls, session_id, property, value):

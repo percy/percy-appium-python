@@ -57,6 +57,23 @@ class CLIWrapper:
             raise CLIException(data.get('error', 'UnknownException'))
         return data
 
+    def post_failed_event(self, error):
+        body = {
+            "clientInfo": Environment._get_client_info(True),
+            "errorMessage": error
+        }
+
+        response = requests.post(f'{PERCY_CLI_API}/percy/events', json=body, timeout=30)
+        log('Percy requests')
+        log(response)
+        # Handle errors
+        response.raise_for_status()
+        data = response.json()
+
+        if response.status_code != 200:
+            raise CLIException(data.get('error', 'UnknownException'))
+        return data
+
     def post_poa_screenshots(self, name, session_id, command_executor_url, capabilities, desired_capabilities, options=None):
         body = {
                 'sessionId': session_id,

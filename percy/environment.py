@@ -9,7 +9,9 @@ class Environment:
     session_type = None
 
     @staticmethod
-    def _get_client_info():
+    def _get_client_info(flag=False):
+        if flag:
+            return 'percy-appium-app-python/' + SDK_VERSION
         return 'percy-appium-app/' + SDK_VERSION
 
     @staticmethod

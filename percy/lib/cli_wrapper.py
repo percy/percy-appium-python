@@ -61,7 +61,8 @@ class CLIWrapper:
         try:
             body = {
                 "clientInfo": Environment._get_client_info(True),
-                "errorMessage": error
+                "message": error,
+                "errorKind": 'sdk'
             }
 
             response = requests.post(f'{PERCY_CLI_API}/percy/events', json=body, timeout=30)

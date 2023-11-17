@@ -56,6 +56,17 @@ class CLIWrapperTestCase(unittest.TestCase):
             )
             self.assertDictEqual(post_screenshots_reponse, response.json())
 
+    def test_post_failed_event(self):
+        with patch("requests.post") as mock_requests:
+            response = Mock()
+            response.json.return_value = {"link": "snapshot-url-link", "success": True}
+            response.status_code = 200
+            response.raise_for_status.return_value = None
+
+            mock_requests.return_value = response
+            post_failed_event_response = self.cli_wrapper.post_failed_event("some-error")
+            self.assertDictEqual(post_failed_event_response, response.json())
+
     def test_post_screenshot_with_ignore_region_null(self):
         with patch("requests.post") as mock_requests:
             response = Mock()

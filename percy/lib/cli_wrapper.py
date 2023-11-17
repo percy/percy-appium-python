@@ -48,7 +48,7 @@ class CLIWrapper:
         body['client_info'] = Environment._get_client_info()
         body['environment_info'] = Environment._get_env_info()
 
-        response = requests.post(f'{PERCY_CLI_API}/percy/comparison', json=body, timeout=30)
+        response = requests.post(f'{PERCY_CLI_API}/percy/comparison', json=body, timeout=60)
         # Handle errors
         response.raise_for_status()
         data = response.json()

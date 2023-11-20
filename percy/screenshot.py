@@ -13,6 +13,7 @@ def percy_screenshot(driver, name: str, **kwargs):
         app_percy = ProviderClass(driver)
         return app_percy.screenshot(name, **kwargs)
     except Exception as e:
+        CLIWrapper().post_failed_event(str(e))
         log(f'Could not take screenshot "{name}"')
         if app_percy and app_percy.percy_options.ignore_errors is False:
             raise e

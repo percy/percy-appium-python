@@ -129,6 +129,7 @@ class TestAppPercy(unittest.TestCase):
     @patch('percy.screenshot.log')
     @patch.object(AppPercy, 'screenshot', MagicMock(side_effect = Exception('RealException')))
     @patch.object(CLIWrapper, 'is_percy_enabled', MagicMock(return_value=True))
+    @patch.object(CLIWrapper, 'post_failed_event', MagicMock(return_value=True))
     def test_percy_options_ignore_errors(self, _mocked_log):
         self.mock_android_webdriver.capabilities['percy:options'] = {'ignoreErrors': False}
         self.assertRaises(Exception, percy_screenshot, self.mock_android_webdriver, 'screenshot')
@@ -136,6 +137,7 @@ class TestAppPercy(unittest.TestCase):
 
     @patch('percy.screenshot.log')
     @patch.object(CLIWrapper, 'is_percy_enabled', MagicMock(return_value=True))
+    @patch.object(CLIWrapper, 'post_failed_event', MagicMock(return_value=True))
     def test_percy_options_ignore_errors_not_raise(self, _mock_log):
         with patch.object(AppPercy, 'screenshot') as mock_screenshot:
             exception = Exception('Some Exception')
@@ -146,6 +148,7 @@ class TestAppPercy(unittest.TestCase):
 
     @patch('percy.screenshot.log')
     @patch.object(CLIWrapper, 'is_percy_enabled', MagicMock(return_value=True))
+    @patch.object(CLIWrapper, 'post_failed_event', MagicMock(return_value=True))
     def test_percyOptions_ignore_errors_not_raise(self, _mock_log):
         with patch.object(AppPercy, 'screenshot') as mock_screenshot:
             exception = Exception('Some Exception')

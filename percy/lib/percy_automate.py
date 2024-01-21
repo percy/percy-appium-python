@@ -10,6 +10,7 @@ IGNORE_ELEMENT_KEY = 'ignore_region_appium_elements'
 IGNORE_ELEMENT_ALT_KEY = 'ignoreRegionAppiumElements'
 CONSIDER_ELEMENT_KEY = 'consider_region_appium_elements'
 CONSIDER_ELEMENT_ALT_KEY = 'considerRegionAppiumElements'
+SYNC = 'sync'
 
 class PercyOnAutomate:
     def __init__(self, driver):
@@ -39,16 +40,18 @@ class PercyOnAutomate:
 
             ignore_region_elements = [element.id for element in options.get(IGNORE_ELEMENT_KEY, [])]
             consider_region_elements = [element.id for element in options.get(CONSIDER_ELEMENT_KEY, [])]
+            sync = options.get(SYNC, False)
             options.pop(IGNORE_ELEMENT_KEY, None)
             options.pop(CONSIDER_ELEMENT_KEY, None)
+            options.pop(SYNC, None)
 
-            CLIWrapper().post_poa_screenshots(
+            return CLIWrapper().post_poa_screenshots(
                 name,
                 metadata.session_id,
                 metadata.command_executor_url,
                 metadata.capabilities,
                 metadata.session_capabilities,
-                { **options, "ignore_region_elements": ignore_region_elements, "consider_region_elements" : consider_region_elements }
+                { **options, "ignore_region_elements": ignore_region_elements, "consider_region_elements" : consider_region_elements, "sync": sync }
             )
         except Exception as e:
             log(f'Could not take Screenshot "{name}"')

@@ -15,6 +15,7 @@ class AppAutomate(GenericProvider):
 
     def screenshot(self, name: str, **kwargs):
         session_details = self.execute_percy_screenshot_begin(name)
+        sync = kwargs.get('sync', False)
         # Device name and OS version retrieval is custom for App Automate users
         if session_details is not None:
             self.metadata._device_name = kwargs.get('device_name') or session_details.get("deviceName")
@@ -24,9 +25,11 @@ class AppAutomate(GenericProvider):
         try:
             response = super().screenshot(name, **kwargs)
             percy_screenshot_url = response.get('link', '')
-            self.execute_percy_screenshot_end(name, percy_screenshot_url, 'success')
+            self.execute_percy_screenshot_end(name, percy_screenshot_url, 'success', sync)
+            data = response.get('data', {})
+            return data
         except Exception as e:
-            self.execute_percy_screenshot_end(name, percy_screenshot_url, 'failure', str(e))
+            self.execute_percy_screenshot_end(name, percy_screenshot_url, 'failure', sync, str(e))
             raise e
 
     def set_debug_url(self, session_details):
@@ -90,7 +93,7 @@ class AppAutomate(GenericProvider):
             log(e, on_debug=True)
             return None
 
-    def execute_percy_screenshot_end(self, name, percy_screenshot_url, status, status_message=None):
+    def execute_percy_screenshot_end(self, name, percy_screenshot_url, status, sync, status_message=None):
         try:
             request_body = {
                 'action': 'percyScreenshot',
@@ -98,7 +101,9 @@ class AppAutomate(GenericProvider):
                     'state': 'end',
                     'percyScreenshotUrl': percy_screenshot_url,
                     'name': name,
-                    'status': status }
+                    'status': status,
+                    'sync': sync
+                }
             }
             if status_message: request_body['arguments']['statusMessage'] = status_message
             command = f'browserstack_executor: {json.dumps(request_body)}'

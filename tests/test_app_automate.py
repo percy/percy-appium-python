@@ -72,7 +72,7 @@ class TestAppAutomate(unittest.TestCase):
         mock_screenshot_end = MagicMock(return_value=None)
         self.app_automate.execute_percy_screenshot_end = mock_screenshot_end
         self.app_automate.screenshot('name')
-        mock_screenshot_end.assert_called_once_with('name', 'https://link', 'success')
+        mock_screenshot_end.assert_called_once_with('name', 'https://link', 'success', False)
 
         # check that code doesnt throw if begin fails
         self.app_automate.execute_percy_screenshot_begin = MagicMock(return_value=None)
@@ -81,7 +81,7 @@ class TestAppAutomate(unittest.TestCase):
         with self.assertRaises(Exception) as e:
             mock_screenshot_end.side_effect = Exception('RandomException')
             self.app_automate.screenshot('name')
-        mock_screenshot_end.assert_called_with('name', 'https://link', 'failure', str(e.exception))
+        mock_screenshot_end.assert_called_with('name', 'https://link', 'failure', False, str(e.exception))
 
     @patch.object(AppAutomate, 'execute_percy_screenshot', MagicMock(return_value={
         "result":"[{\"sha\":\"sha-25568755\",\"status_bar\":null,\"nav_bar\":null,\"header_height\":120,\"footer_height\":80,\"index\":0}]"

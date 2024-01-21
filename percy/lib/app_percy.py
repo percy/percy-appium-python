@@ -34,5 +34,7 @@ class AppPercy:
         orientation = kwargs.get('orientation')
         if orientation and not isinstance(orientation, str):
             raise TypeError('Argument orientation should be a string and portrait/landscape')
-        self.provider.screenshot(name, **kwargs)
-        return None
+        sync = kwargs.get('sync')
+        if sync and not isinstance(sync, bool):
+            raise TypeError('Argument sync should be a boolean')
+        return self.provider.screenshot(name, **kwargs)

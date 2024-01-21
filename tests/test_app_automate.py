@@ -51,7 +51,7 @@ class TestAppAutomate(unittest.TestCase):
 
     def test_app_automate_execute_percy_screenshot_end(self):
         self.mock_webdriver.execute_script.return_value = {}
-        self.assertIsNone(self.app_automate.execute_percy_screenshot_end('Screenshot 1', self.comparison_response['link'], 'success'))
+        self.assertIsNone(self.app_automate.execute_percy_screenshot_end('Screenshot 1', self.comparison_response['link'], 'success', False))
         self.mock_webdriver.execute_script.assert_called()
 
     def test_app_automate_execute_percy_screenshot(self):
@@ -62,7 +62,7 @@ class TestAppAutomate(unittest.TestCase):
     @patch('percy.providers.app_automate.log')
     def test_execute_percy_screenshot_end_throws_error(self, mock_log):
         self.mock_webdriver.execute_script.side_effect = Exception('SomeException')
-        self.app_automate.execute_percy_screenshot_end('Screenshot 1', 'snapshot-url', 'success')
+        self.app_automate.execute_percy_screenshot_end('Screenshot 1', 'snapshot-url', 'success', False)
         mock_log.assert_called()
 
     @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))

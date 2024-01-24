@@ -98,7 +98,7 @@ class CLIWrapper:
 
         if response.status_code != 200:
             raise CLIException(data.get('error', 'UnknownException'))
-        return data
+        return data.get('data', {})
 
     @staticmethod
     def _request_body(name, tag, tiles, external_debug_url, ignored_elements_data, considered_elements_data, sync):

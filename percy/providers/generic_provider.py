@@ -41,7 +41,7 @@ class GenericProvider:
                 custom_locations = kwargs.get("custom_consider_regions", [])
             )
         }
-        sync = kwargs.get("sync", False)
+        sync = kwargs.get("sync", None)
         return self._post_screenshots(name, tag, tiles, self.get_debug_url(), ignore_regions, consider_regions, sync)
 
     def _get_tag(self, **kwargs):

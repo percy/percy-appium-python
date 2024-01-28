@@ -40,7 +40,7 @@ class PercyOnAutomate:
 
             ignore_region_elements = [element.id for element in options.get(IGNORE_ELEMENT_KEY, [])]
             consider_region_elements = [element.id for element in options.get(CONSIDER_ELEMENT_KEY, [])]
-            sync = options.get(SYNC, False)
+            sync = options.get(SYNC, None)
             options.pop(IGNORE_ELEMENT_KEY, None)
             options.pop(CONSIDER_ELEMENT_KEY, None)
             options.pop(SYNC, None)

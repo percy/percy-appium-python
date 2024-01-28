@@ -42,7 +42,7 @@ class CLIWrapper:
             log(e, on_debug=True)
             return False
 
-    def post_screenshots(self, name, tag, tiles, external_debug_url=None, ignored_elements_data=None, considered_elements_data=None, sync=False):
+    def post_screenshots(self, name, tag, tiles, external_debug_url=None, ignored_elements_data=None, considered_elements_data=None, sync=None):
         body = self._request_body(name, tag, tiles, external_debug_url, ignored_elements_data, considered_elements_data, sync)
 
         body['client_info'] = Environment._get_client_info()
@@ -65,7 +65,7 @@ class CLIWrapper:
                 "errorKind": 'sdk'
             }
 
-            response = requests.post(f'{PERCY_CLI_API}/percy/events', json=body, timeout=600)
+            response = requests.post(f'{PERCY_CLI_API}/percy/events', json=body, timeout=30)
             # Handle errors
             response.raise_for_status()
             data = response.json()
@@ -77,7 +77,7 @@ class CLIWrapper:
             log(e, on_debug=True)
             return None
 
-    def post_poa_screenshots(self, name, session_id, command_executor_url, capabilities, desired_capabilities, options=None, sync=False):
+    def post_poa_screenshots(self, name, session_id, command_executor_url, capabilities, desired_capabilities, options=None, sync=None):
         body = {
                 'sessionId': session_id,
                 'commandExecutorUrl': command_executor_url,

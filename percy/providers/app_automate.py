@@ -15,7 +15,7 @@ class AppAutomate(GenericProvider):
 
     def screenshot(self, name: str, **kwargs):
         session_details = self.execute_percy_screenshot_begin(name)
-        sync = kwargs.get('sync', False)
+        sync = kwargs.get('sync', None)
         # Device name and OS version retrieval is custom for App Automate users
         if session_details is not None:
             self.metadata._device_name = kwargs.get('device_name') or session_details.get("deviceName")

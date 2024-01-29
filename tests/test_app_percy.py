@@ -18,6 +18,7 @@ from tests.mocks.mock_methods import android_capabilities, ios_capabilities
 
 class TestAppPercy(unittest.TestCase):
     comparison_response = {'link': 'https://snapshot_url', 'success': True}
+    sync_response = {'link': 'https://snapshot_url', 'data': 'sync-data', 'success': True}
 
     @patch('appium.webdriver.webdriver.WebDriver')
     def setUp(self, mock_webdriver):
@@ -171,3 +172,21 @@ class TestAppPercy(unittest.TestCase):
         with self.assertRaises(Exception) as e:
             AppPercy(Mock())
         self.assertIsInstance(e.exception, DriverNotSupported)
+
+    @patch.object(CLIWrapper, 'post_screenshots', MagicMock(return_value=sync_response))
+    @patch.object(GenericProvider, '_write_screenshot', MagicMock(return_value='path-to-png-file'))
+    @patch.object(AppAutomate, 'execute_percy_screenshot_begin', MagicMock(return_value={'deviceName': 'Google Pixel 4',
+        'osVersion': '12.0',
+        'buildHash': 'abc',
+        'sessionHash': 'def'
+    }))
+    @patch.object(AppAutomate, 'execute_percy_screenshot_end', MagicMock(return_value=None))
+    @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
+    @patch.dict(os.environ, {"PERCY_DISABLE_REMOTE_UPLOADS": "true"})
+    def test_android_on_app_automate(self):
+        with patch('percy.metadata.AndroidMetadata.remote_url', new_callable=PropertyMock) as mock_remote_url:
+            mock_remote_url.return_value = 'url-of-browserstack-cloud'
+            app_percy = AppPercy(self.mock_android_webdriver)
+            self.assertEqual(app_percy.screenshot('screenshot 1', sync = True), 'sync-data')
+            self.assertTrue(isinstance(app_percy.metadata, AndroidMetadata))
+            self.assertTrue(isinstance(app_percy.provider, AppAutomate))

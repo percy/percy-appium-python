@@ -183,7 +183,7 @@ class TestAppPercy(unittest.TestCase):
     @patch.object(AppAutomate, 'execute_percy_screenshot_end', MagicMock(return_value=None))
     @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
     @patch.dict(os.environ, {"PERCY_DISABLE_REMOTE_UPLOADS": "true"})
-    def test_android_on_app_automate(self):
+    def test_app_percy_with_sync(self):
         with patch('percy.metadata.AndroidMetadata.remote_url', new_callable=PropertyMock) as mock_remote_url:
             mock_remote_url.return_value = 'url-of-browserstack-cloud'
             app_percy = AppPercy(self.mock_android_webdriver)

@@ -68,13 +68,13 @@ def mock_screenshot(fail=False):
         status=(500 if fail else 200),
     )
 
-def mock_poa_screenshot(fail=False):
+def mock_poa_screenshot(fail=False, sync=False):
+    body = '{ "success": ' + ("true" if not fail else 'false, "error": "test"') + "}"
+    if sync: body = '{ "success": "true", "data": "sync-data" }'
     httpretty.register_uri(
         httpretty.POST,
         "http://localhost:5338/percy/automateScreenshot",
-        body=(
-            '{ "success": ' + ("true" if not fail else 'false, "error": "test"') + "}"
-        ),
+        body=body,
         status=(500 if fail else 200),
     )
 
@@ -286,6 +286,20 @@ class TestPercyScreenshot(unittest.TestCase):
         self.assertEqual(s2['options']['enable_javascript'], True)
         self.assertEqual(s2['options']['ignore_region_elements'], ['Dummy_id'])
         self.assertEqual(s2['options']['consider_region_elements'], ['Consider_Dummy_id'])
+
+    def test_posts_screenshot_poa_with_sync(self):
+        mock_healthcheck(type="automate")
+        mock_poa_screenshot(False, True)
+
+        driver = Mock(spec=WebDriver)
+        driver.session_id = 'Dummy_session_id'
+        driver.capabilities = { 'key': 'value' }
+        driver.desired_capabilities = { 'key': 'value' }
+        driver.command_executor = Mock()
+        driver.command_executor._url = 'https://hub-cloud.browserstack.com/wd/hub'
+        self.mock_webdriver.capabilities = { 'key': 'value' }
+
+        self.assertEqual(percy_screenshot(driver, 'Snapshot 3', options = {'sync': True}), 'sync-data')
 
 if __name__ == "__main__":
     unittest.main()

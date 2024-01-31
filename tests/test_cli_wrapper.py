@@ -106,7 +106,7 @@ class CLIWrapperTestCase(unittest.TestCase):
         name = "some-name"
         debug_url = "debug-url"
         response = self.cli_wrapper._request_body(
-            name, tag, [tile], debug_url, self.ignored_elements_data, self.considered_elements_data
+            name, tag, [tile], debug_url, self.ignored_elements_data, self.considered_elements_data, False
         )
         self.assertEqual(response["name"], name)
         self.assertEqual(response["external_debug_url"], debug_url)
@@ -118,6 +118,7 @@ class CLIWrapperTestCase(unittest.TestCase):
         self.assertDictEqual(
             response["considered_elements_data"], self.considered_elements_data
         )
+        self.assertEqual(response["sync"], False)
 
     def test_request_body_when_optional_values_are_null(self):
         tile = Tile("some-file-path", 10, 10, 20, 20)
@@ -127,10 +128,11 @@ class CLIWrapperTestCase(unittest.TestCase):
         ignored_elements_data = None
         considered_elements_data = None
         response = self.cli_wrapper._request_body(
-            name, tag, [tile], debug_url, ignored_elements_data, considered_elements_data
+            name, tag, [tile], debug_url, ignored_elements_data, considered_elements_data, True
         )
         self.assertEqual(response["name"], name)
         self.assertEqual(response["external_debug_url"], debug_url)
         self.assertDictEqual(response["tag"], tag)
         self.assertListEqual(response["tiles"], [dict(tile)])
         self.assertEqual(response["ignored_elements_data"], None)
+        self.assertEqual(response["sync"], True)

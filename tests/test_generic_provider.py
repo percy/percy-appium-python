@@ -148,7 +148,7 @@ class TestGenericProvider(unittest.TestCase):
         tag = self.generic_provider._get_tag()
         tiles = self.generic_provider._get_tiles()
         response = self.generic_provider._post_screenshots(
-            "screenshot 1", tag, tiles, "", [], []
+            "screenshot 1", tag, tiles, "", [], [], False
         )
         self.assertEqual(response, self.comparison_response)
 

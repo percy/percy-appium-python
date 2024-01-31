@@ -42,13 +42,13 @@ class CLIWrapper:
             log(e, on_debug=True)
             return False
 
-    def post_screenshots(self, name, tag, tiles, external_debug_url=None, ignored_elements_data=None, considered_elements_data=None):
-        body = self._request_body(name, tag, tiles, external_debug_url, ignored_elements_data, considered_elements_data)
+    def post_screenshots(self, name, tag, tiles, external_debug_url=None, ignored_elements_data=None, considered_elements_data=None, sync=None):
+        body = self._request_body(name, tag, tiles, external_debug_url, ignored_elements_data, considered_elements_data, sync)
 
         body['client_info'] = Environment._get_client_info()
         body['environment_info'] = Environment._get_env_info()
 
-        response = requests.post(f'{PERCY_CLI_API}/percy/comparison', json=body, timeout=60)
+        response = requests.post(f'{PERCY_CLI_API}/percy/comparison', json=body, timeout=600)
         # Handle errors
         response.raise_for_status()
         data = response.json()
@@ -90,17 +90,17 @@ class CLIWrapper:
         body['client_info'] = Environment._get_client_info()
         body['environment_info'] = Environment._get_env_info()
 
-        response = requests.post(f'{PERCY_CLI_API}/percy/automateScreenshot', json=body, timeout=30)
+        response = requests.post(f'{PERCY_CLI_API}/percy/automateScreenshot', json=body, timeout=600)
         # Handle errors
         response.raise_for_status()
         data = response.json()
 
         if response.status_code != 200:
             raise CLIException(data.get('error', 'UnknownException'))
-        return data
+        return data.get('data', {})
 
     @staticmethod
-    def _request_body(name, tag, tiles, external_debug_url, ignored_elements_data, considered_elements_data):
+    def _request_body(name, tag, tiles, external_debug_url, ignored_elements_data, considered_elements_data, sync):
         tiles = list(map(dict, tiles))
         return {
             "name": name,
@@ -108,5 +108,6 @@ class CLIWrapper:
             "tiles": tiles,
             "ignored_elements_data": ignored_elements_data,
             "external_debug_url": external_debug_url,
-            "considered_elements_data": considered_elements_data 
+            "considered_elements_data": considered_elements_data,
+            "sync": sync
         }

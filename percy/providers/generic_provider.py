@@ -41,8 +41,8 @@ class GenericProvider:
                 custom_locations = kwargs.get("custom_consider_regions", [])
             )
         }
-
-        return self._post_screenshots(name, tag, tiles, self.get_debug_url(), ignore_regions, consider_regions)
+        sync = kwargs.get("sync", None)
+        return self._post_screenshots(name, tag, tiles, self.get_debug_url(), ignore_regions, consider_regions, sync)
 
     def _get_tag(self, **kwargs):
         name = kwargs.get('device_name', self.metadata.device_name)
@@ -156,8 +156,8 @@ class GenericProvider:
                 log(f"Values passed in custom ignored region at index: {idx} is not valid")
 
     @staticmethod
-    def _post_screenshots(name, tag, tiles, debug_url, ignored_regions, considered_regions):
-        response = CLIWrapper().post_screenshots(name, tag, tiles, debug_url, ignored_regions, considered_regions)
+    def _post_screenshots(name, tag, tiles, debug_url, ignored_regions, considered_regions, sync):
+        response = CLIWrapper().post_screenshots(name, tag, tiles, debug_url, ignored_regions, considered_regions, sync)
         return response
 
     def _write_screenshot(self, png_bytes, directory):

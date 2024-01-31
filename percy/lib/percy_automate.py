@@ -42,7 +42,7 @@ class PercyOnAutomate:
             options.pop(IGNORE_ELEMENT_KEY, None)
             options.pop(CONSIDER_ELEMENT_KEY, None)
 
-            CLIWrapper().post_poa_screenshots(
+            return CLIWrapper().post_poa_screenshots(
                 name,
                 metadata.session_id,
                 metadata.command_executor_url,

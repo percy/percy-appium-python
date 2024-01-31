@@ -66,6 +66,7 @@ $ percy app:exec -- [python test command]
 - `orientation` (**optional**) - Orientation of device while capturing screeenshot; Allowed values [`portrait` | `landscape`]
 - `status_bar_height` (**optional**) - Height of status bar; int
 - `nav_bar_height` (**optional**) - Height of navigation bar; int
+- `sync` - Boolean value by default it falls back to `false`, Gives the processed result around screenshot [From CLI v1.28.0-beta.0+]
 - `fullpage` (**optional**) - [Alpha] Only supported on App Automate driver sessions [ needs @percy/cli 1.20.2+ ]; boolean
   - `screen_lengths` (**optional**) - [Alpha] Max screen lengths for fullPage; int
   - In case scrollview is overlapping with other app elements. Offsets can be provided to reduce the area which needs to be considered for scrolling:

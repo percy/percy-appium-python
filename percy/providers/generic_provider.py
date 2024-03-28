@@ -160,8 +160,9 @@ class GenericProvider:
                 log(f"Values passed in custom ignored region at index: {idx} is not valid")
 
     @staticmethod
-    def _post_screenshots(name, tag, tiles, debug_url, ignored_regions, considered_regions, sync, test_case, th_execution_id):
-        response = CLIWrapper().post_screenshots(name, tag, tiles, debug_url, ignored_regions, considered_regions, sync, test_case, th_execution_id)
+    def _post_screenshots(name, tag, tiles, debug_url, ignored_regions, considered_regions, sync, test_case, th_test_case_execution_id):
+        response = CLIWrapper().post_screenshots(name, tag, tiles, debug_url, ignored_regions,
+                                                considered_regions, sync, test_case, th_test_case_execution_id)
         return response
 
     def _write_screenshot(self, png_bytes, directory):

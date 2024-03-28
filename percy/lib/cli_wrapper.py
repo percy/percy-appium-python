@@ -43,10 +43,10 @@ class CLIWrapper:
             return False
 
     def post_screenshots(self, name, tag, tiles, external_debug_url=None,
-        ignored_elements_data=None, considered_elements_data=None, sync=None, test_case=None, th_execution_id=None
+        ignored_elements_data=None, considered_elements_data=None, sync=None, test_case=None, th_test_case_execution_id=None
     ):
         body = self._request_body(name, tag, tiles, external_debug_url,
-            ignored_elements_data, considered_elements_data, sync, test_case, th_execution_id
+            ignored_elements_data, considered_elements_data, sync, test_case, th_test_case_execution_id
         )
 
         body['client_info'] = Environment._get_client_info()
@@ -104,7 +104,9 @@ class CLIWrapper:
         return data.get('data', {})
 
     @staticmethod
-    def _request_body(name, tag, tiles, external_debug_url, ignored_elements_data, considered_elements_data, sync, test_case, th_execution_id):
+    def _request_body(name, tag, tiles, external_debug_url, ignored_elements_data,
+        considered_elements_data, sync, test_case, th_test_case_execution_id
+    ):
         tiles = list(map(dict, tiles))
         return {
             "name": name,
@@ -115,5 +117,5 @@ class CLIWrapper:
             "considered_elements_data": considered_elements_data,
             "sync": sync,
             "test_case": test_case,
-            "th_test_case_execution_id": th_execution_id
+            "th_test_case_execution_id": th_test_case_execution_id
         }

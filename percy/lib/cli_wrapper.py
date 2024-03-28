@@ -42,8 +42,12 @@ class CLIWrapper:
             log(e, on_debug=True)
             return False
 
-    def post_screenshots(self, name, tag, tiles, external_debug_url=None, ignored_elements_data=None, considered_elements_data=None, sync=None):
-        body = self._request_body(name, tag, tiles, external_debug_url, ignored_elements_data, considered_elements_data, sync)
+    def post_screenshots(self, name, tag, tiles, external_debug_url=None,
+        ignored_elements_data=None, considered_elements_data=None, sync=None, test_case=None, th_test_case_execution_id=None
+    ):
+        body = self._request_body(name, tag, tiles, external_debug_url,
+            ignored_elements_data, considered_elements_data, sync, test_case, th_test_case_execution_id
+        )
 
         body['client_info'] = Environment._get_client_info()
         body['environment_info'] = Environment._get_env_info()
@@ -100,7 +104,9 @@ class CLIWrapper:
         return data.get('data', {})
 
     @staticmethod
-    def _request_body(name, tag, tiles, external_debug_url, ignored_elements_data, considered_elements_data, sync):
+    def _request_body(name, tag, tiles, external_debug_url, ignored_elements_data,
+        considered_elements_data, sync, test_case, th_test_case_execution_id
+    ):
         tiles = list(map(dict, tiles))
         return {
             "name": name,
@@ -109,5 +115,7 @@ class CLIWrapper:
             "ignored_elements_data": ignored_elements_data,
             "external_debug_url": external_debug_url,
             "considered_elements_data": considered_elements_data,
-            "sync": sync
+            "sync": sync,
+            "test_case": test_case,
+            "th_test_case_execution_id": th_test_case_execution_id
         }

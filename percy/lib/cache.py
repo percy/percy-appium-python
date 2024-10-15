@@ -11,7 +11,6 @@ class Cache:
     system_bars = 'system_bars'
     window_size = 'window_size'
     viewport = 'viewport'
-    session_capabilities = 'session_capabilities'
     capabilities = 'capabilities'
     command_executor_url = 'command_executor_url'
 

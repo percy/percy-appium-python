@@ -81,12 +81,11 @@ class CLIWrapper:
             log(e, on_debug=True)
             return None
 
-    def post_poa_screenshots(self, name, session_id, command_executor_url, capabilities, desired_capabilities, options=None):
+    def post_poa_screenshots(self, name, session_id, command_executor_url, capabilities, options=None):
         body = {
                 'sessionId': session_id,
                 'commandExecutorUrl': command_executor_url,
                 'capabilities': dict(capabilities),
-                'sessionCapabilites':dict(desired_capabilities),
                 'snapshotName': name,
                 'options': options
             }

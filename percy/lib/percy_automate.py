@@ -47,7 +47,6 @@ class PercyOnAutomate:
                 metadata.session_id,
                 metadata.command_executor_url,
                 metadata.capabilities,
-                metadata.session_capabilities,
                 { **options, "ignore_region_elements": ignore_region_elements, "consider_region_elements" : consider_region_elements }
             )
         except Exception as e:

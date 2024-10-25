@@ -277,7 +277,6 @@ class TestPercyScreenshot(unittest.TestCase):
         self.assertEqual(s1['sessionId'], driver.session_id)
         self.assertEqual(s1['commandExecutorUrl'], driver.command_executor._url) # pylint: disable=W0212
         self.assertEqual(s1['capabilities'], dict(driver.capabilities))
-        self.assertEqual(s1['sessionCapabilites'], dict(driver.desired_capabilities))
         self.assertRegex(s1['client_info'], r'percy-appium-app/\d+')
         self.assertRegex(s1['environment_info'][0], r'appium/\d+')
         self.assertRegex(s1['environment_info'][1], r'python/\d+')

@@ -43,9 +43,10 @@ class GenericProvider:
         }
         sync = kwargs.get("sync", None)
         test_case = kwargs.get("test_case", None)
+        labels = kwargs.get("labels", None)
         th_test_case_execution_id = kwargs.get("th_test_case_execution_id", None)
         return self._post_screenshots(name, tag, tiles, self.get_debug_url(), ignore_regions,
-            consider_regions, sync, test_case, th_test_case_execution_id
+            consider_regions, sync, test_case, labels, th_test_case_execution_id
         )
 
     def _get_tag(self, **kwargs):
@@ -160,9 +161,9 @@ class GenericProvider:
                 log(f"Values passed in custom ignored region at index: {idx} is not valid")
 
     @staticmethod
-    def _post_screenshots(name, tag, tiles, debug_url, ignored_regions, considered_regions, sync, test_case, th_test_case_execution_id):
+    def _post_screenshots(name, tag, tiles, debug_url, ignored_regions, considered_regions, sync, test_case, labels, th_test_case_execution_id):
         response = CLIWrapper().post_screenshots(name, tag, tiles, debug_url, ignored_regions,
-                                                considered_regions, sync, test_case, th_test_case_execution_id)
+                                                considered_regions, sync, test_case, labels, th_test_case_execution_id)
         return response
 
     def _write_screenshot(self, png_bytes, directory):

@@ -106,10 +106,11 @@ class CLIWrapperTestCase(unittest.TestCase):
         name = "some-name"
         debug_url = "debug-url"
         test_case = 'test-case-1'
+        labels = 'app;testing'
         th_test_case_execution_id = 'uuid-1231'
         response = self.cli_wrapper._request_body(
             name, tag, [tile], debug_url, self.ignored_elements_data, self.considered_elements_data, False,
-            test_case, th_test_case_execution_id
+            test_case, labels, th_test_case_execution_id
         )
         self.assertEqual(response["name"], name)
         self.assertEqual(response["external_debug_url"], debug_url)
@@ -123,6 +124,7 @@ class CLIWrapperTestCase(unittest.TestCase):
         )
         self.assertEqual(response["sync"], False)
         self.assertEqual(response["test_case"], test_case)
+        self.assertEqual(response["labels"], labels)
         self.assertEqual(response["th_test_case_execution_id"], th_test_case_execution_id)
 
     def test_request_body_when_optional_values_are_null(self):
@@ -133,10 +135,11 @@ class CLIWrapperTestCase(unittest.TestCase):
         ignored_elements_data = None
         considered_elements_data = None
         test_case = None
+        labels = None
         th_test_case_execution_id = None
         response = self.cli_wrapper._request_body(
             name, tag, [tile], debug_url, ignored_elements_data, considered_elements_data, True,
-            test_case, th_test_case_execution_id
+            test_case, labels, th_test_case_execution_id
         )
         self.assertEqual(response["name"], name)
         self.assertEqual(response["external_debug_url"], debug_url)
@@ -145,4 +148,5 @@ class CLIWrapperTestCase(unittest.TestCase):
         self.assertEqual(response["ignored_elements_data"], None)
         self.assertEqual(response["sync"], True)
         self.assertEqual(response["test_case"], test_case)
+        self.assertEqual(response["labels"], labels)
         self.assertEqual(response["th_test_case_execution_id"], th_test_case_execution_id)

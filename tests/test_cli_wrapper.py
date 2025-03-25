@@ -106,7 +106,7 @@ class CLIWrapperTestCase(unittest.TestCase):
         name = "some-name"
         debug_url = "debug-url"
         test_case = 'test-case-1'
-        th_test_case_execution_id = 'uuid-1231',
+        th_test_case_execution_id = 'uuid-1231'
         labels = 'app;testing'
         response = self.cli_wrapper._request_body(
             name, tag, [tile], debug_url, self.ignored_elements_data, self.considered_elements_data, False,

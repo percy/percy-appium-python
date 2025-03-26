@@ -190,3 +190,8 @@ class TestAppPercy(unittest.TestCase):
             self.assertEqual(app_percy.screenshot('screenshot 1', sync = True), 'sync-data')
             self.assertTrue(isinstance(app_percy.metadata, AndroidMetadata))
             self.assertTrue(isinstance(app_percy.provider, AppAutomate))
+    def test_screenshot_labels_not_string(self):
+        app_percy = AppPercy(self.mock_android_webdriver)
+        with self.assertRaises(TypeError) as cm:
+            app_percy.screenshot('screenshot name', labels=123)
+        self.assertEqual(str(cm.exception), 'Argument labels should be a string')

@@ -108,9 +108,10 @@ class CLIWrapperTestCase(unittest.TestCase):
         test_case = 'test-case-1'
         th_test_case_execution_id = 'uuid-1231'
         labels = 'app;testing'
+        regions = [{'algorithm':'intelliignore'}]
         response = self.cli_wrapper._request_body(
             name, tag, [tile], debug_url, self.ignored_elements_data, self.considered_elements_data, False,
-            test_case, th_test_case_execution_id, labels
+            test_case, th_test_case_execution_id, labels, regions
         )
         self.assertEqual(response["name"], name)
         self.assertEqual(response["external_debug_url"], debug_url)
@@ -126,6 +127,7 @@ class CLIWrapperTestCase(unittest.TestCase):
         self.assertEqual(response["test_case"], test_case)
         self.assertEqual(response["th_test_case_execution_id"], th_test_case_execution_id)
         self.assertEqual(response["labels"], labels)
+        self.assertEqual(response["regions"], regions)
 
     def test_request_body_when_optional_values_are_null(self):
         tile = Tile("some-file-path", 10, 10, 20, 20)
@@ -137,9 +139,10 @@ class CLIWrapperTestCase(unittest.TestCase):
         test_case = None
         th_test_case_execution_id = None
         labels = None
+        regions = None
         response = self.cli_wrapper._request_body(
             name, tag, [tile], debug_url, ignored_elements_data, considered_elements_data, True,
-            test_case, th_test_case_execution_id, labels
+            test_case, th_test_case_execution_id, labels, regions
         )
         self.assertEqual(response["name"], name)
         self.assertEqual(response["external_debug_url"], debug_url)
@@ -150,3 +153,5 @@ class CLIWrapperTestCase(unittest.TestCase):
         self.assertEqual(response["test_case"], test_case)
         self.assertEqual(response["th_test_case_execution_id"], th_test_case_execution_id)
         self.assertEqual(response["labels"], labels)
+        self.assertEqual(response["regions"], regions)
+

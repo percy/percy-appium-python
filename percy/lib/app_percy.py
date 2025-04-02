@@ -43,6 +43,9 @@ class AppPercy:
         labels = kwargs.get('labels')
         if labels and not isinstance(labels, str):
             raise TypeError('Argument labels should be a string')
+        regions = kwargs.get('regions')
+        if regions and not isinstance(regions, list):
+            raise TypeError('Argument regions should be an array (list)')
         th_test_case_execution_id = kwargs.get('th_test_case_execution_id')
         if th_test_case_execution_id and not isinstance(th_test_case_execution_id, str):
             raise TypeError('Argument th_test_case_execution_id should be a string')

@@ -195,3 +195,8 @@ class TestAppPercy(unittest.TestCase):
         with self.assertRaises(TypeError) as cm:
             app_percy.screenshot('screenshot name', labels=123)
         self.assertEqual(str(cm.exception), 'Argument labels should be a string')
+    def test_screenshot_regions_not_array(self):
+        app_percy = AppPercy(self.mock_android_webdriver)
+        with self.assertRaises(TypeError) as cm:
+            app_percy.screenshot('screenshot name', regions="regionn")
+        self.assertEqual(str(cm.exception), 'Argument regions should be an array (list)')

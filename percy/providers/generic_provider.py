@@ -45,8 +45,9 @@ class GenericProvider:
         test_case = kwargs.get("test_case", None)
         th_test_case_execution_id = kwargs.get("th_test_case_execution_id", None)
         labels = kwargs.get("labels", None)
+        regions = kwargs.get("regions", None)
         return self._post_screenshots(name, tag, tiles, self.get_debug_url(), ignore_regions,
-            consider_regions, sync, test_case, th_test_case_execution_id, labels
+            consider_regions, sync, test_case, th_test_case_execution_id, labels, regions
         )
 
     def _get_tag(self, **kwargs):
@@ -162,9 +163,9 @@ class GenericProvider:
 
     @staticmethod
     def _post_screenshots(name, tag, tiles, debug_url, ignored_regions, considered_regions, sync, test_case,
-     th_test_case_execution_id, labels):
+     th_test_case_execution_id, labels, regions):
         response = CLIWrapper().post_screenshots(name, tag, tiles, debug_url, ignored_regions,
-                                                considered_regions, sync, test_case, th_test_case_execution_id, labels)
+                                                considered_regions, sync, test_case, th_test_case_execution_id, labels, regions)
         return response
 
     def _write_screenshot(self, png_bytes, directory):

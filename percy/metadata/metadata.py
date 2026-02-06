@@ -47,7 +47,7 @@ class Metadata(ABC):
                 return self.driver.command_executor._client_config.remote_server_addr
         except Exception:
             pass
-        
+
         # Fallback to old version
         return self.driver.command_executor._url
 

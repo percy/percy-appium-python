@@ -1,6 +1,8 @@
 # pylint: disable=[protected-access]
 import sys
 import unittest
+import importlib
+import percy.common
 from io import StringIO
 from unittest.mock import patch
 
@@ -71,15 +73,12 @@ class TestCommon(unittest.TestCase):
     @patch.dict('os.environ', {'PERCY_LOGLEVEL': 'debug'})
     def test_log_debug_message(self):
         """Test that debug messages are logged when PERCY_LOGLEVEL=debug"""
-        import importlib
-        import percy.common
         importlib.reload(percy.common)
-        from percy.common import log as debug_log
 
         captured_output = StringIO()
         sys.stdout = captured_output
 
-        debug_log('Debug message', on_debug=True)
+        log('Debug message', on_debug=True)
 
         sys.stdout = sys.__stdout__
         _ = captured_output.getvalue()
@@ -101,15 +100,12 @@ class TestCommon(unittest.TestCase):
     @patch.dict('os.environ', {'PERCY_LOGLEVEL': 'debug'})
     def test_log_debug_error_to_stderr(self):
         """Test that debug error messages go to stderr"""
-        import importlib
-        import percy.common
-        importlib.reload(percy.common)
-        from percy.common import log as debug_log
+        importlib.reload(percy.common)        
 
         captured_output = StringIO()
         sys.stderr = captured_output
 
-        debug_log('Debug error', on_debug=True, error=True)
+        log('Debug error', on_debug=True, error=True)
 
         sys.stderr = sys.__stderr__
         _ = captured_output.getvalue()

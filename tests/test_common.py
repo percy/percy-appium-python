@@ -1,10 +1,11 @@
 # pylint: disable=[protected-access]
+
 import sys
 import unittest
 import importlib
-import percy.common
 from io import StringIO
 from unittest.mock import patch
+import percy.common
 
 from percy.common import log
 
@@ -100,7 +101,7 @@ class TestCommon(unittest.TestCase):
     @patch.dict('os.environ', {'PERCY_LOGLEVEL': 'debug'})
     def test_log_debug_error_to_stderr(self):
         """Test that debug error messages go to stderr"""
-        importlib.reload(percy.common)        
+        importlib.reload(percy.common)
 
         captured_output = StringIO()
         sys.stderr = captured_output

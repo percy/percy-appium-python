@@ -50,6 +50,6 @@ class PercyOnAutomate:
                 { **options, "ignore_region_elements": ignore_region_elements, "consider_region_elements" : consider_region_elements }
             )
         except Exception as e:
-            log(f'Could not take Screenshot "{name}"')
-            log(f'{e}', on_debug=True)
+            log(f'Could not take Screenshot "{name}"', error=True)
+            log(f'{e}', error=True)
         return None

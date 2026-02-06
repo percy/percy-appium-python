@@ -29,17 +29,17 @@ class CLIWrapper:
             version = response.headers.get('x-percy-core-version')
 
             if version.split('.')[0] != '1':
-                log(f'Unsupported Percy CLI version, {version}')
+                log(f'Unsupported Percy CLI version, {version}', error=True)
                 return False
 
             if int(version.split('.')[1]) < 27:
-                log('Please upgrade to latest CLI version for using this SDK. Minimum compatible version is 1.27.0-beta.0')
+                log('Please upgrade to latest CLI version for using this SDK. Minimum compatible version is 1.27.0-beta.0', error=True)
                 return False
 
             return True
         except Exception as e:
-            log('Percy is not running, disabling screenshots')
-            log(e, on_debug=True)
+            log('Percy is not running, disabling screenshots', error=True)
+            log(e, on_debug=True, error=True)
             return False
 
     def post_screenshots(self, name, tag, tiles, external_debug_url=None,
@@ -79,7 +79,7 @@ class CLIWrapper:
                 raise CLIException(data.get('error', 'UnknownException'))
             return data
         except Exception as e:
-            log(e, on_debug=True)
+            log(e, on_debug=True, error=True)
             return None
 
     def post_poa_screenshots(self, name, session_id, command_executor_url, capabilities, options=None):

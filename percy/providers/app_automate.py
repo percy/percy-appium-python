@@ -41,7 +41,7 @@ class AppAutomate(GenericProvider):
         fullpage_ss = kwargs.get('fullpage', False)
         if os.environ.get('PERCY_DISABLE_REMOTE_UPLOADS') == 'true':
             if fullpage_ss:
-                log('Full page screenshots are only supported when "PERCY_DISABLE_REMOTE_UPLOADS" is not set')
+                log('Full page screenshots are only supported when "PERCY_DISABLE_REMOTE_UPLOADS" is not set', error=True)
             return super()._get_tiles(**kwargs)
         screenshotType = 'fullpage' if fullpage_ss else 'singlepage'
         screen_lengths = kwargs.get('screen_lengths', 4)
@@ -88,9 +88,9 @@ class AppAutomate(GenericProvider):
             response = json.loads(response)
             return response
         except Exception as e:
-            log('Could not set session as Percy session')
-            log('Error occurred during begin call', on_debug=True)
-            log(e, on_debug=True)
+            log('Could not set session as Percy session', error=True)
+            log('Error occurred during begin call', on_debug=True, error=True)
+            log(e, on_debug=True, error=True)
             return None
 
     def execute_percy_screenshot_end(self, name, percy_screenshot_url, status, sync, status_message=None):
@@ -109,8 +109,8 @@ class AppAutomate(GenericProvider):
             command = f'browserstack_executor: {json.dumps(request_body)}'
             self.metadata.execute_script(command)
         except Exception as e:
-            log('Error occurred during end call', on_debug=True)
-            log(e, on_debug=True)
+            log('Error occurred during end call', on_debug=True, error=True)
+            log(e, on_debug=True, error=True)
 
     def execute_percy_screenshot(
         self,
@@ -149,6 +149,6 @@ class AppAutomate(GenericProvider):
             response = json.loads(response)
             return response
         except Exception as e:
-            log('Error occurred during screenshot call', on_debug=True)
-            log(e, on_debug=True)
+            log('Error occurred during screenshot call', on_debug=True, error=True)
+            log(e, on_debug=True, error=True)
             raise e

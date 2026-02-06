@@ -26,8 +26,21 @@ class TestIOSMetadata(TestCase):
         self.assertEqual(response, output)
 
     def test_remote_url(self):
-        self.mock_webdriver.command_executor._url = 'some-remote-url'
+        # Test old Appium client version (using _url)
+        mock_executor = MagicMock()
+        mock_executor._url = 'some-remote-url'
+        # Ensure _client_config is not present or doesn't have remote_server_addr
+        del mock_executor._client_config
+        self.mock_webdriver.command_executor = mock_executor
         self.assertEqual(self.ios_metadata.remote_url, 'some-remote-url')
+
+    def test_remote_url_new_client(self):
+        # Test new Appium client version (using _client_config.remote_server_addr)
+        mock_client_config = MagicMock()
+        mock_client_config.remote_server_addr = 'new-remote-url'
+        self.mock_webdriver.command_executor._client_config = mock_client_config
+        self.mock_webdriver.command_executor._url = 'old-url'
+        self.assertEqual(self.ios_metadata.remote_url, 'new-remote-url')
 
     @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
     def test_get_window_size(self):
@@ -44,6 +57,7 @@ class TestIOSMetadata(TestCase):
     @patch('percy.metadata.ios_metadata.log')
     def test_viewport_exception(self, mock_log):
         _viewport = self.ios_metadata.viewport
+        # Note: This log is informational, not an error, so no error parameter
         mock_log.assert_called_once_with('Could not use viewportRect; using static config', on_debug=True)
 
     @patch.object(IOSMetadata, 'device_name',  PropertyMock(return_value = 'iPhone 6'))

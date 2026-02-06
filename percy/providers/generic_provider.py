@@ -69,7 +69,7 @@ class GenericProvider:
     def _get_tiles(self, **kwargs):
         fullpage_ss = kwargs.get('fullpage', False)
         if fullpage_ss:
-            log('Full page screeshot is only supported on App Automate. Falling back to single page screenshot.')
+            log('Full page screeshot is only supported on App Automate. Falling back to single page screenshot.', error=True)
 
         png_bytes = self.driver.get_screenshot_as_png()
         directory = self._get_dir()

@@ -53,7 +53,7 @@ class TestMetadata(TestCase):
 
             device_name = 'Some Phone 123'
             self.metadata.get_device_info(device_name)
-            mock_log.assert_called_once_with(f'{device_name.lower()} does not exist in config.')
+            mock_log.assert_called_once_with(f'{device_name.lower()} does not exist in config.', error=True)
 
     def test__metadata_get_orientation(self):
         orientation = 'PRTRT'

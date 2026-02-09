@@ -43,12 +43,12 @@ class Metadata(ABC):
         # Old version: driver.command_executor._url
         command_executor = self.driver.command_executor
         client_config = getattr(command_executor, '_client_config', None)
-        
+
         if client_config:
             remote_addr = getattr(client_config, 'remote_server_addr', None)
             if remote_addr:
                 return remote_addr
-        
+
         # Fallback to old version
         return command_executor._url
 

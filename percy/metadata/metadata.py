@@ -38,7 +38,19 @@ class Metadata(ABC):
 
     @property
     def remote_url(self):
-        return self.driver.command_executor._url
+        # Support both old and new Appium client versions
+        # New version > 3 : driver.command_executor._client_config.remote_server_addr
+        # Old version: driver.command_executor._url
+        command_executor = self.driver.command_executor
+        client_config = getattr(command_executor, '_client_config', None)
+
+        if client_config:
+            remote_addr = getattr(client_config, 'remote_server_addr', None)
+            if remote_addr:
+                return remote_addr
+
+        # Fallback to old version
+        return command_executor._url
 
     def get_orientation(self, **kwargs):
         orientation = kwargs.get('orientation', self.capabilities.get('orientation', 'PORTRAIT'))
@@ -96,5 +108,5 @@ class Metadata(ABC):
         if self.device_info:
             return self.device_info
         self.device_info = _DEVICE_INFO.get(device_name.lower(), {})
-        if not self.device_info: log(f'{device_name.lower()} does not exist in config.')
+        if not self.device_info: log(f'{device_name.lower()} does not exist in config.', error=True)
         return self.device_info

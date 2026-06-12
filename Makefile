@@ -31,4 +31,5 @@ release: build
 	$(VENV)/twine upload dist/* --username __token__ --password ${PYPI_TOKEN}
 
 coverage: venv
-	$(VENV)/coverage run --source percy -m unittest discover && $(VENV)/coverage html
+	$(VENV)/coverage run -m unittest discover
+	$(VENV)/coverage report

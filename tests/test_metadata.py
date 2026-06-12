@@ -93,6 +93,19 @@ class TestMetadata(TestCase):
         self.mock_webdriver.capabilities = capabilities
         self.assertEqual(self.metadata.os_version, '')
 
+    def test_metadata_remote_url_new_appium_client(self):
+        client_config = type('C', (), {'remote_server_addr': 'https://new.hub/wd/hub'})()
+        command_executor = type('E', (), {'_client_config': client_config, '_url': 'https://old.hub/wd/hub'})()
+        self.mock_webdriver.command_executor = command_executor
+        self.assertEqual(self.metadata.remote_url, 'https://new.hub/wd/hub')
+
+    def test_metadata_remote_url_falls_back_to_url_when_no_remote_addr(self):
+        # client_config present but without a remote_server_addr -> old-client fallback
+        client_config = type('C', (), {'remote_server_addr': None})()
+        command_executor = type('E', (), {'_client_config': client_config, '_url': 'https://old.hub/wd/hub'})()
+        self.mock_webdriver.command_executor = command_executor
+        self.assertEqual(self.metadata.remote_url, 'https://old.hub/wd/hub')
+
     def test_metadata_value_from_devices_info_for_android(self):
         android_device = 'google pixel 7'
         android_device_info = {'13': {'status_bar': '118', 'nav_bar': '63'}}

@@ -195,3 +195,23 @@ class TestAppPercy(unittest.TestCase):
         with self.assertRaises(TypeError) as cm:
             app_percy.screenshot('screenshot name', labels=123)
         self.assertEqual(str(cm.exception), 'Argument labels should be a string')
+
+    def test_screenshot_sync_not_bool(self):
+        app_percy = AppPercy(self.mock_android_webdriver)
+        with self.assertRaises(TypeError) as cm:
+            app_percy.screenshot('screenshot name', sync='yes')
+        self.assertEqual(str(cm.exception), 'Argument sync should be a boolean')
+
+    def test_screenshot_test_case_not_string(self):
+        app_percy = AppPercy(self.mock_android_webdriver)
+        with self.assertRaises(TypeError) as cm:
+            app_percy.screenshot('screenshot name', test_case=123)
+        self.assertEqual(str(cm.exception), 'Argument test_case should be a string')
+
+    def test_screenshot_th_test_case_execution_id_not_string(self):
+        app_percy = AppPercy(self.mock_android_webdriver)
+        with self.assertRaises(TypeError) as cm:
+            app_percy.screenshot('screenshot name', th_test_case_execution_id=123)
+        self.assertEqual(
+            str(cm.exception), 'Argument th_test_case_execution_id should be a string'
+        )

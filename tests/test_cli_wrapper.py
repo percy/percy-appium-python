@@ -1,10 +1,46 @@
 # pylint: disable=[protected-access]
+import os
 import unittest
 from unittest.mock import Mock, patch
 from percy.errors import CLIException
 
 from percy.lib import cli_wrapper
 from percy.lib.tile import Tile
+
+
+class ResolveCliApiAddressTestCase(unittest.TestCase):
+    @patch.dict(os.environ, {}, clear=True)
+    def test_defaults_to_localhost(self):
+        self.assertEqual(cli_wrapper._resolve_cli_api_address(), cli_wrapper.DEFAULT_PERCY_CLI_API)
+
+    @patch.dict(os.environ, {"PERCY_CLI_API": "http://127.0.0.1:5338"}, clear=True)
+    def test_allows_loopback(self):
+        self.assertEqual(cli_wrapper._resolve_cli_api_address(), "http://127.0.0.1:5338")
+
+    @patch.dict(os.environ, {"PERCY_CLI_API": "http://attacker.example.com/x"}, clear=True)
+    def test_rejects_remote_host(self):
+        # Falls back to the safe default instead of POSTing credentials off-box.
+        self.assertEqual(cli_wrapper._resolve_cli_api_address(), cli_wrapper.DEFAULT_PERCY_CLI_API)
+
+    @patch.dict(os.environ, {
+        "PERCY_CLI_API": "http://169.254.169.254/latest/meta-data",
+    }, clear=True)
+    def test_rejects_link_local_ssrf_target(self):
+        self.assertEqual(cli_wrapper._resolve_cli_api_address(), cli_wrapper.DEFAULT_PERCY_CLI_API)
+
+    @patch.dict(os.environ, {
+        "PERCY_CLI_API": "https://percy-cli.internal:5338",
+        "PERCY_ALLOW_REMOTE_CLI_API": "true",
+    }, clear=True)
+    def test_allows_remote_https_with_opt_in(self):
+        self.assertEqual(cli_wrapper._resolve_cli_api_address(), "https://percy-cli.internal:5338")
+
+    @patch.dict(os.environ, {
+        "PERCY_CLI_API": "http://percy-cli.internal:5338",
+        "PERCY_ALLOW_REMOTE_CLI_API": "true",
+    }, clear=True)
+    def test_remote_opt_in_still_requires_https(self):
+        self.assertEqual(cli_wrapper._resolve_cli_api_address(), cli_wrapper.DEFAULT_PERCY_CLI_API)
 
 
 class CLIWrapperTestCase(unittest.TestCase):

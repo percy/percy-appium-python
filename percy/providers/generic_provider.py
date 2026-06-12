@@ -180,11 +180,33 @@ class GenericProvider:
         return ''
 
     def _get_dir(self):
+        return self._resolve_tmp_dir()
+
+    @staticmethod
+    def _resolve_tmp_dir():
         dir_path = os.environ.get('PERCY_TMP_DIR') or None
-        if dir_path:
-            Path(dir_path).mkdir(parents=True, exist_ok=True)
-            return dir_path
-        return tempfile.mkdtemp()
+        if not dir_path:
+            return tempfile.mkdtemp()
+
+        # PERCY_TMP_DIR is attacker-influenceable. Resolve symlinks and relative
+        # segments, then confirm the result stays within an approved temp root so
+        # it cannot be used to write screenshots to arbitrary locations such as
+        # web-served directories or dotfiles (CWE-22).
+        resolved = os.path.realpath(dir_path)
+        allowed_bases = []
+        for base in (tempfile.gettempdir(), '/tmp', '/var/tmp'):
+            try:
+                allowed_bases.append(os.path.realpath(base))
+            except OSError:
+                continue
+
+        if not any(resolved == base or resolved.startswith(base + os.sep) for base in allowed_bases):
+            log(f"Ignoring unsafe PERCY_TMP_DIR '{dir_path}' (outside the system temp directory); "
+                "using a secure temporary directory instead.", error=True)
+            return tempfile.mkdtemp()
+
+        Path(resolved).mkdir(parents=True, exist_ok=True)
+        return resolved
 
     def _get_path(self, directory):
         suffix = '.png'

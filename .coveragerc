@@ -1,6 +1,5 @@
 [run]
 source = percy
-branch = True
 
 [report]
 show_missing = True

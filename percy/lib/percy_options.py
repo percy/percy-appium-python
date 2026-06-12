@@ -11,11 +11,9 @@ class PercyOptions:
         options = list(map(self._capabilities.get, self.PERCY_OPTIONS))
         options = (options[0] or options[1]) if any(options) else {}
         if options: return options
-        # Reached only when options is an empty dict, so both guards are always
-        # true here; the false arcs are unreachable (no branch to cover).
-        if options is not None and self.IGNORE_ERRORS not in options:  # pragma: no branch
+        if options is not None and self.IGNORE_ERRORS not in options:
             options[self.IGNORE_ERRORS] = self._capabilities.get(f'percy.{self.IGNORE_ERRORS}', True)
-        if options is not None and self.ENABLED not in options:  # pragma: no branch
+        if options is not None and self.ENABLED not in options:
             options[self.ENABLED] = self._capabilities.get(f'percy.{self.ENABLED}', True)
         return options
 

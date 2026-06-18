@@ -261,6 +261,7 @@ class TestPercyScreenshot(unittest.TestCase):
         driver.desired_capabilities = { 'key': 'value' }
         driver.command_executor = Mock()
         driver.command_executor._url = 'https://hub-cloud.browserstack.com/wd/hub'
+        driver.command_executor._client_config = None # pylint: disable=W0212
 
         element = Mock()
         element.id = 'Dummy_id'
@@ -298,6 +299,7 @@ class TestPercyScreenshot(unittest.TestCase):
         driver.desired_capabilities = { 'key': 'value' }
         driver.command_executor = Mock()
         driver.command_executor._url = 'https://hub-cloud.browserstack.com/wd/hub'
+        driver.command_executor._client_config = None # pylint: disable=W0212
         self.mock_webdriver.capabilities = { 'key': 'value' }
 
         self.assertEqual(percy_screenshot(driver, 'Snapshot 3', options = {'sync': True}), 'sync-data')

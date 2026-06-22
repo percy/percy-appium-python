@@ -42,6 +42,21 @@ class TestAndroidMetadata(TestCase):
         mock_get_system_bars.assert_called_once()
 
 
+    @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
+    def test_get_system_bars_falls_back_when_viewport_rect_malformed(self):
+        # viewportRect is present but missing required keys -> the derived
+        # calculation raises, is swallowed, and we fall back to the driver.
+        self.mock_webdriver.capabilities['viewportRect'] = {'left': 5}
+        driver_bars = {'statusBar': {'height': 7}, 'navigationBar': {'height': 9}}
+        mock_get_system_bars = Mock(return_value=driver_bars)
+        self.mock_webdriver.get_system_bars = mock_get_system_bars
+        try:
+            result = AndroidMetadata(self.mock_webdriver).get_system_bars()
+            mock_get_system_bars.assert_called_once()
+            self.assertEqual(result, driver_bars)
+        finally:
+            self.mock_webdriver.capabilities['viewportRect'] = None
+
     def test_status_bar(self):
         mock_get_system_bars = {'statusBar': {'height': 1}}
         self.android_metadata.get_system_bars = Mock(return_value=mock_get_system_bars)

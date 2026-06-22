@@ -152,6 +152,16 @@ class TestGenericProvider(unittest.TestCase):
         )
         self.assertEqual(response, self.comparison_response)
 
+    @patch("percy.providers.generic_provider.log")
+    @patch.object(
+        Metadata, "session_id", PropertyMock(return_value="unique_session_id")
+    )
+    def test_get_tiles_fullpage_falls_back_to_single_page(self, mock_log):
+        tile = self.generic_provider._get_tiles(fullpage=True)[0]
+        # full page is only supported on App Automate -> warn and produce a single tile
+        mock_log.assert_called()
+        os.remove(tile.filepath)
+
     def test_supports(self):
         self.assertTrue(self.generic_provider.supports("some-dummy-url"))
 

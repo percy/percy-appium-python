@@ -97,3 +97,37 @@ class TestAppAutomate(unittest.TestCase):
         self.assertEqual(result.nav_bar_height, 150)
         self.assertEqual(result.header_height, 120)
         self.assertEqual(result.footer_height, 80)
+
+    @patch('percy.providers.app_automate.log')
+    @patch.dict(os.environ, {"PERCY_DISABLE_REMOTE_UPLOADS": "true"})
+    @patch.object(GenericProvider, '_get_tiles', MagicMock(return_value=['local-tile']))
+    def test_get_tiles_falls_back_locally_when_remote_uploads_disabled(self, mock_log):
+        tiles = self.app_automate._get_tiles(fullpage=True)
+        # full page is unsupported with remote uploads disabled -> warn and use local tiles
+        mock_log.assert_called()
+        self.assertEqual(tiles, ['local-tile'])
+
+    def test_execute_percy_screenshot_begin_returns_parsed_response(self):
+        self.mock_webdriver.execute_script.return_value = '{"deviceName": "Google Pixel 4", "osVersion": "12.0"}'
+        result = self.app_automate.execute_percy_screenshot_begin('Screenshot 1')
+        self.assertEqual(result, {'deviceName': 'Google Pixel 4', 'osVersion': '12.0'})
+
+    @patch('percy.providers.app_automate.log')
+    def test_execute_percy_screenshot_throws_error(self, mock_log):
+        self.mock_webdriver.execute_script.side_effect = Exception('SomeException')
+        with self.assertRaises(Exception):
+            self.app_automate.execute_percy_screenshot(1080, 'singlepage', 5)
+        mock_log.assert_called()
+
+    @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
+    @patch.object(GenericProvider, 'screenshot', MagicMock(return_value={'link': 'https://link', 'data': 'd'}))
+    def test_screenshot_reraises_after_failure_notification(self):
+        self.app_automate.execute_percy_screenshot_begin = MagicMock(return_value=None)
+        # first ('success') notification raises; second ('failure') notification succeeds
+        mock_end = MagicMock(side_effect=[Exception('finalize failed'), None])
+        self.app_automate.execute_percy_screenshot_end = mock_end
+        with self.assertRaises(Exception) as cm:
+            self.app_automate.screenshot('name')
+        self.assertEqual(str(cm.exception), 'finalize failed')
+        # a failure notification is attempted before the error propagates
+        mock_end.assert_called_with('name', 'https://link', 'failure', None, 'finalize failed')

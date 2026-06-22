@@ -17,4 +17,4 @@ jobs:
           path: ~/.cache/pip
           key: v1/${{ runner.os }}/pypi-${{matrix.python}}/${{ hashFiles('{requirements,development}.txt') }}
           restore-keys: v1/${{ runner.os }}/pypi-${matrix.python}/
-      - run: make test
+      - run: make coverage

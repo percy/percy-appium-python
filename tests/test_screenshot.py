@@ -278,7 +278,7 @@ class TestPercyScreenshot(unittest.TestCase):
         s1 = httpretty.latest_requests()[1].parsed_body
         self.assertEqual(s1['snapshotName'], 'Snapshot 1')
         self.assertEqual(s1['sessionId'], driver.session_id)
-        self.assertEqual(s1['commandExecutorUrl'], driver.command_executor._url) # pylint: disable=W0212
+        self.assertEqual(s1['commandExecutorUrl'], 'https://hub-cloud.browserstack.com/wd/hub')
         self.assertEqual(s1['capabilities'], dict(driver.capabilities))
         self.assertRegex(s1['client_info'], r'percy-appium-app/\d+')
         self.assertRegex(s1['environment_info'][0], r'appium/\d+')

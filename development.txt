@@ -1,4 +1,4 @@
 httpretty==1.1.*
-pylint==2.*
+pylint==4.*
 twine
 coverage==7.*

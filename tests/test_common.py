@@ -7,7 +7,34 @@ from io import StringIO
 from unittest.mock import patch
 import percy.common
 
-from percy.common import log
+from percy.common import log, resolve_remote_url
+
+
+class TestResolveRemoteUrl(unittest.TestCase):
+    def test_prefers_client_config_remote_server_addr(self):
+        """New Appium-Python-Client (>3) / Selenium 4.x style."""
+        url = 'https://new-style-hub:4444/wd/hub'
+        executor = type('CE', (), {
+            '_client_config': type('Cfg', (), {'remote_server_addr': url})(),
+            '_url': 'https://should-not-be-used'
+        })()
+        self.assertEqual(resolve_remote_url(executor), url)
+
+    def test_falls_back_to_url_when_no_client_config(self):
+        """Older clients only expose ._url."""
+        executor = type('CE', (), {'_client_config': None, '_url': 'https://old-hub:4444/wd/hub'})()
+        self.assertEqual(resolve_remote_url(executor), 'https://old-hub:4444/wd/hub')
+
+    def test_falls_back_to_url_when_client_config_has_no_addr(self):
+        executor = type('CE', (), {
+            '_client_config': type('Cfg', (), {'remote_server_addr': None})(),
+            '_url': 'https://old-hub:4444/wd/hub'
+        })()
+        self.assertEqual(resolve_remote_url(executor), 'https://old-hub:4444/wd/hub')
+
+    def test_returns_empty_string_when_nothing_available(self):
+        executor = type('CE', (), {})()
+        self.assertEqual(resolve_remote_url(executor), '')
 
 
 class TestCommon(unittest.TestCase):

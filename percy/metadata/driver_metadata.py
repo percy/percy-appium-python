@@ -1,4 +1,5 @@
 from percy.lib.cache import Cache
+from percy.common import resolve_remote_url
 
 class DriverMetaData:
     def __init__(self, driver):
@@ -12,7 +13,7 @@ class DriverMetaData:
     def command_executor_url(self):
         url = Cache.get_cache(self.session_id, Cache.command_executor_url)
         if url is None:
-            url = self.driver.command_executor._url # pylint: disable=W0212
+            url = resolve_remote_url(self.driver.command_executor)
             Cache.set_cache(self.session_id, Cache.command_executor_url, url)
             return url
         return url

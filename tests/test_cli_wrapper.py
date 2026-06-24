@@ -163,6 +163,74 @@ class CLIWrapperTestCase(unittest.TestCase):
         self.assertEqual(response["th_test_case_execution_id"], th_test_case_execution_id)
         self.assertEqual(response["labels"], labels)
 
+    def test_is_percy_enabled_rejects_old_cli_minor_version(self):
+        cli_wrapper.CLIWrapper.is_percy_enabled.cache_clear()
+        try:
+            with patch("requests.get") as mock_get:
+                response = Mock()
+                response.raise_for_status.return_value = None
+                response.json.return_value = {
+                    "success": True,
+                    "build": {"id": "build-1", "url": "build-url"},
+                }
+                response.headers = {"x-percy-core-version": "1.26.0"}
+                mock_get.return_value = response
+                self.assertFalse(cli_wrapper.CLIWrapper.is_percy_enabled())
+        finally:
+            cli_wrapper.CLIWrapper.is_percy_enabled.cache_clear()
+
+    def test_is_percy_enabled_returns_false_when_healthcheck_unsuccessful(self):
+        cli_wrapper.CLIWrapper.is_percy_enabled.cache_clear()
+        try:
+            with patch("requests.get") as mock_get:
+                response = Mock()
+                response.raise_for_status.return_value = None
+                response.json.return_value = {"success": False, "error": "not ready"}
+                response.headers = {"x-percy-core-version": "1.27.0"}
+                mock_get.return_value = response
+                self.assertFalse(cli_wrapper.CLIWrapper.is_percy_enabled())
+        finally:
+            cli_wrapper.CLIWrapper.is_percy_enabled.cache_clear()
+
+    def test_post_failed_event_swallows_error(self):
+        with patch("requests.post") as mock_requests:
+            response = Mock()
+            response.json.return_value = {"error": "some error"}
+            response.status_code = 500
+            response.raise_for_status.return_value = None
+            mock_requests.return_value = response
+            # raises CLIException internally; method must swallow it and return None
+            self.assertIsNone(self.cli_wrapper.post_failed_event("some-error"))
+
+    def test_post_poa_screenshots(self):
+        with patch("requests.post") as mock_requests:
+            response = Mock()
+            response.json.return_value = {"data": {"link": "snapshot-url"}, "success": True}
+            response.status_code = 200
+            response.raise_for_status.return_value = None
+            mock_requests.return_value = response
+            result = self.cli_wrapper.post_poa_screenshots(
+                "some-name", "session-id", "executor-url", {"platformName": "android"}, {}
+            )
+            self.assertDictEqual(result, {"link": "snapshot-url"})
+
+    def test_post_poa_screenshots_throws_error(self):
+        with patch("requests.post") as mock_requests:
+            response = Mock()
+            response.json.return_value = {"error": "poa error"}
+            response.status_code = 500
+            response.raise_for_status.return_value = None
+            mock_requests.return_value = response
+            self.assertRaises(
+                CLIException,
+                self.cli_wrapper.post_poa_screenshots,
+                "some-name",
+                "session-id",
+                "executor-url",
+                {"platformName": "android"},
+                {},
+            )
+
     def test_request_body_when_optional_values_are_null(self):
         tile = Tile("some-file-path", 10, 10, 20, 20)
         tag = {"name": "Tag"}

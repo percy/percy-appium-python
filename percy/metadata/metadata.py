@@ -1,7 +1,7 @@
 import json
 import os
 from abc import ABC, abstractmethod
-from percy.common import log
+from percy.common import log, resolve_remote_url
 
 
 _DEVICE_INFO_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'configs', 'devices.json')
@@ -38,19 +38,7 @@ class Metadata(ABC):
 
     @property
     def remote_url(self):
-        # Support both old and new Appium client versions
-        # New version > 3 : driver.command_executor._client_config.remote_server_addr
-        # Old version: driver.command_executor._url
-        command_executor = self.driver.command_executor
-        client_config = getattr(command_executor, '_client_config', None)
-
-        if client_config:
-            remote_addr = getattr(client_config, 'remote_server_addr', None)
-            if remote_addr:
-                return remote_addr
-
-        # Fallback to old version
-        return command_executor._url
+        return resolve_remote_url(self.driver.command_executor)
 
     def get_orientation(self, **kwargs):
         orientation = kwargs.get('orientation', self.capabilities.get('orientation', 'PORTRAIT'))

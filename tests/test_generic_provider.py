@@ -71,6 +71,24 @@ class TestGenericProvider(unittest.TestCase):
         self.assertFalse(os.path.exists(os.path.realpath(traversal)))
         os.removedirs(dir_created)
 
+    def test_get_dir_skips_unresolvable_allowed_base(self):
+        # If resolving an allowed temp base raises OSError it must be skipped
+        # rather than crash; with no resolvable base the env dir is rejected and
+        # a secure temporary directory is used instead.
+        real_realpath = os.path.realpath
+        fake_dir = os.path.join(tempfile.gettempdir(), "percy-base-error")
+
+        def flaky_realpath(path):
+            if path in (tempfile.gettempdir(), "/tmp", "/var/tmp"):
+                raise OSError("cannot resolve base")
+            return real_realpath(path)
+
+        with patch.dict(os.environ, {"PERCY_TMP_DIR": fake_dir}):
+            with patch("percy.providers.generic_provider.os.path.realpath", side_effect=flaky_realpath):
+                dir_created = self.generic_provider._get_dir()
+        self.assertTrue(os.path.realpath(dir_created).startswith(os.path.realpath(tempfile.gettempdir())))
+        os.removedirs(dir_created)
+
     def test_get_path(self):
         count = 1000  # Generate count unique paths and check their uniqueness
         png_paths = [
@@ -170,6 +188,16 @@ class TestGenericProvider(unittest.TestCase):
             "screenshot 1", tag, tiles, "", [], [], False, None, None, None
         )
         self.assertEqual(response, self.comparison_response)
+
+    @patch("percy.providers.generic_provider.log")
+    @patch.object(
+        Metadata, "session_id", PropertyMock(return_value="unique_session_id")
+    )
+    def test_get_tiles_fullpage_falls_back_to_single_page(self, mock_log):
+        tile = self.generic_provider._get_tiles(fullpage=True)[0]
+        # full page is only supported on App Automate -> warn and produce a single tile
+        mock_log.assert_called()
+        os.remove(tile.filepath)
 
     def test_supports(self):
         self.assertTrue(self.generic_provider.supports("some-dummy-url"))

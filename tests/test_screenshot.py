@@ -261,6 +261,7 @@ class TestPercyScreenshot(unittest.TestCase):
         driver.desired_capabilities = { 'key': 'value' }
         driver.command_executor = Mock()
         driver.command_executor._url = 'https://hub-cloud.browserstack.com/wd/hub'
+        driver.command_executor._client_config = None # pylint: disable=W0212
 
         element = Mock()
         element.id = 'Dummy_id'
@@ -277,7 +278,7 @@ class TestPercyScreenshot(unittest.TestCase):
         s1 = httpretty.latest_requests()[1].parsed_body
         self.assertEqual(s1['snapshotName'], 'Snapshot 1')
         self.assertEqual(s1['sessionId'], driver.session_id)
-        self.assertEqual(s1['commandExecutorUrl'], driver.command_executor._url) # pylint: disable=W0212
+        self.assertEqual(s1['commandExecutorUrl'], 'https://hub-cloud.browserstack.com/wd/hub')
         self.assertEqual(s1['capabilities'], dict(driver.capabilities))
         self.assertRegex(s1['client_info'], r'percy-appium-app/\d+')
         self.assertRegex(s1['environment_info'][0], r'appium/\d+')
@@ -298,6 +299,7 @@ class TestPercyScreenshot(unittest.TestCase):
         driver.desired_capabilities = { 'key': 'value' }
         driver.command_executor = Mock()
         driver.command_executor._url = 'https://hub-cloud.browserstack.com/wd/hub'
+        driver.command_executor._client_config = None # pylint: disable=W0212
         self.mock_webdriver.capabilities = { 'key': 'value' }
 
         self.assertEqual(percy_screenshot(driver, 'Snapshot 3', options = {'sync': True}), 'sync-data')

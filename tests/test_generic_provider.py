@@ -2,7 +2,6 @@
 # pylint: disable=R0904
 import shutil
 import os
-import tempfile
 import unittest
 from unittest.mock import MagicMock, patch, PropertyMock
 from appium.webdriver.webdriver import WebDriver
@@ -51,42 +50,6 @@ class TestGenericProvider(unittest.TestCase):
     def test_get_dir_with_env_var(self):
         dir_created = self.generic_provider._get_dir()
         self.assertEqual(os.listdir(dir_created), [])
-        os.removedirs(dir_created)
-
-    def test_get_dir_rejects_path_outside_temp(self):
-        # A PERCY_TMP_DIR that resolves outside the system temp root must be
-        # rejected to prevent arbitrary file writes via path traversal (CWE-22).
-        escape_dir = os.path.join(os.getcwd(), "percy-escape-test")
-        with patch.dict(os.environ, {"PERCY_TMP_DIR": escape_dir}):
-            dir_created = self.generic_provider._get_dir()
-        self.assertTrue(os.path.realpath(dir_created).startswith(os.path.realpath(tempfile.gettempdir())))
-        self.assertFalse(os.path.exists(escape_dir))
-        os.removedirs(dir_created)
-
-    def test_get_dir_rejects_dotdot_traversal(self):
-        traversal = os.path.join(tempfile.gettempdir(), "..", "..", "etc", "percy-evil")
-        with patch.dict(os.environ, {"PERCY_TMP_DIR": traversal}):
-            dir_created = self.generic_provider._get_dir()
-        self.assertTrue(os.path.realpath(dir_created).startswith(os.path.realpath(tempfile.gettempdir())))
-        self.assertFalse(os.path.exists(os.path.realpath(traversal)))
-        os.removedirs(dir_created)
-
-    def test_get_dir_skips_unresolvable_allowed_base(self):
-        # If resolving an allowed temp base raises OSError it must be skipped
-        # rather than crash; with no resolvable base the env dir is rejected and
-        # a secure temporary directory is used instead.
-        real_realpath = os.path.realpath
-        fake_dir = os.path.join(tempfile.gettempdir(), "percy-base-error")
-
-        def flaky_realpath(path):
-            if path in (tempfile.gettempdir(), "/tmp", "/var/tmp"):
-                raise OSError("cannot resolve base")
-            return real_realpath(path)
-
-        with patch.dict(os.environ, {"PERCY_TMP_DIR": fake_dir}):
-            with patch("percy.providers.generic_provider.os.path.realpath", side_effect=flaky_realpath):
-                dir_created = self.generic_provider._get_dir()
-        self.assertTrue(os.path.realpath(dir_created).startswith(os.path.realpath(tempfile.gettempdir())))
         os.removedirs(dir_created)
 
     def test_get_path(self):

@@ -1,5 +1,4 @@
 from functools import lru_cache
-from urllib.parse import urlparse
 import os
 import requests
 
@@ -7,40 +6,8 @@ from percy.errors import CLIException
 from percy.common import log
 from percy.environment import Environment
 
-DEFAULT_PERCY_CLI_API = 'http://localhost:5338'
-
-# Hostnames that resolve to the local machine. The Percy CLI runs locally, so
-# the SDK only ever needs to talk to a loopback address.
-_LOOPBACK_HOSTS = frozenset({'localhost', '127.0.0.1', '::1'})
-
-
-def _resolve_cli_api_address():
-    # The CLI API address can be overridden via the environment. Because the SDK
-    # POSTs request bodies that may carry BrowserStack credentials (capabilities)
-    # to this address, an attacker-controlled value would enable SSRF and
-    # credential exfiltration to an arbitrary host (CWE-306 / CWE-918). Restrict
-    # it to loopback by default; allow a remote host only over HTTPS and with an
-    # explicit opt-in.
-    raw = os.environ.get('PERCY_CLI_API') or DEFAULT_PERCY_CLI_API
-    host = (urlparse(raw).hostname or '').lower()
-
-    if host in _LOOPBACK_HOSTS:
-        return raw
-
-    allow_remote = os.environ.get('PERCY_ALLOW_REMOTE_CLI_API', '').lower() in ('1', 'true', 'yes')
-    if allow_remote and urlparse(raw).scheme == 'https':
-        return raw
-
-    log(
-        f"Ignoring non-loopback PERCY_CLI_API '{raw}'; falling back to {DEFAULT_PERCY_CLI_API}. "
-        "To target a remote Percy CLI, use an https:// URL and set PERCY_ALLOW_REMOTE_CLI_API=true.",
-        error=True,
-    )
-    return DEFAULT_PERCY_CLI_API
-
-
-# Maybe get the CLI API address from the environment (validated to loopback)
-PERCY_CLI_API = _resolve_cli_api_address()
+# Maybe get the CLI API address from the environment
+PERCY_CLI_API = os.environ.get('PERCY_CLI_API') or 'http://localhost:5338'
 
 class CLIWrapper:
     def __init__(self) -> None:

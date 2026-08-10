@@ -1,4 +1,4 @@
 httpretty==1.1.*
 pylint==2.*
-twine==5.1.1
+twine==7.0.0
 coverage==7.*

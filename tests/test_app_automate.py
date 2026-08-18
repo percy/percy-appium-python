@@ -131,3 +131,14 @@ class TestAppAutomate(unittest.TestCase):
         self.assertEqual(str(cm.exception), 'finalize failed')
         # a failure notification is attempted before the error propagates
         mock_end.assert_called_with('name', 'https://link', 'failure', None, 'finalize failed')
+
+    @patch.object(Metadata, 'session_id', PropertyMock(return_value='unique_session_id'))
+    @patch.object(GenericProvider, 'screenshot', MagicMock(side_effect=ValueError('capture failed')))
+    def test_screenshot_propagates_capture_error_and_reports_failure(self):
+        self.app_automate.execute_percy_screenshot_begin = MagicMock(return_value=None)
+        mock_end = MagicMock(return_value=None)
+        self.app_automate.execute_percy_screenshot_end = mock_end
+        with self.assertRaises(ValueError) as cm:
+            self.app_automate.screenshot('name')
+        self.assertEqual(str(cm.exception), 'capture failed')
+        mock_end.assert_called_once_with('name', '', 'failure', None, 'capture failed')

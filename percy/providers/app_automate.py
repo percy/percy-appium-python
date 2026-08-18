@@ -22,6 +22,7 @@ class AppAutomate(GenericProvider):
             self.metadata._os_version = session_details.get("osVersion")
             self.set_debug_url(session_details)
 
+        percy_screenshot_url = ''
         try:
             response = super().screenshot(name, **kwargs)
             percy_screenshot_url = response.get('link', '')

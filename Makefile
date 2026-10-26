@@ -28,7 +28,7 @@ build: venv
 	$(VENV)/python setup.py sdist bdist_wheel
 
 release: build
-	$(VENV)/twine upload dist/* --username __token__ --password ${PYPI_TOKEN}
+	TWINE_USERNAME=__token__ TWINE_PASSWORD="$$PYPI_TOKEN" $(VENV)/twine upload dist/*
 
 coverage: venv
 	$(VENV)/coverage run -m unittest discover

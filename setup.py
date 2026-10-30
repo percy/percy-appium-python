@@ -22,7 +22,7 @@ setup(
     package_data={'percy': ['configs/*.json']},
     include_package_data=True,
     install_requires=[
-        'Appium-Python-Client',
+        'Appium-Python-Client>=2.1.0,<7',
         'requests'
     ],
     python_requires='>=3.6',
@@ -37,6 +37,6 @@ setup(
         'Programming Language :: Python :: 3.9',
     ],
     test_suite='tests',
-    tests_require=['Appium-Python-Client', 'httpretty', 'requests'],
+    tests_require=['Appium-Python-Client>=2.1.0,<7', 'httpretty', 'requests'],
     zip_safe=False
 )

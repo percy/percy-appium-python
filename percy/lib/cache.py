@@ -1,8 +1,11 @@
+import threading
 import time
 
 
 class Cache:
     CACHE = {}
+    # Reentrant: get_cache calls cleanup_cache while holding it
+    _lock = threading.RLock()
     CACHE_TIMEOUT = 5 * 60  # 5 * 60 seconds
     TIMEOUT_KEY = 'last_access_time'
 
@@ -20,27 +23,30 @@ class Cache:
             raise TypeError('Argument session_id should be string')
         if not isinstance(property, str):
             raise TypeError('Argument property should be string')
-        session = cls.CACHE.get(session_id, {})
-        session[cls.TIMEOUT_KEY] = time.time()
-        session[property] = value
-        cls.CACHE[session_id] = session
+        with cls._lock:
+            session = cls.CACHE.get(session_id, {})
+            session[cls.TIMEOUT_KEY] = time.time()
+            session[property] = value
+            cls.CACHE[session_id] = session
 
     @classmethod
     def get_cache(cls, session_id, property):
-        cls.cleanup_cache()
-        if not isinstance(session_id, str):
-            raise TypeError('Argument session_id should be string')
-        if not isinstance(property, str):
-            raise TypeError('Argument property should be string')
-        session = cls.CACHE.get(session_id, {})
-        return session.get(property, None)
+        with cls._lock:
+            cls.cleanup_cache()
+            if not isinstance(session_id, str):
+                raise TypeError('Argument session_id should be string')
+            if not isinstance(property, str):
+                raise TypeError('Argument property should be string')
+            session = cls.CACHE.get(session_id, {})
+            return session.get(property, None)
 
     @classmethod
     def cleanup_cache(cls):
-        now = time.time()
-        session_ids = []
-        for session_id, session in cls.CACHE.items():
-            timestamp = session[cls.TIMEOUT_KEY]
-            if now - timestamp >= cls.CACHE_TIMEOUT:
-                session_ids.append(session_id)
-        list(map(cls.CACHE.pop, session_ids))
+        with cls._lock:
+            now = time.time()
+            session_ids = []
+            for session_id, session in cls.CACHE.items():
+                timestamp = session[cls.TIMEOUT_KEY]
+                if now - timestamp >= cls.CACHE_TIMEOUT:
+                    session_ids.append(session_id)
+            list(map(cls.CACHE.pop, session_ids))

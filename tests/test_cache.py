@@ -1,4 +1,6 @@
 # . # pylint: disable=[arguments-differ, protected-access]
+import itertools
+import threading
 import time
 import unittest
 from unittest.mock import patch
@@ -47,3 +49,40 @@ class TestCache(unittest.TestCase):
         self.assertIn(self.session_id, self.cache.CACHE)
         self.cache.cleanup_cache()
         self.assertNotIn(self.session_id, self.cache.CACHE)
+
+    def test_concurrent_set_during_cleanup_is_serialized(self):
+        errors = []
+
+        class MidIterationDict(dict):
+            def items(inner):  # pylint: disable=no-self-argument
+                it = iter(dict.items(inner))
+                yield from itertools.islice(it, 1)
+                # a writer starting now mutates the dict mid-iteration unless locked
+                writer = threading.Thread(target=run_writer)
+                writer.start()
+                writer.join(0.5)
+                yield from it
+
+        def run_writer():
+            try:
+                self.cache.set_cache('other_session', 'k', 'v')
+            except Exception as e:  # pylint: disable=broad-except
+                errors.append(e)
+
+        data = MidIterationDict()
+        data['seed'] = {self.cache.TIMEOUT_KEY: time.time()}
+        with patch('percy.lib.cache.Cache.CACHE', data):
+            self.cache.cleanup_cache()
+            time.sleep(0.1)
+            self.assertEqual(errors, [])
+            self.assertIn('seed', data)
+            self.assertIn('other_session', data)
+
+    def test_get_cache_does_not_deadlock(self):
+        result = []
+        t = threading.Thread(target=lambda: result.append(
+            self.cache.get_cache(self.session_id, self.prop)))
+        t.start()
+        t.join(2)
+        self.assertFalse(t.is_alive())
+        self.assertEqual(result, [self.value])

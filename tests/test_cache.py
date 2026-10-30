@@ -94,13 +94,13 @@ class TestCache(unittest.TestCase):
             assert Cache.get_cache('s', 'p') == 'v'
         """)
         root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        process = subprocess.Popen([sys.executable, '-c', script], cwd=root,
-                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                   universal_newlines=True)
-        try:
-            _, stderr = process.communicate(timeout=10)
-        except subprocess.TimeoutExpired:
-            process.kill()
-            process.communicate()
-            self.fail('get_cache did not complete before the timeout')
+        with subprocess.Popen([sys.executable, '-c', script], cwd=root,
+                              stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                              universal_newlines=True) as process:
+            try:
+                _, stderr = process.communicate(timeout=10)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.communicate()
+                self.fail('get_cache did not complete before the timeout')
         self.assertEqual(process.returncode, 0, stderr)

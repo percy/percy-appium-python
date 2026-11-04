@@ -139,6 +139,40 @@ class TestCommon(unittest.TestCase):
         _ = captured_output.getvalue()
         self.assertIn('Debug error', _)
 
+    def _capture_log(self, message):
+        captured_output = StringIO()
+        sys.stdout = captured_output
+        try:
+            log(message)
+        finally:
+            sys.stdout = sys.__stdout__
+        return captured_output.getvalue()
+
+    def test_log_strips_terminal_escape_sequences(self):
+        output = self._capture_log(
+            'pixel\x1b[2K\x1b[1;32mforged line\x1b[0m\x1b]0;title\x07\x1b]8;;http://x\x1b\\link\x1bc end'
+        )
+        message = output.split('] ', 1)[1]
+        self.assertNotIn('\x1b', message)
+        self.assertEqual(message, 'pixelforged linelink end\n')
+
+    def test_log_strips_carriage_returns_and_control_chars(self):
+        output = self._capture_log('real error\r[percy] all good\x08\x00\x7f\x9b')
+        message = output.split('] ', 1)[1]
+        self.assertEqual(message, 'real error[percy] all good\n')
+
+    def test_log_keeps_newlines_tabs_and_unicode(self):
+        output = self._capture_log('line one\n\tline two \u2014 caf\u00e9')
+        self.assertIn('line one\n\tline two \u2014 caf\u00e9', output)
+
+    def test_log_sanitizes_exception_messages(self):
+        output = self._capture_log(Exception('boom\x1b[2K\rhidden'))
+        self.assertIn('boomhidden', output)
+
+    def test_log_label_keeps_its_color(self):
+        output = self._capture_log('plain')
+        self.assertTrue(output.startswith(percy.common.LABEL))
+
 
 if __name__ == '__main__':
     unittest.main()

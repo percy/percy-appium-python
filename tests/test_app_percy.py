@@ -120,6 +120,11 @@ class TestAppPercy(unittest.TestCase):
         app_percy = AppPercy(self.mock_android_webdriver)
         self.assertIsNone(app_percy.screenshot('screenshot 1'))
 
+    def test_screenshot_rejects_non_boolean_dynamic_island(self):
+        app_percy = AppPercy(self.mock_android_webdriver)
+        with self.assertRaises(TypeError):
+            app_percy.screenshot('screenshot 1', dynamic_island='yes')
+
     def test_screenshot_with_percyOptions_disabled(self):
         self.mock_android_webdriver.capabilities['percyOptions'] = {'enabled': False}
         self.mock_android_webdriver.capabilities['percy:options'] = None

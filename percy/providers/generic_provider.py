@@ -46,8 +46,18 @@ class GenericProvider:
         th_test_case_execution_id = kwargs.get("th_test_case_execution_id", None)
         labels = kwargs.get("labels", None)
         return self._post_screenshots(name, tag, tiles, self.get_debug_url(), ignore_regions,
-            consider_regions, sync, test_case, th_test_case_execution_id, labels
+            consider_regions, sync, test_case, th_test_case_execution_id, labels,
+            self._comparison_extras(**kwargs)
         )
+
+    def _comparison_extras(self, **kwargs):
+        # Optional comparison fields. `dynamic_island` is only sent when set, so the
+        # `.percy.yml` snapshot default applies otherwise.
+        extras = {}
+        dynamic_island = kwargs.get('dynamic_island')
+        if dynamic_island is not None:
+            extras['dynamic_island'] = dynamic_island
+        return extras
 
     def _get_tag(self, **kwargs):
         name = kwargs.get('device_name', self.metadata.device_name)
@@ -162,9 +172,10 @@ class GenericProvider:
 
     @staticmethod
     def _post_screenshots(name, tag, tiles, debug_url, ignored_regions, considered_regions, sync, test_case,
-     th_test_case_execution_id, labels):
+     th_test_case_execution_id, labels, extras=None):
         response = CLIWrapper().post_screenshots(name, tag, tiles, debug_url, ignored_regions,
-                                                considered_regions, sync, test_case, th_test_case_execution_id, labels)
+                                                considered_regions, sync, test_case, th_test_case_execution_id, labels,
+                                                extras)
         return response
 
     def _write_screenshot(self, png_bytes, directory):

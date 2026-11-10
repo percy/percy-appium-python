@@ -72,6 +72,7 @@ $ percy app:exec -- [python test command]
   - In case scrollview is overlapping with other app elements. Offsets can be provided to reduce the area which needs to be considered for scrolling:
     - `top_scrollview_offset`: (**optional**) - [Alpha] Offset from top of scrollview; int
     - `bottom_scrollview_offset` (**optional**) - [Alpha] Offset from bottom of scrollview; int
+- `dynamic_island` (**optional**) - Draw the Dynamic Island on App Automate iOS screenshots of iPhones that have one. Defaults to the `.percy.yml` `snapshot.dynamic-island` value, which is `false` when unset. Not applied to `fullpage` screenshots; boolean
 - `full_screen` (**optional**) - Indicate whether app is full screen; boolean [ needs @percy/cli 1.20.2+ ];
 - `scrollable_xpath` (**optional**) - [Alpha] Scrollable element xpath for fullpage [ needs @percy/cli 1.20.2+ ]; string
 - `scrollable_id` (**optional**) - [Alpha] Scrollable element accessibility id for fullpage [ needs @percy/cli 1.20.2+ ]; string

@@ -19,7 +19,9 @@ _UNSAFE_LOG_CHARS = re.compile(
 )
 
 def _sanitize(message):
-    return _UNSAFE_LOG_CHARS.sub('', str(message))
+    # Continuation lines are indented so a multi-line message can't start a
+    # line that looks like separate SDK output.
+    return _UNSAFE_LOG_CHARS.sub('', str(message)).replace('\n', '\n  ')
 
 def log(message, on_debug=None, error=False):
     if isinstance(on_debug, type(None)) or (isinstance(on_debug, bool) and PERCY_DEBUG):

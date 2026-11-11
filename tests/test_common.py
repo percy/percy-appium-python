@@ -141,12 +141,23 @@ class TestCommon(unittest.TestCase):
 
     def _capture_log(self, message):
         captured_output = StringIO()
+        previous_stdout = sys.stdout
         sys.stdout = captured_output
         try:
             log(message)
         finally:
-            sys.stdout = sys.__stdout__
+            sys.stdout = previous_stdout
         return captured_output.getvalue()
+
+    def test_capture_log_restores_previous_stdout(self):
+        runner_stream = StringIO()
+        original_stdout = sys.stdout
+        sys.stdout = runner_stream
+        try:
+            self._capture_log('message')
+            self.assertIs(sys.stdout, runner_stream)
+        finally:
+            sys.stdout = original_stdout
 
     def test_log_strips_terminal_escape_sequences(self):
         output = self._capture_log(
@@ -163,7 +174,12 @@ class TestCommon(unittest.TestCase):
 
     def test_log_keeps_newlines_tabs_and_unicode(self):
         output = self._capture_log('line one\n\tline two \u2014 caf\u00e9')
-        self.assertIn('line one\n\tline two \u2014 caf\u00e9', output)
+        self.assertIn('line one\n  \tline two \u2014 caf\u00e9', output)
+
+    def test_log_indents_continuation_lines(self):
+        output = self._capture_log('request failed\n[percy] upload succeeded')
+        self.assertEqual(output.split('] ', 1)[1], 'request failed\n  [percy] upload succeeded\n')
+        self.assertNotIn('\n[percy]', output)
 
     def test_log_sanitizes_exception_messages(self):
         output = self._capture_log(Exception('boom\x1b[2K\rhidden'))

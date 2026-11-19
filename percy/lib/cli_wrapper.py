@@ -26,6 +26,7 @@ class CLIWrapper:
             Environment.percy_build_id = data['build']['id']
             Environment.percy_build_url = data['build']['url']
             Environment.session_type = data.get('type', None)
+            Environment.percy_config = data.get('config', None)
             version = response.headers.get('x-percy-core-version')
 
             if version.split('.')[0] != '1':
@@ -44,11 +45,13 @@ class CLIWrapper:
 
     def post_screenshots(self, name, tag, tiles, external_debug_url=None,
         ignored_elements_data=None, considered_elements_data=None, sync=None, test_case=None,
-            th_test_case_execution_id=None,labels=None
+            th_test_case_execution_id=None, labels=None, extras=None
     ):
         body = self._request_body(name, tag, tiles, external_debug_url,
             ignored_elements_data, considered_elements_data, sync, test_case, th_test_case_execution_id, labels
         )
+        if extras:
+            body.update(extras)
 
         body['client_info'] = Environment._get_client_info()
         body['environment_info'] = Environment._get_env_info()

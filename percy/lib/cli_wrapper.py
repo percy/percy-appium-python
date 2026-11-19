@@ -26,6 +26,7 @@ class CLIWrapper:
             Environment.percy_build_id = data['build']['id']
             Environment.percy_build_url = data['build']['url']
             Environment.session_type = data.get('type', None)
+            Environment.percy_config = data.get('config', None)
             version = response.headers.get('x-percy-core-version')
 
             if version.split('.')[0] != '1':

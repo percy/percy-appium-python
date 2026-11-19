@@ -53,6 +53,16 @@ class AppAutomate(GenericProvider):
         return extras
 
     @staticmethod
+    def _dynamic_island_requested(**kwargs):
+        # The per-screenshot choice wins; otherwise the .percy.yml snapshot default the CLI reports
+        dynamic_island = kwargs.get('dynamic_island')
+        if dynamic_island is None:
+            config = Environment.percy_config if isinstance(Environment.percy_config, dict) else {}
+            snapshot = config.get('snapshot')
+            dynamic_island = snapshot.get('dynamicIsland') if isinstance(snapshot, dict) else None
+        return dynamic_island is True
+
+    @staticmethod
     def _extract_dynamic_island_fields(tile_data):
         # Island data must never fail a screenshot: anything missing or malformed is dropped
         try:
@@ -91,13 +101,14 @@ class AppAutomate(GenericProvider):
             scrollable_id,
             self.metadata.scale_factor,
             top_scrollview_offset,
-            bottom_scrollview_offset
+            bottom_scrollview_offset,
+            # Dynamic island is drawn on single page screenshots only, so only ask for it there
+            dynamic_island=not fullpage_ss and self._dynamic_island_requested(**kwargs)
         )
         tiles = []
         status_bar_height = self.metadata.status_bar_height
         nav_bar_height = self.metadata.navigation_bar_height
         tiles_data = json.loads(data.get('result'))
-        # Dynamic island is drawn on single page screenshots only
         if tiles_data and not fullpage_ss:
             self._dynamic_island_fields = self._extract_dynamic_island_fields(tiles_data[0])
         for tile_data in tiles_data:
@@ -159,7 +170,8 @@ class AppAutomate(GenericProvider):
         scrollable_id=None,
         scale_factor=1,
         top_scrollview_offset=0,
-        bottom_scrollview_offset=0
+        bottom_scrollview_offset=0,
+        dynamic_island=False
     ):
         try:
             projectId = 'percy-dev' if os.environ.get('PERCY_ENABLE_DEV') == 'true' else 'percy-prod'
@@ -182,6 +194,10 @@ class AppAutomate(GenericProvider):
                     },
                 }
             }
+            # Only sent when opted in: App Automate then adds the island geometry to the tiles,
+            # which needs a WDA call, so screenshots that don't want the island skip it
+            if dynamic_island:
+                request_body['arguments']['options']['dynamicIsland'] = True
             command = f'browserstack_executor: {json.dumps(request_body)}'
             response = self.metadata.execute_script(command)
             response = json.loads(response)

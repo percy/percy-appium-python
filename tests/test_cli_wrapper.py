@@ -4,6 +4,7 @@ from unittest.mock import Mock, patch
 from percy.errors import CLIException
 
 from percy.lib import cli_wrapper
+from percy.environment import Environment
 from percy.lib.tile import Tile
 
 
@@ -170,6 +171,25 @@ class CLIWrapperTestCase(unittest.TestCase):
                 self.assertFalse(cli_wrapper.CLIWrapper.is_percy_enabled())
         finally:
             cli_wrapper.CLIWrapper.is_percy_enabled.cache_clear()
+
+    def test_is_percy_enabled_stores_cli_config(self):
+        cli_wrapper.CLIWrapper.is_percy_enabled.cache_clear()
+        try:
+            with patch("requests.get") as mock_get:
+                response = Mock()
+                response.raise_for_status.return_value = None
+                response.json.return_value = {
+                    "success": True,
+                    "build": {"id": "build-1", "url": "build-url"},
+                    "config": {"snapshot": {"dynamicIsland": True}},
+                }
+                response.headers = {"x-percy-core-version": "1.27.0"}
+                mock_get.return_value = response
+                self.assertTrue(cli_wrapper.CLIWrapper.is_percy_enabled())
+                self.assertEqual(Environment.percy_config, {"snapshot": {"dynamicIsland": True}})
+        finally:
+            cli_wrapper.CLIWrapper.is_percy_enabled.cache_clear()
+            Environment.percy_config = None
 
     def test_is_percy_enabled_returns_false_when_healthcheck_unsuccessful(self):
         cli_wrapper.CLIWrapper.is_percy_enabled.cache_clear()

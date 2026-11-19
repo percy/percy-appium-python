@@ -6,6 +6,7 @@ from appium.webdriver.webdriver import WebDriver
 from percy.providers.app_automate import AppAutomate
 from percy.providers.generic_provider import GenericProvider
 from percy.metadata import AndroidMetadata
+from percy.environment import Environment
 from tests.mocks.mock_methods import android_capabilities
 
 ISLAND_FIELDS = {
@@ -117,3 +118,63 @@ class TestAppAutomateDynamicIsland(unittest.TestCase):
         self.app_automate.execute_percy_screenshot = mock_tiles_result(PLAIN_TILE)
         self.app_automate.screenshot('Screenshot 1')
         self.assertDictEqual(mock_post_screenshots.call_args.args[-1], {})
+
+
+class TestAppAutomateDynamicIslandRequest(unittest.TestCase):
+    """Whether the screenshot request asks App Automate for the island geometry."""
+
+    @patch('appium.webdriver.webdriver.WebDriver')
+    def setUp(self, mock_webdriver) -> None:
+        mock_webdriver.__class__ = WebDriver
+        mock_webdriver.capabilities = android_capabilities
+        self.app_automate = AppAutomate(mock_webdriver, AndroidMetadata(mock_webdriver))
+        Environment.percy_config = None
+
+    def tearDown(self) -> None:
+        Environment.percy_config = None
+
+    def requested(self, **kwargs):
+        mock_screenshot = mock_tiles_result(PLAIN_TILE)
+        self.app_automate.execute_percy_screenshot = mock_screenshot
+        self.app_automate._get_tiles(**kwargs)
+        return mock_screenshot.call_args.kwargs['dynamic_island']
+
+    def sent_options(self, **kwargs):
+        with patch.object(AndroidMetadata, 'execute_script', return_value='{"result": "[]"}') as mock_execute:
+            self.app_automate.execute_percy_screenshot(1080, 'singlepage', 5, **kwargs)
+        command = mock_execute.call_args.args[0]
+        return json.loads(command.split('browserstack_executor: ', 1)[1])['arguments']['options']
+
+    @patch_android_metadata
+    def test_requested_when_screenshot_opts_in(self):
+        self.assertTrue(self.requested(dynamic_island=True))
+
+    @patch_android_metadata
+    def test_not_requested_by_default(self):
+        self.assertFalse(self.requested())
+
+    @patch_android_metadata
+    def test_requested_from_config_default(self):
+        Environment.percy_config = {'snapshot': {'dynamicIsland': True}}
+        self.assertTrue(self.requested())
+
+    @patch_android_metadata
+    def test_screenshot_opt_out_overrides_config_default(self):
+        Environment.percy_config = {'snapshot': {'dynamicIsland': True}}
+        self.assertFalse(self.requested(dynamic_island=False))
+
+    @patch_android_metadata
+    def test_not_requested_for_fullpage(self):
+        self.assertFalse(self.requested(dynamic_island=True, fullpage=True))
+
+    @patch_android_metadata
+    def test_malformed_config_is_ignored(self):
+        for config in ({'snapshot': None}, {'snapshot': 'x'}, 'x', {'snapshot': {'dynamicIsland': 'yes'}}):
+            Environment.percy_config = config
+            self.assertFalse(self.requested(), config)
+
+    def test_options_carry_dynamic_island_when_requested(self):
+        self.assertIs(self.sent_options(dynamic_island=True)['dynamicIsland'], True)
+
+    def test_options_omit_dynamic_island_otherwise(self):
+        self.assertNotIn('dynamicIsland', self.sent_options())

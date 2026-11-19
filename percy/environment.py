@@ -7,6 +7,8 @@ class Environment:
     percy_build_id = None
     percy_build_url = None
     session_type = None
+    # Percy CLI config from the healthcheck (e.g. the .percy.yml snapshot defaults)
+    percy_config = None
 
     @staticmethod
     def _get_client_info(flag=False):

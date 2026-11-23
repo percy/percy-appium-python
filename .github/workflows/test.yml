@@ -15,7 +15,8 @@ jobs:
     strategy:
       matrix:
         python: [3.9, 3.11, 3.12]
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest moved to 26.04, which has no Python 3.9 for setup-python.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:

@@ -46,4 +46,7 @@ class AppPercy:
         th_test_case_execution_id = kwargs.get('th_test_case_execution_id')
         if th_test_case_execution_id and not isinstance(th_test_case_execution_id, str):
             raise TypeError('Argument th_test_case_execution_id should be a string')
+        dynamic_island = kwargs.get('dynamic_island')
+        if dynamic_island is not None and not isinstance(dynamic_island, bool):
+            raise TypeError('Argument dynamic_island should be a boolean')
         return self.provider.screenshot(name, **kwargs)

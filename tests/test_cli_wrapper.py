@@ -4,6 +4,7 @@ from unittest.mock import Mock, patch
 from percy.errors import CLIException
 
 from percy.lib import cli_wrapper
+from percy.environment import Environment
 from percy.lib.tile import Tile
 
 
@@ -55,6 +56,34 @@ class CLIWrapperTestCase(unittest.TestCase):
                 "some-name", {}, "some-debug-url"
             )
             self.assertDictEqual(post_screenshots_reponse, response.json())
+
+    def test_post_screenshot_merges_extras_into_body(self):
+        with patch("requests.post") as mock_requests:
+            response = Mock()
+            response.json.return_value = {"link": "snapshot-url-link", "success": True}
+            response.status_code = 200
+            response.raise_for_status.return_value = None
+            mock_requests.return_value = response
+
+            self.cli_wrapper.post_screenshots(
+                "some-name", {"name": "iPhone"}, [], extras={"dynamic_island": True, "device_orientation": "LANDSCAPE"}
+            )
+            body = mock_requests.call_args.kwargs["json"]
+            self.assertEqual(body["dynamic_island"], True)
+            self.assertEqual(body["device_orientation"], "LANDSCAPE")
+
+    def test_post_screenshot_without_extras_sends_no_dynamic_island_fields(self):
+        with patch("requests.post") as mock_requests:
+            response = Mock()
+            response.json.return_value = {"link": "snapshot-url-link", "success": True}
+            response.status_code = 200
+            response.raise_for_status.return_value = None
+            mock_requests.return_value = response
+
+            self.cli_wrapper.post_screenshots("some-name", {"name": "iPhone"}, [])
+            body = mock_requests.call_args.kwargs["json"]
+            for key in ("dynamic_island", "dynamic_island_rect", "screen_size_points", "device_orientation"):
+                self.assertNotIn(key, body)
 
     def test_post_failed_event(self):
         with patch("requests.post") as mock_requests:
@@ -142,6 +171,25 @@ class CLIWrapperTestCase(unittest.TestCase):
                 self.assertFalse(cli_wrapper.CLIWrapper.is_percy_enabled())
         finally:
             cli_wrapper.CLIWrapper.is_percy_enabled.cache_clear()
+
+    def test_is_percy_enabled_stores_cli_config(self):
+        cli_wrapper.CLIWrapper.is_percy_enabled.cache_clear()
+        try:
+            with patch("requests.get") as mock_get:
+                response = Mock()
+                response.raise_for_status.return_value = None
+                response.json.return_value = {
+                    "success": True,
+                    "build": {"id": "build-1", "url": "build-url"},
+                    "config": {"snapshot": {"dynamicIsland": True}},
+                }
+                response.headers = {"x-percy-core-version": "1.27.0"}
+                mock_get.return_value = response
+                self.assertTrue(cli_wrapper.CLIWrapper.is_percy_enabled())
+                self.assertEqual(Environment.percy_config, {"snapshot": {"dynamicIsland": True}})
+        finally:
+            cli_wrapper.CLIWrapper.is_percy_enabled.cache_clear()
+            Environment.percy_config = None
 
     def test_is_percy_enabled_returns_false_when_healthcheck_unsuccessful(self):
         cli_wrapper.CLIWrapper.is_percy_enabled.cache_clear()
